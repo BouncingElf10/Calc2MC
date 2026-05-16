@@ -9,7 +9,9 @@ add_executable(ti84controller src/main.c
         src/util.c
         src/util.h
         src/device.c
-        src/device.h)
+        src/device.h
+        src/control.c
+        src/control.h)
 
 target_include_directories(ti84controller PRIVATE
         ${CEDEV}/include
