@@ -7,7 +7,9 @@ set(CEDEV "C:/CEdev")
 
 add_executable(ti84controller src/main.c
         src/util.c
-        src/util.h)
+        src/util.h
+        src/device.c
+        src/device.h)
 
 target_include_directories(ti84controller PRIVATE
         ${CEDEV}/include
