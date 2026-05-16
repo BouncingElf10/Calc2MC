@@ -5,7 +5,6 @@
 #include <ti/getcsc.h>
 #include <srldrvce.h>
 #include <stdbool.h>
-#include <tice.h>
 #include <usbdrvce.h>
 
 int main(void) {
@@ -26,6 +25,10 @@ int main(void) {
         }
         if (!has_srl_device && isConnected) {
             fatal("device disconnected");
+            return 1;
+        }
+        if (shouldQuit()) {
+            fatal("client disconnected");
             return 1;
         }
 

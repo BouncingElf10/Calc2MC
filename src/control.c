@@ -69,3 +69,13 @@ void fatal(const char *msg) {
     usb_Cleanup();
 }
 
+bool shouldQuit() {
+    uint8_t byte;
+    if (srl_Read(&srl, &byte, 1) == 1) {
+        if (byte == QUIT_BYTE) {
+            return true;
+        }
+    }
+    return false;
+}
+

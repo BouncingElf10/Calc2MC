@@ -5,6 +5,7 @@
 extern int BAUD_RATE;
 extern char CONFIRM_BYTE;
 extern char CONNECT_BYTE;
+extern char QUIT_BYTE;
 
 extern bool isConnected;
 
