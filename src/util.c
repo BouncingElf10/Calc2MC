@@ -7,7 +7,12 @@
 #include "control.h"
 
 const int BAUD_RATE = 115200;
-const int NUM_COLS = 28;
+
+const int SCREEN_COLS = 28;
+const int SCREEN_ROWS = 9;
+const int SCREEN_WIDTH = 320;
+const int SCREEN_HEIGHT = 240;
+
 const char CONFIRM_BYTE = 0x67; // haha
 const char CONNECT_BYTE = 0x69; // even funnier the second time I do it!
 const char QUIT_BYTE = 0x42; // fuck i ran out of them
@@ -16,7 +21,7 @@ bool isConnected = false;
 
 void centerPrintText(const char str[], int row) {
     const int length = strlen(str);
-    const int pos = (NUM_COLS - length) / 2;
+    const int pos = (SCREEN_COLS - length) / 2;
     os_SetCursorPos(row, pos);
     os_PutStrFull(str);
 }
@@ -30,7 +35,7 @@ void printText(const char *str, int row) { // yeah ts was gippty, aint bothered 
 
         while (str[len] && str[len] != ' ')len++;
 
-        if (col + len > NUM_COLS) { row++; col = 0; }
+        if (col + len > SCREEN_COLS) { row++; col = 0; }
 
         char temp[29];
         memcpy(temp, word, len);
@@ -49,11 +54,18 @@ void printText(const char *str, int row) { // yeah ts was gippty, aint bothered 
     }
 }
 
+void printSmallText(const char *str, int y) {
+    os_FontSelect(os_SmallFont);
+    os_FontDrawText(str, 0, y);
+}
+
 void clearMenu() {
     os_ClrHome();
 
     const char message[] = "Welcome to Calc2MC!";
     centerPrintText(message, 0);
+
+    printSmallText("Made   by   BouncingElf10", SCREEN_HEIGHT - os_FontGetHeight());
 }
 
 char* concat(const char *s1, const char *s2) {
