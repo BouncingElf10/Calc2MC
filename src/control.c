@@ -10,10 +10,10 @@
 
 State currentState = WAITING;
 
-const char *stateToString(const State state) {
+char *stateToString(const State state) {
     switch (state) {
-        case WAITING: return "Waiting for USB to be connected...";
-        case HANDSHAKE: return "Connected! Waiting to connect to Minecraft...";
+        case WAITING: return "Waiting for USB to be connected";
+        case HANDSHAKE: return "Connected! Waiting to connect to Minecraft";
         case CONFIRMED: return "Everything connected successfully!";
         case QUIT: return "";
     }

@@ -12,5 +12,8 @@ extern bool isConnected;
 void centerPrintText(const char str[], int row);
 void printText(const char str[], int row);
 void clearMenu();
+char* concat(const char *s1, const char *s2);
+char* getMovingDots();
+void printInfoText();
 
 #endif

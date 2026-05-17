@@ -1,10 +1,10 @@
 #include "util.h"
 #include "control.h"
 #include "device.h"
-#include <ti/screen.h>
 #include <ti/getcsc.h>
 #include <srldrvce.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <usbdrvce.h>
 
 int main(void) {
@@ -16,8 +16,7 @@ int main(void) {
     while (true) {
         usb_HandleEvents();
 
-        const char *status = stateToString(currentState);
-        printText(status, 2);
+        printInfoText();
 
         if (os_GetCSC() == sk_Clear) {
             fatal("user quit");
@@ -27,7 +26,7 @@ int main(void) {
             fatal("device disconnected");
             return 1;
         }
-        if (shouldQuit()) {
+        if (currentState == CONFIRMED && has_srl_device && shouldQuit()) {
             fatal("client disconnected");
             return 1;
         }

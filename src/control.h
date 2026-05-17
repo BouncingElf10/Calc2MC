@@ -11,7 +11,7 @@ typedef enum {
 
 extern State currentState;
 
-const char* stateToString(State state);
+char* stateToString(State state);
 
 void handleWaiting();
 void handleHandshake();
