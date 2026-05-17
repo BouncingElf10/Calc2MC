@@ -51,7 +51,7 @@ void handleHandshake() {
 void handleConnected() {
     const uint8_t keyInt = os_GetCSC();
     if (!keyInt) return;
-    if (keyInt == sk_Clear) fatal("user quit");
+    if (keyInt == sk_Clear) fatal("User has quit the program.");
 
     const uint8_t key[] = { keyInt };
     srl_Write(&srl, key, sizeof(key));

@@ -19,15 +19,15 @@ int main(void) {
         printInfoText();
 
         if (os_GetCSC() == sk_Clear) {
-            fatal("user quit");
+            fatal("User has quit the program.");
             return 0;
         }
         if (!has_srl_device && isConnected) {
-            fatal("device disconnected");
+            fatal("Device has disconnected.");
             return 1;
         }
         if (currentState == CONFIRMED && has_srl_device && shouldQuit()) {
-            fatal("client disconnected");
+            fatal("Client has disconnected.");
             return 1;
         }
 
