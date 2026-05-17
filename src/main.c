@@ -22,7 +22,7 @@ int main(void) {
             fatal("User has quit the program.");
             return 0;
         }
-        if (!has_srl_device && isConnected) {
+        if (currentState == CONFIRMED && !has_srl_device) {
             fatal("Device has disconnected.");
             return 1;
         }
