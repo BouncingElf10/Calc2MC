@@ -1,3 +1,4 @@
+#include <keypadc.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -122,7 +123,72 @@ const char *keyToString(uint8_t key) {
         case sk_Vars: return "Vars";
         case sk_Power: return "^";
 
-        default: return "Unknown";
+        default: return "None";
+    }
+}
+
+kb_lkey_t skToKbKey(const uint8_t sk) {
+    switch (sk) {
+        case sk_Down: return kb_KeyDown;
+        case sk_Left: return kb_KeyLeft;
+        case sk_Right: return kb_KeyRight;
+        case sk_Up: return kb_KeyUp;
+
+        case sk_Enter: return kb_KeyEnter;
+        case sk_2nd: return kb_Key2nd;
+        case sk_Clear: return kb_KeyClear;
+        case sk_Alpha: return kb_KeyAlpha;
+
+        case sk_Add: return kb_KeyAdd;
+        case sk_Sub: return kb_KeySub;
+        case sk_Mul: return kb_KeyMul;
+        case sk_Div: return kb_KeyDiv;
+
+        case sk_Graph: return kb_KeyGraph;
+        case sk_Trace: return kb_KeyTrace;
+        case sk_Zoom: return kb_KeyZoom;
+        case sk_Window: return kb_KeyWindow;
+        case sk_Yequ: return kb_KeyYequ;
+
+        case sk_Mode: return kb_KeyMode;
+        case sk_Del: return kb_KeyDel;
+
+        case sk_Store: return kb_KeySto;
+        case sk_Ln: return kb_KeyLn;
+        case sk_Log: return kb_KeyLog;
+        case sk_Square: return kb_KeySquare;
+        case sk_Recip: return kb_KeyRecip;
+        case sk_Math: return kb_KeyMath;
+
+        case sk_0: return kb_Key0;
+        case sk_1: return kb_Key1;
+        case sk_2: return kb_Key2;
+        case sk_3: return kb_Key3;
+        case sk_4: return kb_Key4;
+        case sk_5: return kb_Key5;
+        case sk_6: return kb_Key6;
+        case sk_7: return kb_Key7;
+        case sk_8: return kb_Key8;
+        case sk_9: return kb_Key9;
+
+        case sk_Comma: return kb_KeyComma;
+        case sk_Sin: return kb_KeySin;
+        case sk_Apps: return kb_KeyApps;
+        case sk_GraphVar: return kb_KeyGraphVar;
+
+        case sk_DecPnt: return kb_KeyDecPnt;
+        case sk_LParen: return kb_KeyLParen;
+        case sk_Cos: return kb_KeyCos;
+        case sk_Prgm: return kb_KeyPrgm;
+        case sk_Stat: return kb_KeyStat;
+
+        case sk_Chs: return kb_KeyChs;
+        case sk_RParen: return kb_KeyRParen;
+        case sk_Tan: return kb_KeyTan;
+        case sk_Vars: return kb_KeyVars;
+        case sk_Power: return kb_KeyPower;
+
+        default: return 0;
     }
 }
 

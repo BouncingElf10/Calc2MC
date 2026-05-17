@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <tice.h>
 #include <time.h>
+#include <keypadc.h>
 
 State currentState = WAITING;
 bool hasMadeInput = false;
@@ -51,15 +52,43 @@ void handleHandshake() {
     }
 }
 
-void handleConnected() {
+bool getKeyEvent(uint8_t *key, bool *pressed) {
+    kb_Scan();
     const uint8_t keyInt = os_GetCSC();
-    if (!keyInt) return;
+
+    if (keyInt && lastKeyPressed != keyInt) {
+        *key = keyInt;
+        *pressed = true;
+        lastKeyPressed = keyInt;
+        return true;
+    }
+
+    if (lastKeyPressed != 0) {
+        const kb_lkey_t lkey = skToKbKey(lastKeyPressed);
+        if (!lkey || !kb_IsDown(lkey)) {
+            *key = lastKeyPressed;
+            *pressed = false;
+            lastKeyPressed = 0;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void handleConnected() {
+    uint8_t keyInt;
+    bool pressed;
+    if (!getKeyEvent(&keyInt, &pressed)) return;
+
     if (keyInt == sk_Clear) fatal("User has quit the program.");
 
     clearMenu();
     if (hasMadeInput == false) hasMadeInput = true;
+    if (!pressed) {
+        keyInt = keyInt | 0b10000000; // depressed bit
+    }
 
-    lastKeyPressed = keyInt;
     const uint8_t key[] = { keyInt };
     srl_Write(&srl, key, sizeof(key));
 }
