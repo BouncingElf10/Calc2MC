@@ -9,6 +9,9 @@
 #include <time.h>
 
 State currentState = WAITING;
+bool hasMadeInput = false;
+bool displayMessage = true;
+uint8_t lastKeyPressed = 0;
 
 char *stateToString(const State state) {
     switch (state) {
@@ -53,6 +56,10 @@ void handleConnected() {
     if (!keyInt) return;
     if (keyInt == sk_Clear) fatal("User has quit the program.");
 
+    clearMenu();
+    if (hasMadeInput == false) hasMadeInput = true;
+
+    lastKeyPressed = keyInt;
     const uint8_t key[] = { keyInt };
     srl_Write(&srl, key, sizeof(key));
 }

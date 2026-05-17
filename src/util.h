@@ -7,6 +7,11 @@ extern char CONFIRM_BYTE;
 extern char CONNECT_BYTE;
 extern char QUIT_BYTE;
 
+extern int SCREEN_COLS;
+extern int SCREEN_ROWS;
+extern int SCREEN_WIDTH;
+extern int SCREEN_HEIGHT;
+
 extern bool isConnected;
 
 void centerPrintText(const char str[], int row);

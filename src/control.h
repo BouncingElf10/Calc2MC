@@ -1,6 +1,7 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef enum {
     WAITING,
@@ -10,6 +11,8 @@ typedef enum {
 } State;
 
 extern State currentState;
+extern bool hasMadeInput;
+extern uint8_t lastKeyPressed;
 
 char* stateToString(State state);
 
