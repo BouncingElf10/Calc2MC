@@ -4,6 +4,7 @@ import com.bouncingelf10.calc2mc.Calc2MCClient;
 import com.fazecast.jSerialComm.SerialPort;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 public class CalcClient {
@@ -13,7 +14,7 @@ public class CalcClient {
     static final int CONFIRM_BYTE = 0x67;
     static final int QUIT_BYTE = 0x42;
 
-    static SerialPort calculatorPort;
+    static volatile SerialPort calculatorPort;
 
     public static void spawnThreadToFindCalculator() {
         Thread thread = new Thread(() -> {
@@ -25,6 +26,10 @@ public class CalcClient {
             calculatorPort.setComPortParameters(BAUD_RATE, 8, 1, 0);
         });
         thread.start();
+    }
+
+    public static CompletableFuture<SerialPort> connectAsync(String portName) {
+        return CompletableFuture.supplyAsync(() -> connectTo(portName));
     }
 
     public static SerialPort tryFindCOM3Calculator() {

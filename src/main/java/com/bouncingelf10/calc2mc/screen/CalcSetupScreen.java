@@ -101,13 +101,14 @@ public class CalcSetupScreen extends Screen {
                 try {
                     setStatus(Component.translatable("screen.calc2mc.connecting", portName), STATUS_WARNING);
 
-                    SerialPort port = CalcClient.connectTo(portName);
-
-                    if (port != null && port.isOpen()) {
-                        setStatus(Component.translatable("screen.calc2mc.connected", portName), STATUS_SUCCESS);
-                    } else {
-                        setStatus(Component.translatable("screen.calc2mc.failedconnect", portName), STATUS_ERROR);
-                    }
+                    CalcClient.connectAsync(portName)
+                        .thenAccept(port -> {
+                            if (port != null && port.isOpen()) {
+                                setStatus(Component.translatable("screen.calc2mc.connected", portName), STATUS_SUCCESS);
+                            } else {
+                                setStatus(Component.translatable("screen.calc2mc.failedconnect", portName), STATUS_ERROR);
+                            }
+                        });
                 } catch (Exception e) {
                     setStatus(Component.literal("Error: " + e.getMessage()), STATUS_ERROR);
 
