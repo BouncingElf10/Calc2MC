@@ -6,6 +6,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
@@ -56,7 +57,13 @@ public class CalcSetupScreen extends Screen {
 
         int footerY = panelY() + panelHeight() - FOOTER_HEIGHT;
 
-        refreshButton = Button.builder(Component.translatable("screen.calc2mc.refresh"), button -> refreshPorts()).pos(panelX() + PANEL_WIDTH - REFRESH_BUTTON_WIDTH - PADDING, footerY + (FOOTER_HEIGHT - REFRESH_BUTTON_HEIGHT) / 2).size(REFRESH_BUTTON_WIDTH, REFRESH_BUTTON_HEIGHT).build();
+        refreshButton = new ModernButton(
+                panelX() + PANEL_WIDTH - REFRESH_BUTTON_WIDTH - PADDING,
+                footerY + (FOOTER_HEIGHT - REFRESH_BUTTON_HEIGHT) / 2,
+                REFRESH_BUTTON_WIDTH, REFRESH_BUTTON_HEIGHT,
+                Component.translatable("screen.calc2mc.refresh"),
+                button -> Calc2MCClient.LOGGER.warn("asipmda")
+        );
 
         addRenderableWidget(refreshButton);
     }
@@ -75,13 +82,23 @@ public class CalcSetupScreen extends Screen {
             int buttonX = panelX() + PANEL_WIDTH - PADDING - CONNECT_BUTTON_WIDTH;
             int buttonY = rowY + (ROW_HEIGHT - CONNECT_BUTTON_HEIGHT) / 2;
 
-            addRenderableWidget(Button.builder(Component.translatable("screen.calc2mc.connect"), button -> Calc2MCClient.LOGGER.info("connect to: {}", portName)).pos(buttonX, buttonY).size(CONNECT_BUTTON_WIDTH, CONNECT_BUTTON_HEIGHT).build());
+            addRenderableWidget(new ModernButton(
+                    buttonX, buttonY,
+                    CONNECT_BUTTON_WIDTH, CONNECT_BUTTON_HEIGHT,
+                    Component.translatable("screen.calc2mc.connect"),
+                    button -> Calc2MCClient.LOGGER.info("connect to: {}", portName)
+            ));
         }
 
         int footerY = panelY() + panelHeight() - FOOTER_HEIGHT;
 
-        refreshButton = Button.builder(Component.translatable("screen.calc2mc.refresh"), button -> refreshPorts()).pos(panelX() + PANEL_WIDTH - REFRESH_BUTTON_WIDTH - PADDING, footerY + (FOOTER_HEIGHT - REFRESH_BUTTON_HEIGHT) / 2).size(REFRESH_BUTTON_WIDTH, REFRESH_BUTTON_HEIGHT).build();
-
+        refreshButton = new ModernButton(
+                panelX() + PANEL_WIDTH - REFRESH_BUTTON_WIDTH - PADDING,
+                footerY + (FOOTER_HEIGHT - REFRESH_BUTTON_HEIGHT) / 2,
+                REFRESH_BUTTON_WIDTH, REFRESH_BUTTON_HEIGHT,
+                Component.translatable("screen.calc2mc.refresh"),
+                button -> Calc2MCClient.LOGGER.warn("asipmda")
+        );
         addRenderableWidget(refreshButton);
     }
 
