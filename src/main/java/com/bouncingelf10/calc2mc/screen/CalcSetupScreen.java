@@ -6,7 +6,6 @@ import com.fazecast.jSerialComm.SerialPort;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
@@ -44,7 +43,7 @@ public class CalcSetupScreen extends Screen {
     private static final Vector3f TEXT_SECONDARY = rgb(140, 143, 150);
     private static final Vector3f TEXT_MUTED = rgb(72, 74, 80);
 
-    private List<SerialPort> ports = List.of();
+    private List<String> ports = List.of();
     private Button refreshButton;
 
     public CalcSetupScreen() {
@@ -62,7 +61,7 @@ public class CalcSetupScreen extends Screen {
                 footerY + (FOOTER_HEIGHT - REFRESH_BUTTON_HEIGHT) / 2,
                 REFRESH_BUTTON_WIDTH, REFRESH_BUTTON_HEIGHT,
                 Component.translatable("screen.calc2mc.refresh"),
-                button -> Calc2MCClient.LOGGER.warn("asipmda")
+                button -> refreshPorts()
         );
 
         addRenderableWidget(refreshButton);
@@ -71,12 +70,12 @@ public class CalcSetupScreen extends Screen {
     private void refreshPorts() {
         clearWidgets();
 
-        ports = CalcClient.getSerialPorts();
+        ports = CalcClient.getSerialPortStrings();
 
         int listTop = panelY() + HEADER_HEIGHT + PADDING;
 
         for (int i = 0; i < ports.size(); i++) {
-            String portName = ports.get(i).getDescriptivePortName();
+            String portName = ports.get(i);
 
             int rowY = listTop + i * ROW_HEIGHT;
             int buttonX = panelX() + PANEL_WIDTH - PADDING - CONNECT_BUTTON_WIDTH;
@@ -97,7 +96,7 @@ public class CalcSetupScreen extends Screen {
                 footerY + (FOOTER_HEIGHT - REFRESH_BUTTON_HEIGHT) / 2,
                 REFRESH_BUTTON_WIDTH, REFRESH_BUTTON_HEIGHT,
                 Component.translatable("screen.calc2mc.refresh"),
-                button -> Calc2MCClient.LOGGER.warn("asipmda")
+                button -> refreshPorts()
         );
         addRenderableWidget(refreshButton);
     }
@@ -164,7 +163,7 @@ public class CalcSetupScreen extends Screen {
                     graphics.fill(x + 1, rowY, x + 3, rowY + ROW_HEIGHT, color(ACCENT));
                 }
 
-                graphics.drawString(minecraft.font, Component.literal(ports.get(i).getDescriptivePortName()), x + PADDING + 4, rowY + (ROW_HEIGHT - 8) / 2, hovered ? color(TEXT_PRIMARY) : color(TEXT_SECONDARY));
+                graphics.drawString(minecraft.font, Component.literal(ports.get(i)), x + PADDING + 4, rowY + (ROW_HEIGHT - 8) / 2, hovered ? color(TEXT_PRIMARY) : color(TEXT_SECONDARY));
             }
         }
 

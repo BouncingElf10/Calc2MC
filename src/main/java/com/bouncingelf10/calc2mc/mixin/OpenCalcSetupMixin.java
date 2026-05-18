@@ -1,5 +1,6 @@
 package com.bouncingelf10.calc2mc.mixin;
 
+import com.bouncingelf10.calc2mc.calc.CalcClient;
 import com.bouncingelf10.calc2mc.screen.CalcSetupScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.LoadingOverlay;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class OpenCalcSetupMixin {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;init(Lnet/minecraft/client/Minecraft;II)V"))
 	private void atEndOfSplash(CallbackInfo info) {
+		if (CalcClient.hasFoundCalculator()) return;
 		Minecraft.getInstance().execute(() -> {
 			Minecraft.getInstance().setScreen(new CalcSetupScreen());
 		});

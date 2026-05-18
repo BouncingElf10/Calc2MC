@@ -4,12 +4,13 @@ import com.bouncingelf10.calc2mc.Calc2MCClient;
 import com.fazecast.jSerialComm.SerialPort;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CalcClient {
     static final int BAUD_RATE = 115200;
 
-    static final int CONNECT_BYTE = 0x67;
-    static final int CONFIRM_BYTE = 0x69;
+    static final int CONNECT_BYTE = 0x69;
+    static final int CONFIRM_BYTE = 0x67;
     static final int QUIT_BYTE = 0x42;
 
     static SerialPort calculatorPort;
@@ -28,19 +29,36 @@ public class CalcClient {
 
     public static SerialPort tryFindCOM3Calculator() {
         try {
-            List<SerialPort> ports = getSerialPorts();
-            for (SerialPort port : ports) {
+            for (SerialPort port : getSerialPorts()) {
                 if (port.getDescriptivePortName().contains("COM3")) {
+                    calculatorPort = connectTo(port.getDescriptivePortName());
                     return calculatorPort;
                 }
             }
-            Thread.sleep(1000);
         } catch (Exception e) {
             Calc2MCClient.LOGGER.error("Error while trying to find calculator: {}", e.getMessage());
         }
         return null;
     }
 
+    public static SerialPort connectTo(String portName) {
+        for (SerialPort port : getSerialPorts()) {
+            if (port.getDescriptivePortName().equals(portName)) {
+                calculatorPort = port;
+                calculatorPort.setComPortParameters(BAUD_RATE, 8, 1, 0);
+            }
+        }
+        if (calculatorPort == null) return null;
+        calculatorPort.openPort();
+        byte[] receivedByte = new byte[1];
+        calculatorPort.readBytes(receivedByte, 1);
+        if (receivedByte[0] == CONNECT_BYTE) {
+            byte[] sendByte = new byte[]{(byte) CONFIRM_BYTE};
+            calculatorPort.writeBytes(sendByte, 1);
+            return calculatorPort;
+        }
+        return null;
+    }
 
     public static boolean hasFoundCalculator() {
         return calculatorPort != null;
@@ -48,5 +66,9 @@ public class CalcClient {
 
     public static List<SerialPort> getSerialPorts() {
         return List.of(SerialPort.getCommPorts());
+    }
+
+    public static List<String> getSerialPortStrings() {
+        return Stream.of(SerialPort.getCommPorts()).map(SerialPort::getDescriptivePortName).toList();
     }
 }
