@@ -50,6 +50,11 @@ public class CalcClient {
         }
         if (calculatorPort == null) return null;
         calculatorPort.openPort();
+        calculatorPort.setComPortTimeouts(
+                SerialPort.TIMEOUT_READ_BLOCKING,
+                2000,
+                0
+        );
         byte[] receivedByte = new byte[1];
         calculatorPort.readBytes(receivedByte, 1);
         if (receivedByte[0] == CONNECT_BYTE) {
@@ -57,7 +62,19 @@ public class CalcClient {
             calculatorPort.writeBytes(sendByte, 1);
             return calculatorPort;
         }
+
+        calculatorPort.closePort();
         return null;
+    }
+
+    public static void quitIfConnected() {
+        if (calculatorPort == null) return;
+        if (!calculatorPort.isOpen()) return;
+
+        byte[] sendByte = new byte[]{(byte) QUIT_BYTE};
+        calculatorPort.writeBytes(sendByte, 1);
+        calculatorPort.closePort();
+        calculatorPort = null;
     }
 
     public static boolean hasFoundCalculator() {

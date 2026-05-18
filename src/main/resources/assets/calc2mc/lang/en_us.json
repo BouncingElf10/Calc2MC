@@ -8,5 +8,12 @@
 
   "screen.calc2mc.calcnotfound": "It looks like we couldn't automatically find your calculator!",
   "screen.calc2mc.calcnotfoundinstructions.0": "Pick the option that appears when you refresh. (Default pick should be COM3)",
-  "screen.calc2mc.calcnotfoundinstructions.1": "Your calculator needs to be plugged in and the program §nshould be looking to connect to minecraft§r."
+  "screen.calc2mc.calcnotfoundinstructions.1": "Your calculator needs to be plugged in and the program §nshould be looking to connect to minecraft§r.",
+
+  "screen.calc2mc.refreshing": "Refreshing ports...",
+  "screen.calc2mc.portsfound": "%s port(s) found",
+  "screen.calc2mc.connecting": "Connecting to %s...",
+  "screen.calc2mc.connected": "Connected to %s",
+  "screen.calc2mc.failedconnect": "Failed to connect to %s",
+  "screen.calc2mc.continue": "Continue to Menu"
 }

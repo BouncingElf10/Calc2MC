@@ -22,7 +22,7 @@ public class CalcSetupScreen extends Screen {
     private static final int PANEL_WIDTH = 400;
     private static final int HEADER_HEIGHT = 100;
     private static final int ROW_HEIGHT = 24;
-    private static final int PADDING = 16;
+    private static final int PADDING = 20;
     private static final int CONNECT_BUTTON_WIDTH = 64;
     private static final int CONNECT_BUTTON_HEIGHT = 14;
     private static final int REFRESH_BUTTON_WIDTH = 80;
@@ -43,8 +43,16 @@ public class CalcSetupScreen extends Screen {
     private static final Vector3f TEXT_SECONDARY = rgb(140, 143, 150);
     private static final Vector3f TEXT_MUTED = rgb(72, 74, 80);
 
+    private static final Vector3f STATUS_SUCCESS = rgb(64, 220, 120);
+    private static final Vector3f STATUS_ERROR = rgb(220, 80, 80);
+    private static final Vector3f STATUS_WARNING = rgb(255, 190, 90);
+
     private List<String> ports = List.of();
     private Button refreshButton;
+    private Button continueButton;
+
+    private Component statusMessage = Component.empty();
+    private Vector3f statusColor = TEXT_MUTED;
 
     public CalcSetupScreen() {
         super(Component.translatable("screen.calc2mc.calcsetup"));
@@ -70,7 +78,15 @@ public class CalcSetupScreen extends Screen {
     private void refreshPorts() {
         clearWidgets();
 
+        setStatus(Component.translatable("screen.calc2mc.refreshing"), STATUS_WARNING);
+
         ports = CalcClient.getSerialPortStrings();
+
+        if (ports.isEmpty()) {
+            setStatus(Component.translatable("screen.calc2mc.noports"), STATUS_ERROR);
+        } else {
+            setStatus(Component.translatable("screen.calc2mc.portsfound", ports.size()), STATUS_SUCCESS);
+        }
 
         int listTop = panelY() + HEADER_HEIGHT + PADDING;
 
@@ -81,12 +97,23 @@ public class CalcSetupScreen extends Screen {
             int buttonX = panelX() + PANEL_WIDTH - PADDING - CONNECT_BUTTON_WIDTH;
             int buttonY = rowY + (ROW_HEIGHT - CONNECT_BUTTON_HEIGHT) / 2;
 
-            addRenderableWidget(new ModernButton(
-                    buttonX, buttonY,
-                    CONNECT_BUTTON_WIDTH, CONNECT_BUTTON_HEIGHT,
-                    Component.translatable("screen.calc2mc.connect"),
-                    button -> Calc2MCClient.LOGGER.info("connect to: {}", portName)
-            ));
+            addRenderableWidget(new ModernButton(buttonX, buttonY, CONNECT_BUTTON_WIDTH, CONNECT_BUTTON_HEIGHT, Component.translatable("screen.calc2mc.connect"), button -> {
+                try {
+                    setStatus(Component.translatable("screen.calc2mc.connecting", portName), STATUS_WARNING);
+
+                    SerialPort port = CalcClient.connectTo(portName);
+
+                    if (port != null && port.isOpen()) {
+                        setStatus(Component.translatable("screen.calc2mc.connected", portName), STATUS_SUCCESS);
+                    } else {
+                        setStatus(Component.translatable("screen.calc2mc.failedconnect", portName), STATUS_ERROR);
+                    }
+                } catch (Exception e) {
+                    setStatus(Component.literal("Error: " + e.getMessage()), STATUS_ERROR);
+
+                    Calc2MCClient.LOGGER.error("Failed to connect", e);
+                }
+            }));
         }
 
         int footerY = panelY() + panelHeight() - FOOTER_HEIGHT;
@@ -99,6 +126,15 @@ public class CalcSetupScreen extends Screen {
                 button -> refreshPorts()
         );
         addRenderableWidget(refreshButton);
+
+        continueButton = new ModernButton(
+                panelX() + PADDING,
+                footerY + (FOOTER_HEIGHT - REFRESH_BUTTON_HEIGHT) / 2,
+                110, REFRESH_BUTTON_HEIGHT,
+                Component.translatable("screen.calc2mc.continue"),
+                button -> Minecraft.getInstance().setScreen(null)
+        );
+        addRenderableWidget(continueButton);
     }
 
     @Override
@@ -146,7 +182,7 @@ public class CalcSetupScreen extends Screen {
         }
 
         int listTop = y + HEADER_HEIGHT + PADDING;
-        int headerY = listTop - 11;
+        int headerY = listTop - 14;
 
         graphics.drawString(minecraft.font, Component.translatable("screen.calc2mc.port"), x + PADDING + 2, headerY, color(ACCENT_DARK));
 
@@ -171,7 +207,8 @@ public class CalcSetupScreen extends Screen {
 
         graphics.fill(x, footerY, x + PANEL_WIDTH, footerY + 1, color(BORDER));
 
-        graphics.drawString(minecraft.font, Component.translatable("screen.calc2mc.selectport"), x + PADDING, footerY + (FOOTER_HEIGHT - 8) / 2, color(TEXT_MUTED));
+        // graphics.drawString(minecraft.font, Component.translatable("screen.calc2mc.selectport"), x + PADDING, footerY + (FOOTER_HEIGHT - 8) / 2, color(TEXT_MUTED));
+        graphics.drawString(minecraft.font, statusMessage, x + PADDING, footerY - 14, color(statusColor));
 
         super.render(graphics, mouseX, mouseY, delta);
     }
@@ -181,6 +218,11 @@ public class CalcSetupScreen extends Screen {
         graphics.fill(x, y + height - 1, x + width, y + height, color);
         graphics.fill(x, y, x + 1, y + height, color);
         graphics.fill(x + width - 1, y, x + width, y + height, color);
+    }
+
+    private void setStatus(Component message, Vector3f color) {
+        this.statusMessage = message;
+        this.statusColor = color;
     }
 
     private static Vector3f rgb(int r, int g, int b) {
