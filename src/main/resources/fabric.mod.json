@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"client": [
 			"com.bouncingelf10.calc2mc.Calc2MCClient"
+		],
+		"modmenu": [
+			"com.bouncingelf10.calc2mc.compat.ModMenuCompat"
 		]
 	},
 	"mixins": [
