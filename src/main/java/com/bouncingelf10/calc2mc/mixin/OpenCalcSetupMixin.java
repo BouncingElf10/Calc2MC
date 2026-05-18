@@ -1,6 +1,6 @@
 package com.bouncingelf10.calc2mc.mixin;
 
-import com.bouncingelf10.calc2mc.screen.WelcomeSplashScreen;
+import com.bouncingelf10.calc2mc.screen.CalcSetupScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LoadingOverlay.class)
 public class OpenCalcSetupMixin {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;init(Lnet/minecraft/client/Minecraft;II)V"))
-	private void init(CallbackInfo info) {
+	private void atEndOfSplash(CallbackInfo info) {
 		Minecraft.getInstance().execute(() -> {
-			Minecraft.getInstance().setScreen(new WelcomeSplashScreen());
+			Minecraft.getInstance().setScreen(new CalcSetupScreen());
 		});
 	}
 }

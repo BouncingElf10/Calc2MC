@@ -1,14 +1,17 @@
 {
-	"required": true,
-	"package": "com.bouncingelf10.calc2mc.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-      "OpenCalcSetupMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
-	}
+  "required": true,
+  "package": "com.bouncingelf10.calc2mc.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "OpenCalcSetupMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "client": [
+    "StopBlurMixin"
+  ]
 }
