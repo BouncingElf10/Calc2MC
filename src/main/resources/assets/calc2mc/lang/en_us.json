@@ -15,5 +15,8 @@
   "screen.calc2mc.connecting": "Connecting to %s...",
   "screen.calc2mc.connected": "Connected to %s",
   "screen.calc2mc.failedconnect": "Failed to connect to %s",
-  "screen.calc2mc.continue": "Continue to Menu"
+
+  "screen.calc2mc.continue": "Continue to Menu",
+  "screen.calc2mc.no_calc_title": "No Calculator is Connected!",
+  "screen.calc2mc.no_calc_message": "You are continuing without having your calculator connected. This means that you wont be able to use it until you connect it. (You can access this screen again with modmenu or relanchinng the gam)"
 }

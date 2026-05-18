@@ -6,6 +6,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
@@ -133,7 +134,27 @@ public class CalcSetupScreen extends Screen {
                 footerY + (FOOTER_HEIGHT - REFRESH_BUTTON_HEIGHT) / 2,
                 110, REFRESH_BUTTON_HEIGHT,
                 Component.translatable("screen.calc2mc.continue"),
-                button -> Minecraft.getInstance().setScreen(null)
+                button -> {
+                    Minecraft mc = Minecraft.getInstance();
+
+                    if (!CalcClient.hasFoundCalculator()) {
+                        mc.setScreen(new ConfirmScreen(
+                                confirmed -> {
+                                    if (confirmed) {
+                                        mc.setScreen(null);
+                                    } else {
+                                        mc.setScreen(this);
+                                    }
+                                },
+                                Component.translatable("screen.calc2mc.no_calc_title"),
+                                Component.translatable("screen.calc2mc.no_calc_message"),
+                                Component.translatable("gui.continue"),
+                                Component.translatable("gui.back")
+                        ));
+                    } else {
+                        mc.setScreen(null);
+                    }
+                }
         );
         addRenderableWidget(continueButton);
     }
