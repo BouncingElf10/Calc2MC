@@ -1,4 +1,5 @@
 NAME = MCCTRL
+ICON = icon.png
 DESCRIPTION = "MC Controller"
 COMPRESSED = NO
 ARCHIVED = NO

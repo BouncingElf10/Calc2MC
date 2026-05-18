@@ -99,6 +99,10 @@ void fatal(const char *msg) {
     printText("ERROR:", 0);
     printText(msg, 1);
     printText("Press clear to quit.", 3);
+
+    srl_Close(&srl);
+    has_srl_device = false;
+
     while (os_GetCSC() != sk_Clear) usb_HandleEvents();
 
     currentState = QUIT;
