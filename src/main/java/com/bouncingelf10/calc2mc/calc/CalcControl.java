@@ -69,6 +69,13 @@ public class CalcControl {
     public static boolean handleSpecialCases(CalcKey activeKey, byte raw, boolean depressed, boolean changed, Minecraft minecraft, boolean inMenu) {
         boolean isMouseScreen = inMenu && isMouseDrivenScreen(minecraft);
 
+        if (inMenu && CalcBindings.get("key.inventory") == activeKey && !depressed && changed) {
+            int scancode = GLFW.glfwGetKeyScancode(GLFW.GLFW_KEY_ESCAPE);
+            minecraft.screen.keyPressed(GLFW.GLFW_KEY_ESCAPE, scancode, 0);
+            if (minecraft.screen != null) minecraft.screen.keyReleased(GLFW.GLFW_KEY_ESCAPE, scancode, 0);
+            return true;
+        }
+
         if (activeKey == CalcKey.UP || activeKey == CalcKey.DOWN || activeKey == CalcKey.LEFT || activeKey == CalcKey.RIGHT) {
 
             if (changed) {
