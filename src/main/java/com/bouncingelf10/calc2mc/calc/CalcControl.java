@@ -10,8 +10,6 @@ import org.lwjgl.glfw.GLFW;
 public class CalcControl {
     public static KeyMapping selectedCalcKey = null;
 
-    private static double mouseAccumX = 0.0;
-    private static double mouseAccumY = 0.0;
     private static boolean attackHeld = false;
     private static boolean useHeld = false;
 
@@ -63,8 +61,6 @@ public class CalcControl {
 
             if (changed) {
                 CalcState.arrowHoldTicks = 0;
-                mouseAccumX = 0.0;
-                mouseAccumY = 0.0;
 
                 if (inMenu && !isMouseScreen && !depressed && minecraft.screen != null) {
                     int glfwKey = switch (activeKey) {
@@ -86,31 +82,22 @@ public class CalcControl {
                 CalcState.arrowHoldTicks++;
                 double speed = Math.min(2.0 + (CalcState.arrowHoldTicks / 20.0) * 18.0, 20.0);
 
-                mouseAccumX += switch (activeKey) {
-                    case LEFT -> -speed;
-                    case RIGHT -> speed;
-                    default -> 0.0;
-                };
-                mouseAccumY += switch (activeKey) {
-                    case UP -> -speed;
-                    case DOWN -> speed;
-                    default -> 0.0;
-                };
+                double gs = minecraft.getWindow().getGuiScale();
+                long window = minecraft.getWindow().getWindow();
+                double[] cx = new double[1], cy = new double[1];
+                GLFW.glfwGetCursorPos(window, cx, cy);
 
-                int moveX = (int) mouseAccumX;
-                int moveY = (int) mouseAccumY;
-                if (moveX != 0 || moveY != 0) {
-                    long window = minecraft.getWindow().getWindow();
-                    double[] cx = new double[1], cy = new double[1];
-                    GLFW.glfwGetCursorPos(window, cx, cy);
-                    double newX = Math.max(0, Math.min(cx[0] + moveX, minecraft.getWindow().getWidth() - 1));
-                    double newY = Math.max(0, Math.min(cy[0] + moveY, minecraft.getWindow().getHeight() - 1));
-                    GLFW.glfwSetCursorPos(window, newX, newY);
-                    double gs = minecraft.getWindow().getGuiScale();
-                    minecraft.screen.mouseMoved(newX / gs, newY / gs);
-                    mouseAccumX -= moveX;
-                    mouseAccumY -= moveY;
-                }
+                double newGuiX = Math.max(0, Math.min(
+                        cx[0] / gs + switch (activeKey) { case LEFT -> -speed; case RIGHT -> speed; default -> 0.0; },
+                        minecraft.getWindow().getGuiScaledWidth() - 1
+                ));
+                double newGuiY = Math.max(0, Math.min(
+                        cy[0] / gs + switch (activeKey) { case UP -> -speed; case DOWN -> speed; default -> 0.0; },
+                        minecraft.getWindow().getGuiScaledHeight() - 1
+                ));
+
+                GLFW.glfwSetCursorPos(window, newGuiX * gs, newGuiY * gs);
+                minecraft.screen.mouseMoved(newGuiX, newGuiY);
             } else if (!inMenu && !depressed) {
                 CalcState.arrowHoldTicks++;
                 double speed = Math.min(2.0 + (CalcState.arrowHoldTicks / 20.0) * 18.0, 20.0);
@@ -130,8 +117,6 @@ public class CalcControl {
                 CalcState.arrowHoldTicks = 0;
                 CalcState.pendingDX = 0;
                 CalcState.pendingDY = 0;
-                mouseAccumX = 0.0;
-                mouseAccumY = 0.0;
             }
             return true;
         }
