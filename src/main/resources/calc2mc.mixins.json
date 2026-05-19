@@ -12,13 +12,15 @@
     "requireAnnotations": true
   },
   "client": [
+    "KeyEntryMixin",
+    "MouseHandlerMixin",
+    "QuitConnectedCalcMixin",
+    "StopBlurMixin",
+    "TickHookMixin",
     "acessors.KeyBindsListAccessor",
     "acessors.KeyBindsListScreenAccessor",
     "acessors.KeyBindsScreenAccessor",
     "acessors.KeyEntryAccessor",
-    "KeyEntryMixin",
-    "QuitConnectedCalcMixin",
-    "StopBlurMixin",
-    "TickHookMixin"
+    "acessors.MouseHandlerAccessor"
   ]
 }

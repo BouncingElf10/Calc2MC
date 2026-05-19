@@ -69,6 +69,10 @@ public class CalcBindings {
         initialized = true;
     }
 
+    public static CalcKey get(String name) {
+        return bindings.getOrDefault(name, CalcKey.NONE);
+    }
+
     public static CalcKey get(KeyMapping km) {
         return bindings.getOrDefault(km.getName(), CalcKey.NONE);
     }
