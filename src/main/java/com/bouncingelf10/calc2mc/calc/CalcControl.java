@@ -13,6 +13,9 @@ public class CalcControl {
 
         byte raw = CalcState.currentKey;
         boolean depressed = (raw & 0b10000000) != 0;
+        if (raw == CalcState.previousKey) return;
+        CalcState.previousKey = raw;
+
         CalcKey activeKey = CalcKey.fromCode(raw);
 
         if (selectedCalcKey != null) {
@@ -29,7 +32,9 @@ public class CalcControl {
         for (KeyMapping km : CalcBindings.allKeyMappings()) {
             CalcKey bound = CalcBindings.get(km);
             if (bound == CalcKey.NONE) continue;
-            KeyMapping.set(km.getDefaultKey(), !depressed && bound == activeKey);
+            if (bound != activeKey) continue;
+
+            KeyMapping.set(km.getDefaultKey(), !depressed);
         }
     }
 }
