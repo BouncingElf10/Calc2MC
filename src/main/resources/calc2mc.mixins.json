@@ -12,7 +12,13 @@
     "requireAnnotations": true
   },
   "client": [
+    "acessors.KeyBindsListAccessor",
+    "acessors.KeyBindsListScreenAccessor",
+    "acessors.KeyBindsScreenAccessor",
+    "acessors.KeyEntryAccessor",
+    "KeyEntryMixin",
     "QuitConnectedCalcMixin",
-    "StopBlurMixin"
+    "StopBlurMixin",
+    "TickHookMixin"
   ]
 }

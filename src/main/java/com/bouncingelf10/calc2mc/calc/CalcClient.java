@@ -65,6 +65,7 @@ public class CalcClient {
         if (receivedByte[0] == CONNECT_BYTE) {
             byte[] sendByte = new byte[]{(byte) CONFIRM_BYTE};
             calculatorPort.writeBytes(sendByte, 1);
+            spawnReadLoop();
             return calculatorPort;
         }
 
@@ -80,6 +81,22 @@ public class CalcClient {
         calculatorPort.writeBytes(sendByte, 1);
         calculatorPort.closePort();
         calculatorPort = null;
+    }
+
+    public static void spawnReadLoop() {
+        Thread thread = new Thread(() -> {
+            calculatorPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0);
+
+            while (calculatorPort != null && calculatorPort.isOpen()) {
+                byte[] buf = new byte[1];
+                int read = calculatorPort.readBytes(buf, 1);
+                if (read > 0) {
+                    CalcState.currentKey = buf[0];
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public static boolean hasFoundCalculator() {
