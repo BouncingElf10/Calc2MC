@@ -1,6 +1,9 @@
 package com.bouncingelf10.calc2mc.calc;
 
 import com.bouncingelf10.calc2mc.mixin.acessors.KeyBindsScreenAccessor;
+import com.bouncingelf10.calc2mc.mixin.acessors.KeyMappingAccessor;
+import com.bouncingelf10.calc2mc.mixin.acessors.MouseHandlerAccessor;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -50,7 +53,16 @@ public class CalcControl {
             CalcKey bound = CalcBindings.get(km);
             if (bound == CalcKey.NONE) continue;
             if (bound != activeKey) continue;
-            KeyMapping.set(km.getDefaultKey(), !depressed);
+
+            if (!depressed) {
+                ((KeyMappingAccessor) km).calc2mc$incrementClicks(1);
+            }
+
+            if (CalcBindings.get("key.attack") == activeKey) {
+                ((KeyMappingAccessor) minecraft.options.keyAttack).calc2mc$setIsDown(!depressed);
+            } else {
+                KeyMapping.set(km.getDefaultKey(), !depressed);
+            }
         }
     }
 

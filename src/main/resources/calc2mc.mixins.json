@@ -21,6 +21,7 @@
     "acessors.KeyBindsListScreenAccessor",
     "acessors.KeyBindsScreenAccessor",
     "acessors.KeyEntryAccessor",
+    "acessors.KeyMappingAccessor",
     "acessors.MouseHandlerAccessor"
   ]
 }
