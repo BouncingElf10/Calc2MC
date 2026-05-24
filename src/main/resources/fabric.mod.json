@@ -12,7 +12,7 @@
 		"sources": "https://github.com/BouncingElf10/Calc2MC"
 	},
 	"license": "GPL-3.0",
-	"icon": "assets/calc2mc/icon.png",
+	"icon": "assets/calc2mc/iconmc.png",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
