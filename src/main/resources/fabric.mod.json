@@ -3,17 +3,17 @@
 	"id": "calc2mc",
 	"version": "${version}",
 	"name": "Calc2MC",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "If you ever dont have a controller nearby...",
 	"authors": [
-		"Me!"
+		"BouncingElf10"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://bouncingelf10.com/",
+		"sources": "https://github.com/BouncingElf10/Calc2MC"
 	},
 	"license": "GPL-3.0",
 	"icon": "assets/calc2mc/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"client": [
 			"com.bouncingelf10.calc2mc.Calc2MCClient"
@@ -29,6 +29,7 @@
 		"fabricloader": ">=0.19.2",
 		"minecraft": "~1.21.1",
 		"java": ">=21",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"modmenu": "*"
 	}
 }
