@@ -13,17 +13,23 @@
 /* Line tags: '#' heading, '@' formula name / term, '=' expression,
  * '!' note, anything else is body text. Balance sheet lines are
  * "label\tvalue": '^' group, '>' item, '+' subtotal, '*' total.
+ * Comparisons add '%' sub-heading, '~' advantage, '-' drawback.
  * Lists end with NULL. */
 typedef struct {
     const char *title;
     const char *const *lines;
 } section_t;
 
-/* sections[] order: formulas, layouts, definitions */
+/* sections[] order: formulas, layouts, definitions, comparisons */
 #define N_FORMULA 6
 #define N_LAYOUT 2
 #define N_DEF 6
-#define N_SECTIONS (N_FORMULA + N_LAYOUT + N_DEF)
+#define N_COMPARE 25
+#define N_SECTIONS (N_FORMULA + N_LAYOUT + N_DEF + N_COMPARE)
 extern const section_t sections[N_SECTIONS];
+
+/* Compare menu grouping: the topic heading that starts at this comparison,
+ * or NULL to carry on under the previous one. */
+extern const char *const compareTopic[N_COMPARE];
 
 #endif

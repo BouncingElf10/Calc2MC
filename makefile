@@ -1,7 +1,7 @@
 NAME = BUSMAN
 ICON = iconmc.png
 DESCRIPTION = "IB Business Management SL"
-COMPRESSED = NO
+COMPRESSED = YES
 ARCHIVED = YES
 CFLAGS = -Wall -Wextra
 CXXFLAGS = -Wall -Wextra

@@ -541,6 +541,531 @@ static const char *const concepts[] = {
     NULL
 };
 
+/* ---- comparisons: what changes if a business moves from X to Y ----
+ * '%' is a sub-heading search ignores, '~' an advantage, '-' a drawback. */
+
+static const char *const cmpPartner[] = {
+    "@Sole trader to partnership",
+    "Taking on partners under a deed of partnership. Capital, work and decisions "
+    "are shared, but liability normally stays unlimited.",
+    "%Advantages",
+    "~More capital, as every partner invests in the business.",
+    "~Partners bring extra skills and specialist knowledge.",
+    "~Workload and stress are shared, so illness and holidays are covered.",
+    "~Losses and debts are shared instead of carried alone.",
+    "~Still quick and cheap to set up, with no accounts to publish.",
+    "%Disadvantages",
+    "-Liability stays unlimited, so personal assets are still at risk.",
+    "-Profits are shared, so the founder's own income may fall.",
+    "-Decisions must be agreed, which slows the business down.",
+    "-Each partner is bound by what the others do in the firm's name.",
+    "-No continuity: the partnership usually ends if a partner dies or leaves.",
+    "!Right when the owner needs skills and capital more than control. If the "
+    "real worry is personal risk, incorporating protects the owner properly and "
+    "a partnership does not.",
+    NULL
+};
+
+static const char *const cmpIncorporate[] = {
+    "@Sole trader to private limited company",
+    "Incorporating. The business becomes a separate legal person and shares are "
+    "sold privately to family, friends or invited investors.",
+    "%Advantages",
+    "~Limited liability: the owner risks only the money invested.",
+    "~Capital can be raised by selling shares to invited investors.",
+    "~Continuity: the company survives the death or exit of an owner.",
+    "~Banks and suppliers treat an incorporated firm as more credible.",
+    "~Shares cannot be sold to the public, so the founder keeps control.",
+    "%Disadvantages",
+    "-Formation costs and legal formalities to complete and maintain.",
+    "-Accounts must be filed and can be inspected, so privacy is lost.",
+    "-Profits are shared with shareholders as dividends.",
+    "-Control is diluted: other shareholders have a say.",
+    "-More regulation, and accountants to pay for it.",
+    "!Worth it once the business has real debts or assets at stake. Limited "
+    "liability and continuity are what the paperwork buys; if neither matters "
+    "yet, staying a sole trader is cheaper.",
+    NULL
+};
+
+static const char *const cmpFloat[] = {
+    "@Private limited company to public limited company",
+    "Going public. Shares are floated on a stock exchange in an initial public "
+    "offering, so anyone can buy them.",
+    "%Advantages",
+    "~Very large amounts of capital can be raised from the public.",
+    "~Shares are freely traded, so they are easier to sell and worth more.",
+    "~A listing raises the firm's profile with customers and lenders.",
+    "~Borrowing gets cheaper: lenders see a larger, transparent business.",
+    "~Shares can be used to pay for takeovers and to reward senior staff.",
+    "%Disadvantages",
+    "-Risk of takeover, because anyone can buy the shares.",
+    "-Ownership is divorced from control, so founders can be outvoted.",
+    "-The flotation itself is expensive in legal, banking and marketing fees.",
+    "-Full accounts must be published, so rivals see the figures.",
+    "-Pressure for dividends and a rising share price crowds out long-term aims.",
+    "!Only for a business needing capital on a scale its owners cannot supply, "
+    "whose owners accept losing some control. Many profitable firms stay "
+    "private for exactly that reason.",
+    NULL
+};
+
+static const char *const cmpExternal[] = {
+    "@Internal growth to external growth",
+    "Growing by merger, takeover or joint venture instead of expanding the firm's "
+    "own capacity out of its own profits.",
+    "%Advantages",
+    "~Much faster than building capacity from scratch.",
+    "~Buys ready-made market share, brands, patents and customers.",
+    "~Removes a competitor and increases market power.",
+    "~Synergy: the combined firm can cost less to run than the two apart.",
+    "~Diversification spreads risk across products and markets.",
+    "%Disadvantages",
+    "-Expensive, and usually financed by heavy borrowing.",
+    "-Culture clash between the two workforces damages motivation.",
+    "-Diseconomies of scale: the bigger firm is harder to coordinate.",
+    "-Redundancies harm morale and the firm's reputation.",
+    "-Regulators may block the deal on competition grounds.",
+    "!Internal growth is slower but keeps control and culture. External growth "
+    "buys time, which is what a fast-moving market punishes a firm for losing.",
+    NULL
+};
+
+static const char *const cmpFranchise[] = {
+    "@Own outlets to franchising",
+    "Selling franchisees the right to trade under the firm's name and business "
+    "model for a fee and a share of their revenue.",
+    "%Advantages",
+    "~Rapid expansion: the franchisee supplies the capital for each outlet.",
+    "~Steady income from franchise fees and royalties at low risk.",
+    "~Franchisees are owner-managers, so they are highly motivated.",
+    "~Buying for the whole chain brings economies of scale.",
+    "~Local franchisees understand regions or countries the firm does not.",
+    "%Disadvantages",
+    "-Profit per outlet is lower than running it yourself.",
+    "-Quality is hard to control, and one bad outlet damages the whole brand.",
+    "-Franchisees resist central decisions and new products.",
+    "-Training, supporting and monitoring franchisees costs money.",
+    "-Disputes over territory and fees can end in expensive legal action.",
+    "!Growth without the capital cost, paid for in control and margin. It "
+    "suits a proven, easily copied format; it is dangerous where quality is "
+    "the brand.",
+    NULL
+};
+
+static const char *const cmpFlat[] = {
+    "@Tall structure to flat structure",
+    "Delayering. Levels of hierarchy are removed, so each manager has a wider "
+    "span of control and the chain of command is shorter.",
+    "%Advantages",
+    "~Cuts costs, as whole layers of managerial salaries go.",
+    "~Communication is faster and less distorted down a short chain.",
+    "~Wide spans force delegation, which develops and motivates staff.",
+    "~Decisions are taken closer to the customer, so the firm reacts faster.",
+    "%Disadvantages",
+    "-Redundancies damage morale, loyalty and reputation.",
+    "-Managers can be overloaded by too wide a span of control.",
+    "-Fewer levels means fewer promotions, weakening career paths.",
+    "-Less supervision can mean slipping standards and more stress.",
+    "!Flat suits skilled staff doing varied work. Tall still suits work needing "
+    "close supervision or tight control, such as safety-critical production.",
+    NULL
+};
+
+static const char *const cmpDecentral[] = {
+    "@Centralization to decentralization",
+    "Passing decision-making authority down from head office to divisions, "
+    "branches or teams.",
+    "%Advantages",
+    "~Decisions are faster: no waiting for approval from the top.",
+    "~Local managers know their own market and customers best.",
+    "~Delegation motivates and trains the next generation of managers.",
+    "~Senior managers are freed to concentrate on strategy.",
+    "~Responsibility is a motivator in its own right (Herzberg).",
+    "%Disadvantages",
+    "-Branches become inconsistent, which confuses customers.",
+    "-Junior managers may lack the experience to decide well.",
+    "-Roles and resources are duplicated across sites, raising costs.",
+    "-A single strategy is harder to coordinate and enforce.",
+    "-Loss of the economies of scale that central buying gives.",
+    "!Centralize in a crisis, or where the brand must be identical everywhere. "
+    "Decentralize where local knowledge and speed win the sale.",
+    NULL
+};
+
+static const char *const cmpDemocratic[] = {
+    "@Autocratic leadership to democratic leadership",
+    "The leader stops deciding alone and consults employees before taking "
+    "decisions.",
+    "%Advantages",
+    "~Staff feel valued and listened to, which raises motivation.",
+    "~Better decisions: the people doing the job see problems first.",
+    "~Employees are committed to decisions they helped to make.",
+    "~Develops the judgement of future managers.",
+    "~Lower labour turnover and absenteeism.",
+    "%Disadvantages",
+    "-Consultation is slow and useless in an emergency.",
+    "-Meetings and discussion cost management time.",
+    "-Employees may lack the expertise or the full picture.",
+    "-Not everyone wants the responsibility of deciding.",
+    "-Consultation that is ignored breeds more cynicism than autocracy.",
+    "!Match the style to the situation: autocratic in a crisis or with "
+    "untrained staff, democratic with skilled staff and time to decide.",
+    NULL
+};
+
+static const char *const cmpRecruit[] = {
+    "@Internal recruitment to external recruitment",
+    "Filling a vacancy from outside the organization instead of promoting or "
+    "transferring someone already employed.",
+    "%Advantages",
+    "~A far wider pool of applicants to choose from.",
+    "~New ideas and fresh ways of working come into the firm.",
+    "~Buys experience and skills the firm does not have and has not paid to build.",
+    "~Avoids the resentment caused by promoting one colleague over another.",
+    "~Advertising the post raises the firm's profile.",
+    "%Disadvantages",
+    "-Expensive: advertising, agency fees and selection time.",
+    "-Slower, and the newcomer needs induction before being productive.",
+    "-A weak appointment is a real risk; references and interviews mislead.",
+    "-Existing staff are demotivated when promotion is blocked.",
+    "-The newcomer does not know the culture or the customers.",
+    "!Internal is cheap, quick and motivating but only reshuffles the same "
+    "skills. Recruit externally when the firm needs a capability it does not "
+    "already have.",
+    NULL
+};
+
+static const char *const cmpOffJob[] = {
+    "@On-the-job training to off-the-job training",
+    "Training away from the workplace, by specialists, instead of learning while "
+    "doing the actual job.",
+    "%Advantages",
+    "~Taught by specialists with current, expert knowledge.",
+    "~No disruption to production or to customers.",
+    "~Broader, recognised qualifications rather than one firm's habits.",
+    "~Trainees can concentrate without the distractions of the job.",
+    "~Brings new ideas and outside contacts back into the business.",
+    "%Disadvantages",
+    "-Expensive: course fees, travel and output lost while staff are away.",
+    "-May not match the firm's own equipment or procedures.",
+    "-The qualification makes the employee attractive to competitors.",
+    "-Staff must still be shown how it applies back at work.",
+    "-Hard to judge the quality of the provider in advance.",
+    "!On-the-job is cheap and directly relevant but passes on bad habits. Use "
+    "off-the-job where the skill is technical, legal or entirely new.",
+    NULL
+};
+
+static const char *const cmpNonFin[] = {
+    "@Financial rewards to non-financial rewards",
+    "Motivating through job enrichment, enlargement, rotation, empowerment and "
+    "teamwork rather than through more pay.",
+    "%Advantages",
+    "~Cheaper than a permanent rise in the wage bill.",
+    "~Herzberg: pay only removes dissatisfaction, the motivators are in the work.",
+    "~Enrichment raises quality and pride in the job.",
+    "~Rotation and enlargement build a flexible, multi-skilled workforce.",
+    "~Cuts labour turnover, absenteeism and recruitment costs.",
+    "%Disadvantages",
+    "-Staff on low pay want the money first (Maslow's lower needs).",
+    "-Enrichment needs training and time before it works.",
+    "-Can be seen as more work for no extra reward.",
+    "-Effects are hard to measure, so hard to justify to owners.",
+    "-Managers must give up authority, and many resist.",
+    "!Pay must be fair before anything else motivates. Beyond that point, "
+    "non-financial methods give more motivation per dollar spent.",
+    NULL
+};
+
+static const char *const cmpTelework[] = {
+    "@Office working to teleworking",
+    "Employees work away from the firm's premises, usually at home, staying in "
+    "touch through communications technology.",
+    "%Advantages",
+    "~Saves office space, rent and running costs.",
+    "~Recruits from anywhere, with no commute to put candidates off.",
+    "~Flexibility improves work-life balance, so good staff stay.",
+    "~Fewer interruptions can raise productivity on focused work.",
+    "~Fewer commuting journeys supports sustainability targets.",
+    "%Disadvantages",
+    "-Harder to supervise, and output must be measured instead of hours.",
+    "-Teamwork, culture and informal communication all weaken.",
+    "-Costs of laptops, software and data security.",
+    "-Isolation demotivates and can harm wellbeing.",
+    "-Impossible for production, retail or face-to-face service roles.",
+    "!Best as a hybrid: keep the collaboration and induction that need a room, "
+    "move the focused work home.",
+    NULL
+};
+
+static const char *const cmpLoan[] = {
+    "@Retained profit to bank loan",
+    "Funding expansion with external long-term finance instead of the profit the "
+    "business has kept.",
+    "%Advantages",
+    "~A large sum is available now, so growth need not wait for profits.",
+    "~The firm keeps its own cash for day-to-day working capital.",
+    "~Repayments are fixed and known, so cash flow can be forecast.",
+    "~No ownership or control is given away.",
+    "~Interest is a business expense, and the lender shares no profit.",
+    "%Disadvantages",
+    "-Interest raises fixed costs and is paid in bad years as well as good.",
+    "-Collateral is usually required, putting assets at risk.",
+    "-High gearing makes the firm vulnerable to a rise in interest rates.",
+    "-The bank sets conditions, and can simply refuse a new business.",
+    "-Retained profit is free; a loan is not.",
+    "!Retained profit costs nothing but limits growth to past success and may "
+    "annoy shareholders expecting dividends. Borrow for assets that will earn "
+    "more than the interest.",
+    NULL
+};
+
+static const char *const cmpShares[] = {
+    "@Loan capital to share capital",
+    "Raising long-term finance by selling shares instead of borrowing.",
+    "%Advantages",
+    "~No interest and no repayment date: the capital is permanent.",
+    "~No collateral is needed, so assets are not pledged.",
+    "~Gearing falls, so the firm is safer in a downturn.",
+    "~Dividends can be cut in a bad year; interest cannot.",
+    "~Investors may bring expertise and contacts with their money.",
+    "%Disadvantages",
+    "-Ownership is diluted and control is shared with new shareholders.",
+    "-Dividends are paid out of taxed profit, forever.",
+    "-Issuing shares is slow and expensive.",
+    "-New shareholders may push for short-term returns.",
+    "-Widely held shares open the door to a takeover.",
+    "!Debt is cheaper while trading is good; equity is safer when it is not. "
+    "Check gearing and how stable the firm's cash flow is before deciding.",
+    NULL
+};
+
+static const char *const cmpLease[] = {
+    "@Buying to leasing",
+    "Paying a regular fee to use an asset owned by someone else instead of "
+    "buying it outright.",
+    "%Advantages",
+    "~No large initial outlay, so cash flow and liquidity are protected.",
+    "~Maintenance and repairs are usually the lessor's responsibility.",
+    "~Equipment can be upgraded, so obsolescence is the lessor's problem.",
+    "~Easier for a new firm to arrange than a bank loan.",
+    "~The cost is a predictable monthly expense, easy to budget.",
+    "%Disadvantages",
+    "-Total cost over the asset's life is higher than buying.",
+    "-The asset is never owned: no resale value and nothing on the balance sheet.",
+    "-Contracts run for years and are expensive to cancel.",
+    "-Conditions may restrict how the asset is used or modified.",
+    "!Lease what dates quickly, such as IT and vehicles. Buy what lasts and "
+    "holds value, if the cash is there.",
+    NULL
+};
+
+static const char *const cmpCredit[] = {
+    "@Cash sales to trade credit",
+    "Letting customers take the goods now and pay in 30 or 60 days.",
+    "%Advantages",
+    "~Attracts customers and encourages larger orders.",
+    "~Matches rivals who already offer credit terms.",
+    "~Builds long-term relationships with business customers.",
+    "~A slightly higher price can be charged for the convenience.",
+    "%Disadvantages",
+    "-Cash arrives later, squeezing working capital and liquidity.",
+    "-Bad debts if a customer fails before paying.",
+    "-Credit control and chasing payment cost time and money.",
+    "-An overdraft may be needed to bridge the gap, and interest with it.",
+    "!Cash flow, not profit, closes businesses. Offer credit only with credit "
+    "checks, clear terms and a forecast that survives late payers.",
+    NULL
+};
+
+static const char *const cmpMarketOrient[] = {
+    "@Product orientation to market orientation",
+    "Researching what customers want and designing the product around them, "
+    "instead of making a good product and hoping it sells.",
+    "%Advantages",
+    "~Products match real customer needs, so they sell.",
+    "~Much lower risk of an expensive product failure.",
+    "~The firm spots changes in taste and reacts to competitors.",
+    "~Research guides price, promotion and place, not just the product.",
+    "~Satisfied customers come back, building brand loyalty.",
+    "%Disadvantages",
+    "-Market research costs money and takes time.",
+    "-Research can be biased, out of date or simply wrong.",
+    "-Customers cannot ask for a product they have never imagined.",
+    "-Rivals research the same market, so products converge.",
+    "-Chasing the customer can smother genuine innovation.",
+    "!Most firms need both: research to avoid the obvious failures, and the "
+    "creativity to offer something the research could not have asked for.",
+    NULL
+};
+
+static const char *const cmpNiche[] = {
+    "@Mass market to niche market",
+    "Targeting one small, clearly defined segment with a specialised product "
+    "rather than selling to the whole market.",
+    "%Advantages",
+    "~Far less competition, especially from large firms.",
+    "~Customers will pay a premium price for a specialised product.",
+    "~Strong brand loyalty within a small, well-understood group.",
+    "~Marketing is targeted, so less of the budget is wasted.",
+    "~A small firm can be profitable against much larger rivals.",
+    "%Disadvantages",
+    "-Low volume, so few economies of scale and high unit costs.",
+    "-All eggs in one basket if tastes or the economy change.",
+    "-A large firm can enter the niche and outspend you.",
+    "-Growth is capped by the size of the segment.",
+    "!A niche is the safest place for a small firm to start and the most "
+    "dangerous place to stay once a large competitor notices it.",
+    NULL
+};
+
+static const char *const cmpPenetration[] = {
+    "@Cost-plus pricing to penetration pricing",
+    "Launching at a deliberately low price to win market share, instead of "
+    "adding a fixed mark-up to unit cost.",
+    "%Advantages",
+    "~Wins market share quickly in a competitive market.",
+    "~Encourages trial, word of mouth and repeat purchase.",
+    "~High volume brings economies of scale and lower unit costs.",
+    "~Discourages new rivals from entering at that price.",
+    "~Builds loyalty before the price is raised later.",
+    "%Disadvantages",
+    "-Margins are thin or negative at first, so losses are likely.",
+    "-Sets a low reference price that customers resist leaving.",
+    "-A low price can signal low quality.",
+    "-Capacity must be there to meet demand, or the goodwill is lost.",
+    "-May start a price war the firm cannot win.",
+    "!Penetration suits a mass market with repeat purchase. Skimming suits a "
+    "distinctive new product with development costs to recover.",
+    NULL
+};
+
+static const char *const cmpPrimary[] = {
+    "@Secondary research to primary research",
+    "Collecting original data from the market for this specific decision, "
+    "rather than using data someone else already gathered.",
+    "%Advantages",
+    "~The data answers the firm's own question exactly.",
+    "~It is up to date, not written for a different year.",
+    "~The firm owns it, so competitors do not have it.",
+    "~The method and sample fit the firm's target market.",
+    "~Reveals opinions and reasons, not just numbers.",
+    "%Disadvantages",
+    "-Expensive, which weighs heavily on a small firm.",
+    "-Slow to collect and to analyse.",
+    "-Bias in the questions, the interviewer or the sample distorts it.",
+    "-A small or unrepresentative sample misleads.",
+    "-Needs expertise to design and to interpret properly.",
+    "!Do secondary first: it is cheap and shows what is already known, so the "
+    "primary research can be aimed only at what is still missing.",
+    NULL
+};
+
+static const char *const cmpEcommerce[] = {
+    "@Physical shop to e-commerce",
+    "Selling online instead of, or as well as, from a physical outlet.",
+    "%Advantages",
+    "~Open 24 hours a day to a national or global market.",
+    "~Lower fixed costs than high street premises and shop staff.",
+    "~Customer data can be used to target marketing precisely.",
+    "~Stock can be held centrally instead of in every store.",
+    "~Cheap market entry, so a small firm can compete on reach.",
+    "%Disadvantages",
+    "-Delivery and returns are costly and hard to get right.",
+    "-Customers cannot touch, try or take the product away today.",
+    "-Prices are compared in seconds, so competition is brutal.",
+    "-Needs investment in IT and in security against fraud.",
+    "-Loses personal service, impulse buying and the store experience.",
+    "!Most retailers end up multi-channel: the website for reach and price, "
+    "the store for service, trust and returns.",
+    NULL
+};
+
+static const char *const cmpBatch[] = {
+    "@Job production to batch production",
+    "Making identical items in groups, completing each stage for the whole "
+    "batch, instead of one unique item at a time.",
+    "%Advantages",
+    "~Lower unit costs: the same set-up serves the whole batch.",
+    "~Some variety is kept, as each batch can differ.",
+    "~Less skilled labour is needed, so the wage bill falls.",
+    "~Output per worker rises and orders are met faster.",
+    "%Disadvantages",
+    "-Individual customer requirements can no longer be met.",
+    "-Time and money are lost changing over between batches.",
+    "-Stocks of work-in-progress and finished goods build up.",
+    "-Repetitive work demotivates skilled staff.",
+    "!Batch fits a firm with steady demand for a few varieties. Keep job "
+    "production where the customer is paying for exactly what they asked for.",
+    NULL
+};
+
+static const char *const cmpMass[] = {
+    "@Batch production to mass production",
+    "Producing a standardised product continuously on a production line.",
+    "%Advantages",
+    "~Very low unit costs from large economies of scale.",
+    "~Huge output, so a mass market can be supplied.",
+    "~No changeover time: the line runs continuously.",
+    "~Quality is consistent because every unit is identical.",
+    "~Mostly unskilled labour, often automated.",
+    "%Disadvantages",
+    "-Enormous set-up cost for the line and the machinery.",
+    "-Inflexible: changing the product is slow and expensive.",
+    "-One breakdown stops the entire line.",
+    "-Highly repetitive work causes boredom, absence and turnover.",
+    "-Large stocks tie up cash and storage space.",
+    "!Only worth it if demand is large, standardised and reliable. Cellular "
+    "production keeps much of the efficiency with better motivation.",
+    NULL
+};
+
+static const char *const cmpOutsource[] = {
+    "@In-house operations to outsourcing",
+    "Contracting a function such as production, IT or customer service out to "
+    "an external provider.",
+    "%Advantages",
+    "~A specialist provider can do it cheaper, faster or better.",
+    "~Turns fixed costs into variable costs that flex with demand.",
+    "~Frees management to focus on the firm's core activity.",
+    "~Avoids investing in equipment, premises and training.",
+    "~Capacity can be scaled up or down quickly.",
+    "%Disadvantages",
+    "-Less control over quality, timing and the customer's experience.",
+    "-The provider's ethics and working conditions become the firm's "
+    "reputation risk.",
+    "-Redundancies damage morale and industrial relations.",
+    "-Sensitive information and know-how leave the business.",
+    "-Dependence on one supplier, who can raise prices later.",
+    "!Outsource what is routine and easy to specify. Keep in-house whatever "
+    "the customer judges the firm on.",
+    NULL
+};
+
+static const char *const cmpCircular[] = {
+    "@Linear model to circular business model",
+    "Designing waste out: products are made to be reused, repaired, "
+    "refurbished and recycled instead of thrown away.",
+    "%Advantages",
+    "~Lower material and waste disposal costs over time.",
+    "~Less exposure to raw material shortages and price swings.",
+    "~Stays ahead of tightening environmental law and taxes.",
+    "~Appeals to ethical consumers and helps recruit staff.",
+    "~New revenue from repair, resale, refill and recycling.",
+    "%Disadvantages",
+    "-Redesign, new suppliers and new equipment need heavy investment.",
+    "-Unit costs can rise in the short term.",
+    "-Customers and suppliers must change long-standing habits.",
+    "-Payback is long and hard to measure, so owners may resist.",
+    "-Exaggerated claims invite accusations of greenwashing.",
+    "!The clearest link to the sustainability key concept: a cost now against "
+    "resilience, reputation and lower costs later.",
+    NULL
+};
+
+#define TO " " G_RIGHT " "
+
 const section_t sections[N_SECTIONS] = {
     {"Costs & break-even", costs},
     {"Final accounts", accounts},
@@ -556,4 +1081,38 @@ const section_t sections[N_SECTIONS] = {
     {"Marketing", unit4},
     {"Operations", unit5},
     {"Concepts & tips", concepts},
+    {"Sole trader" TO "Partner", cmpPartner},
+    {"Sole trader" TO "Ltd co.", cmpIncorporate},
+    {"Ltd company" TO "Plc", cmpFloat},
+    {"Internal growth" TO "M&A", cmpExternal},
+    {"Own outlets" TO "Franchise", cmpFranchise},
+    {"Tall" TO "Flat structure", cmpFlat},
+    {"Central" TO "Decentralized", cmpDecentral},
+    {"Autocratic" TO "Democratic", cmpDemocratic},
+    {"Promote" TO "Hire outside", cmpRecruit},
+    {"On-the-job" TO "Off-site", cmpOffJob},
+    {"Pay" TO "Job enrichment", cmpNonFin},
+    {"Office" TO "Teleworking", cmpTelework},
+    {"Retained profit" TO "Loan", cmpLoan},
+    {"Loan" TO "Share capital", cmpShares},
+    {"Buying" TO "Leasing", cmpLease},
+    {"Cash" TO "Trade credit", cmpCredit},
+    {"Product" TO "Market focus", cmpMarketOrient},
+    {"Mass" TO "Niche market", cmpNiche},
+    {"Cost-plus" TO "Penetration", cmpPenetration},
+    {"Secondary" TO "Primary", cmpPrimary},
+    {"Shop" TO "E-commerce", cmpEcommerce},
+    {"Job" TO "Batch production", cmpBatch},
+    {"Batch" TO "Mass production", cmpMass},
+    {"In-house" TO "Outsourcing", cmpOutsource},
+    {"Linear" TO "Circular model", cmpCircular},
+};
+
+/* the topic each comparison starts, NULL to continue the previous one */
+const char *const compareTopic[N_COMPARE] = {
+    "ORGANIZATION & GROWTH", NULL, NULL, NULL, NULL,
+    "HUMAN RESOURCES", NULL, NULL, NULL, NULL, NULL, NULL,
+    "FINANCE", NULL, NULL, NULL,
+    "MARKETING", NULL, NULL, NULL, NULL,
+    "OPERATIONS", NULL, NULL, NULL,
 };

@@ -21,6 +21,30 @@ static int top(const char *q, const char *want, int n) {
     return 0;
 }
 
+/* every comparison: one name, both headings, an evaluation, bullets on both
+ * sides, and a title that reads "A -> B" */
+static void checkComparisons(void) {
+    int topics = 0;
+    for (int i = 0; i < N_COMPARE; i++) {
+        const section_t *sec = &sections[N_SECTIONS - N_COMPARE + i];
+        int names = 0, heads = 0, pros = 0, cons = 0, evals = 0;
+        topics += compareTopic[i] != NULL;
+        assert(strstr(sec->title, G_RIGHT));
+        for (const char *const *p = sec->lines; *p; p++)
+            switch (**p) {
+                case '@': names++; break;
+                case '%': heads++; break;
+                case '~': pros++; break;
+                case '-': cons++; break;
+                case '!': evals++; break;
+                default: break;
+            }
+        assert(names == 1 && heads == 2 && evals == 1);
+        assert(pros >= 4 && cons >= 4);
+    }
+    assert(topics == 5);
+}
+
 int main(void) {
     assert(top("break even", "Break-even", 2));
     assert(top("brek evn", "Break-even", 3));
@@ -44,6 +68,12 @@ int main(void) {
     assert(phraseAt("current assets" MINUS, "Working capital (net current assets)") == 0);
     assert(phraseAt("break-even quantity", "Break-even quantity") == 19);
     assert(phraseAt("gross profitability", "Gross profit") == 0);       /* whole words only */
+
+    /* comparisons are searchable too, behind the definition of the same term */
+    assert(top("outsourcing", "In-house operations to outsourcing", 3));
+    assert(top("penetration pricing", "Cost-plus pricing to penetration", 3));
+    assert(top("going public", "public limited company", 3));
+    checkComparisons();
 
     assert(search("xyzzy", hits, 40) == 0);
     assert(search("", hits, 40) == 0);

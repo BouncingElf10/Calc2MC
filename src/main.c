@@ -7,15 +7,17 @@
 #include "content.h"
 #include "search.h"
 
-enum { C_BG = 1, C_PANEL, C_LINE, C_TEXT, C_DIM, C_TEAL, C_AMBER, C_VIOLET, C_TRANSP = 255 };
+enum { C_BG = 1, C_PANEL, C_LINE, C_TEXT, C_DIM, C_TEAL, C_AMBER, C_VIOLET, C_ROSE, C_TRANSP = 255 };
 
 /* keys; letters come back as their lowercase char */
 enum { K_NONE, K_UP, K_DOWN, K_LEFT, K_RIGHT, K_OK, K_BACK, K_DEL };
 
-enum { M_HOME, M_PAGE, M_SEARCH, M_LINK };   /* M_LINK: picking a link on a page */
+enum { M_HOME, M_PAGE, M_SEARCH, M_LINK, M_COMPARE };   /* M_LINK: picking a link on a page */
 
-enum { R_HEAD, R_NAME, R_EXPR, R_NOTE, R_TERM, R_TEXT, R_GROUP, R_ITEM, R_SUB, R_TOTAL };
-static const uint8_t rowH[] = {20, 14, 10, 10, 15, 10, 14, 10, 12, 16};
+enum { R_HEAD, R_NAME, R_EXPR, R_NOTE, R_TERM, R_TEXT, R_GROUP, R_ITEM, R_SUB, R_TOTAL,
+       R_PRO, R_CON };
+static const uint8_t rowH[]  = {20, 14, 10, 10, 15, 10, 14, 10, 12, 16, 10, 10};
+static const uint8_t rowGap[] = {0,  0,  0,  3,  0,  0,  0,  0,  0,  0,  2,  2};   /* above the first line */
 
 #define L 10          /* left margin of page body */
 #define RIGHT 306     /* text never goes past this */
@@ -40,6 +42,13 @@ static hit_t hits[MAX_HITS];
 static int nHits;
 static char query[21];
 static int qlen;
+
+/* compare menu: every comparison, with a topic row before each new topic */
+typedef struct { const char *label; int8_t sect; } menu_t;   /* sect < 0: topic */
+static menu_t menu[N_COMPARE + 8];
+static int nMenu;
+#define MENU_SHOWN 11    /* rows on screen */
+#define MENU_H 18
 
 /* links: phrases in formulas that name another formula or definition */
 typedef struct {
@@ -78,7 +87,7 @@ static const uint8_t glyphs[8][8] = {
 static uint8_t spacing[256];
 
 static int rowHeight(const row_t *r) {
-    return rowH[r->kind] + (r->kind == R_NOTE && !r->cont ? 3 : 0);
+    return rowH[r->kind] + (r->cont ? 0 : rowGap[r->kind]);
 }
 
 static void setupGfx(void) {
@@ -92,6 +101,7 @@ static void setupGfx(void) {
         {0x0A, 0x70, 0x67},   /* teal accent */
         {0xA0, 0x52, 0x00},   /* amber accent */
         {0x6A, 0x45, 0xE0},   /* violet accent */
+        {0xB0, 0x2E, 0x3E},   /* rose accent */
     };
     for (uint8_t i = 0; i < sizeof pal / 3; i++)
         gfx_palette[i] = gfx_RGBTo1555(pal[i][0], pal[i][1], pal[i][2]);
@@ -119,30 +129,53 @@ static int text(const char *s, int len, int x, int y, uint8_t color) {
     return gfx_GetTextX();
 }
 
+/* writes n (1..99) into p, returns the end */
+static char *putNum(char *p, int n) {
+    if (n > 9) *p++ = '0' + n / 10;
+    *p++ = '0' + n % 10;
+    return p;
+}
+
 static int str(const char *s, int x, int y, uint8_t color) {
     return text(s, strlen(s), x, y, color);
 }
 
-enum { G_FORMULA, G_LAYOUT, G_DEF };
-static const char *const groupName[] = {"FORMULAS", "LAYOUTS", "DEFINITIONS"};
-static const uint8_t groupColor[] = {C_TEAL, C_VIOLET, C_AMBER};
-static const int groupStart[] = {0, N_FORMULA, N_FORMULA + N_LAYOUT};
-static const int groupSize[] = {N_FORMULA, N_LAYOUT, N_DEF};
+enum { G_FORMULA, G_LAYOUT, G_DEF, G_COMPARE };
+static const char *const groupName[] = {"FORMULAS", "LAYOUTS", "DEFINITIONS", "COMPARE"};
+static const uint8_t groupColor[] = {C_TEAL, C_VIOLET, C_AMBER, C_ROSE};
+static const int groupStart[] = {0, N_FORMULA, N_FORMULA + N_LAYOUT,
+                                 N_FORMULA + N_LAYOUT + N_DEF};
+static const int groupSize[] = {N_FORMULA, N_LAYOUT, N_DEF, N_COMPARE};
 
 static int group(int sect) {
-    return sect < N_FORMULA ? G_FORMULA : sect < N_FORMULA + N_LAYOUT ? G_LAYOUT : G_DEF;
+    return sect < groupStart[G_LAYOUT] ? G_FORMULA
+         : sect < groupStart[G_DEF] ? G_LAYOUT
+         : sect < groupStart[G_COMPARE] ? G_DEF : G_COMPARE;
 }
 
 static uint8_t accent(int sect) {
     return groupColor[group(sect)];
 }
 
-/* Home is a 2x7 grid: formulas | definitions, then a row of the two layouts.
- * Relies on N_FORMULA == N_DEF and N_LAYOUT == 2. */
+/* Home is formulas | definitions in two columns, then a bottom row of the
+ * two layouts and the compare menu. Relies on N_FORMULA == N_DEF. */
 #define HOME_ROWS (N_FORMULA + 1)
+#define H_COMPARE N_SECTIONS   /* the tile that opens the compare menu */
+
+static int homeCols(int row) {
+    return row == N_FORMULA ? N_LAYOUT + 1 : 2;
+}
+
 static int cell(int col, int row) {
-    if (row == N_FORMULA) return N_FORMULA + col;
-    return col ? groupStart[G_DEF] + row : row;
+    if (row != N_FORMULA) return col ? groupStart[G_DEF] + row : row;
+    return col == N_LAYOUT ? H_COMPARE : groupStart[G_LAYOUT] + col;
+}
+
+/* tile geometry; the bottom row holds three, each just wide enough */
+static const uint8_t botX[] = {8, 111, 230}, botW[] = {100, 116, 82};
+static void tileBox(int col, int row, int *x, int *w) {
+    *x = row == N_FORMULA ? botX[col] : col ? 164 : 8;
+    *w = row == N_FORMULA ? botW[col] : 148;
 }
 
 /* ---- page layout ---- */
@@ -152,6 +185,7 @@ static int kindX(uint8_t kind) {
         case R_EXPR: return L + 20;
         case R_NOTE: return L + 16;
         case R_TERM: case R_TEXT: return L + 10;
+        case R_PRO: case R_CON: return L + 18;
         case R_ITEM: case R_SUB: return L + 12;
         default: return L;
     }
@@ -216,6 +250,9 @@ static void layout(int sect) {
             case '@': addRows(s + 1, formulas ? R_NAME : R_TERM); break;
             case '=': addRows(s + 1, R_EXPR); break;
             case '!': addRows(s + 1, R_NOTE); break;
+            case '%': addRows(s + 1, R_HEAD); break;   /* search ignores it */
+            case '~': addRows(s + 1, R_PRO); break;
+            case '-': addRows(s + 1, R_CON); break;
             case '^': case '>': case '+': case '*':   /* balance sheet lines never wrap */
                 if (nRows < (int)(sizeof rows / sizeof rows[0]))
                     rows[nRows++] = (row_t){s + 1, (uint8_t)strlen(s + 1),
@@ -271,6 +308,10 @@ static void footer(int mode) {
         keycap(&x, G_LEFT G_RIGHT, "topic");
         keycap(&x, "enter", "links");
         keycap(&x, "clear", "back");
+    } else if (mode == M_COMPARE) {
+        keycap(&x, G_UP G_DOWN, "choose");
+        keycap(&x, "enter", "open");
+        keycap(&x, "clear", "back");
     } else if (mode == M_SEARCH) {
         keycap(&x, G_UP G_DOWN, "");
         keycap(&x, "enter", "open");
@@ -325,6 +366,13 @@ static void groupHeader(int g, int x, int y, int w) {
     gfx_HorizLine_NoClip(x, y + 11, w);
 }
 
+/* draws s cut to fit in w pixels */
+static void fitText(const char *s, int x, int y, int w, uint8_t color) {
+    int n = 0, used = 0;
+    while (s[n] && used + spacing[(uint8_t)s[n]] <= w) used += spacing[(uint8_t)s[n++]];
+    text(s, n, x, y, color);
+}
+
 static void drawHome(int sel) {
     gfx_FillScreen(C_BG);
     gfx_SetColor(C_PANEL);
@@ -336,37 +384,33 @@ static void drawHome(int sel) {
 
     groupHeader(G_FORMULA, 8, 32, 148);
     groupHeader(G_DEF, 164, 32, 148);
-    groupHeader(G_LAYOUT, 8, 183, 304);
+    groupHeader(G_LAYOUT, 8, 183, 219);
+    groupHeader(G_COMPARE, 230, 183, 82);
 
     for (int row = 0; row < HOME_ROWS; row++) {
-        for (int col = 0; col < 2; col++) {
+        for (int col = 0; col < homeCols(row); col++) {
             const int i = cell(col, row);
-            const int x = col ? 164 : 8;
             const int y = row < N_FORMULA ? 48 + row * 22 : 198;
             const uint8_t acc = accent(i);
             const bool on = i == sel;
+            int x, w;
+            tileBox(col, row, &x, &w);
 
-            roundRect(x, y, 148, 19, on ? acc : C_PANEL, C_BG);
+            roundRect(x, y, w, 19, on ? acc : C_PANEL, C_BG);
             if (!on) {
                 gfx_SetColor(acc);
                 gfx_FillRectangle_NoClip(x, y + 1, 3, 17);
             }
-            int tx = x + 10;
-            if (group(i) == G_DEF && i < N_SECTIONS - 1) {   /* unit number */
+            int tx = x + (row == N_FORMULA ? 8 : 10);
+            if (group(i) == G_DEF && i < groupStart[G_COMPARE] - 1) {   /* unit number */
                 const char num[2] = {'1' + i - groupStart[G_DEF], 0};
                 tx = str(num, tx, y + 6, on ? C_BG : acc) + 6;
             }
-            str(sections[i].title, tx, y + 6, on ? C_BG : C_TEXT);
+            str(i == H_COMPARE ? "Decisions" : sections[i].title,
+                tx, y + 6, on ? C_BG : C_TEXT);
         }
     }
     footer(M_HOME);
-}
-
-/* draws s cut to fit in w pixels */
-static void fitText(const char *s, int x, int y, int w, uint8_t color) {
-    int n = 0, used = 0;
-    while (s[n] && used + spacing[(uint8_t)s[n]] <= w) used += spacing[(uint8_t)s[n++]];
-    text(s, n, x, y, color);
 }
 
 static void drawSearch(int sel, int top) {
@@ -422,6 +466,38 @@ static void drawSearch(int sel, int top) {
     footer(M_SEARCH);
 }
 
+static void drawCompare(int sel, int top) {
+    gfx_FillScreen(C_BG);
+    gfx_SetColor(C_PANEL);
+    gfx_FillRectangle_NoClip(0, 0, 320, 22);
+    str("What changes if you switch?", pill(6, 5, "COMPARE", C_ROSE) + 8, 7, C_TEXT);
+
+    for (int i = top; i < nMenu && i < top + MENU_SHOWN; i++) {
+        const int y = BODY_Y + (i - top) * MENU_H;
+        if (menu[i].sect < 0) {   /* topic */
+            const int end = str(menu[i].label, L, y + 7, C_DIM) + 6;
+            gfx_SetColor(C_LINE);
+            gfx_HorizLine_NoClip(end, y + 11, RIGHT - end);
+            continue;
+        }
+        if (i == sel) {
+            roundRect(6, y, 300, 17, C_PANEL, C_BG);
+            gfx_SetColor(C_ROSE);
+            gfx_FillRectangle_NoClip(6, y + 1, 3, 15);
+        }
+        fitText(sections[menu[i].sect].title, 16, y + 4, 286, C_TEXT);
+    }
+
+    if (nMenu > MENU_SHOWN) {   /* scrollbar */
+        const int track = MENU_SHOWN * MENU_H - 2, th = track * MENU_SHOWN / nMenu;
+        gfx_SetColor(C_PANEL);
+        gfx_FillRectangle_NoClip(313, BODY_Y, 3, track);
+        gfx_SetColor(C_ROSE);
+        gfx_FillRectangle_NoClip(313, BODY_Y + (track - th) * top / (nMenu - MENU_SHOWN), 3, th);
+    }
+    footer(M_COMPARE);
+}
+
 static void drawPage(int sect, int top) {
     const int g = group(sect);
     const uint8_t acc = groupColor[g];
@@ -430,13 +506,16 @@ static void drawPage(int sect, int top) {
     gfx_SetColor(C_PANEL);
     gfx_FillRectangle_NoClip(0, 0, 320, 22);
     const int tx = pill(6, 5, curLink < 0 ? groupName[g] : "GO TO", acc);
-    if (curLink < 0) str(sections[sect].title, tx + 8, 7, C_TEXT);
+    if (curLink < 0) fitText(sections[sect].title, tx + 8, 7, 260 - tx, C_TEXT);   /* stops before n/m */
     else {
         const link_t *l = &links[curLink];
         const int ax = str(G_RIGHT, tx + 6, 7, C_DIM) + 4;
         fitText(l->target + 1, ax, 7, 290 - ax, accent(l->sect));
     }
-    const char pos[4] = {'1' + sect - groupStart[g], '/', '0' + groupSize[g], 0};
+    char pos[6], *q = pos;   /* "3/25" */
+    q = putNum(q, sect - groupStart[g] + 1);
+    *q++ = '/';
+    *putNum(q, groupSize[g]) = 0;
     str(pos, 314 - gfx_GetStringWidth(pos), 7, C_DIM);
 
     int y = BODY_Y;
@@ -487,6 +566,13 @@ static void drawPage(int sect, int top) {
                 gfx_SetColor(C_AMBER);
                 gfx_FillRectangle_NoClip(L + 8, ty - 1, 2, 10);
                 text(r->s, r->len, x, ty, C_DIM);
+                break;
+            case R_PRO:
+            case R_CON:
+                if (!r->cont)
+                    str(r->kind == R_PRO ? "+" : MINUS, L + 8, ty,
+                        r->kind == R_PRO ? C_TEAL : C_ROSE);
+                text(r->s, r->len, x, ty, C_TEXT);
                 break;
             case R_TERM:
                 if (!r->cont) {
@@ -602,7 +688,13 @@ static int openAt(int sect, const char *line) {
 }
 
 int main(void) {
-    int mode = M_HOME, sel = 0, sect = 0, top = 0, hSel = 0, hTop = 0;
+    int mode = M_HOME, sel = 0, sect = 0, top = 0, hSel = 0, hTop = 0, mSel = 0, mTop = 0;
+
+    for (int i = 0; i < N_COMPARE; i++) {
+        if (compareTopic[i]) menu[nMenu++] = (menu_t){compareTopic[i], -1};
+        menu[nMenu++] = (menu_t){NULL, (int8_t)(groupStart[G_COMPARE] + i)};
+    }
+    while (menu[mSel].sect < 0) mSel++;
 
     for (int b = 0; b < 27; b++) {   /* by first letter; formulas, layouts, then definitions */
         bucketStart[b] = nItems;
@@ -621,6 +713,7 @@ int main(void) {
     for (;;) {
         if (mode == M_HOME) drawHome(sel);
         else if (mode == M_SEARCH) drawSearch(hSel, hTop);
+        else if (mode == M_COMPARE) drawCompare(mSel, mTop);
         else drawPage(sect, top);
         gfx_SwapDraw();
 
@@ -635,20 +728,43 @@ int main(void) {
             }
         } else if (mode == M_HOME) {
             int col = 0, row = 0;
-            for (int c = 0; c < 2; c++)
-                for (int r = 0; r < HOME_ROWS; r++)
+            for (int r = 0; r < HOME_ROWS; r++)
+                for (int c = 0; c < homeCols(r); c++)
                     if (cell(c, r) == sel) { col = c; row = r; }
-            if (k == K_UP && row > 0) sel = cell(col, row - 1);
-            else if (k == K_DOWN && row < HOME_ROWS - 1) sel = cell(col, row + 1);
-            else if (k == K_LEFT || k == K_RIGHT) sel = cell(k == K_RIGHT, row);
+            const int dr = k == K_UP ? -1 : k == K_DOWN ? 1 : 0;
+            if (dr && row + dr >= 0 && row + dr < HOME_ROWS) {
+                row += dr;
+                if (col >= homeCols(row)) col = homeCols(row) - 1;
+                sel = cell(col, row);
+            } else if (k == K_LEFT && col > 0) sel = cell(col - 1, row);
+            else if (k == K_RIGHT && col < homeCols(row) - 1) sel = cell(col + 1, row);
             else if (k == K_OK) {
                 nHistory = 0;
+                if (sel == H_COMPARE) { mode = M_COMPARE; continue; }
                 remember(M_HOME, 0, 0);
                 sect = sel;
                 top = 0;
                 layout(sect);
                 mode = M_PAGE;
             } else if (k == K_BACK) break;
+        } else if (mode == M_COMPARE) {
+            const int d = k == K_UP || k == K_LEFT ? -1 : 1;
+            if (k == K_UP || k == K_DOWN || k == K_LEFT || k == K_RIGHT) {
+                int i = mSel + d;
+                while (i > 0 && i < nMenu && menu[i].sect < 0) i += d;   /* skip topics */
+                if (i >= 0 && i < nMenu && menu[i].sect >= 0) mSel = i;
+                /* keep the topic above the first item of a block in view */
+                if (mSel <= mTop) mTop = mSel && menu[mSel - 1].sect < 0 ? mSel - 1 : mSel;
+                else if (mSel >= mTop + MENU_SHOWN) mTop = mSel - MENU_SHOWN + 1;
+            } else if (k == K_BACK) mode = M_HOME;
+            else if (k == K_OK) {
+                nHistory = 0;
+                remember(M_COMPARE, 0, 0);
+                sect = menu[mSel].sect;
+                top = 0;
+                layout(sect);
+                mode = M_PAGE;
+            }
         } else if (mode == M_SEARCH) {
             if (k == K_UP && hSel > 0) { if (--hSel < hTop) hTop = hSel; }
             else if (k == K_DOWN && hSel < nHits - 1) { if (++hSel >= hTop + SHOWN) hTop++; }
@@ -685,7 +801,7 @@ int main(void) {
                 top = reveal(rowOf(links[curLink].s), top);
             } else if (k == K_BACK || k == K_DEL) {
                 const place_t p = nHistory ? history[--nHistory] : (place_t){M_HOME, 0, 0};
-                sel = sect;
+                sel = group(sect) == G_COMPARE ? H_COMPARE : sect;
                 mode = p.mode;
                 if (mode == M_PAGE) {
                     sect = p.sect;
