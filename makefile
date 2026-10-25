@@ -1,6 +1,6 @@
-NAME = BUSMAN
+NAME = PHYSICS
 ICON = iconmc.png
-DESCRIPTION = "IB Business Management SL"
+DESCRIPTION = "IB Physics HL"
 COMPRESSED = YES
 ARCHIVED = YES
 CFLAGS = -Wall -Wextra

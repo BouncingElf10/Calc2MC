@@ -32,7 +32,7 @@ typedef struct {
     bool cont;        /* continuation line of a wrapped item */
 } row_t;
 
-static row_t rows[300];
+static row_t rows[400];
 static int nRows, maxTop, totalH;
 static int hlRow = -1;   /* row a search jumped to */
 
@@ -60,7 +60,7 @@ static link_t links[96];
 static int nLinks, curLink = -1;
 
 typedef struct { const char *line; uint8_t sect; } item_t;
-static item_t items[256];   /* every '@' line by first letter, formulas first */
+static item_t items[512];   /* every '@' line by first letter, formulas first */
 static int nItems, bucketStart[28];
 
 static int bucket(char c) {
@@ -141,7 +141,7 @@ static int str(const char *s, int x, int y, uint8_t color) {
 }
 
 enum { G_FORMULA, G_LAYOUT, G_DEF, G_COMPARE };
-static const char *const groupName[] = {"FORMULAS", "LAYOUTS", "DEFINITIONS", "COMPARE"};
+static const char *const groupName[] = {"TEST UNIT", "SKETCH & LAB", "IB THEMES", "COMPARE"};
 static const uint8_t groupColor[] = {C_TEAL, C_VIOLET, C_AMBER, C_ROSE};
 static const int groupStart[] = {0, N_FORMULA, N_FORMULA + N_LAYOUT,
                                  N_FORMULA + N_LAYOUT + N_DEF};
@@ -377,8 +377,8 @@ static void drawHome(int sel) {
     gfx_FillScreen(C_BG);
     gfx_SetColor(C_PANEL);
     gfx_FillRectangle_NoClip(0, 0, 320, 26);
-    str("IB Business Management", 8, 9, C_TEXT);
-    pill(292, 7, "SL", C_AMBER);
+    str("IB Physics", 8, 9, C_TEXT);
+    pill(292, 7, "HL", C_AMBER);
     roundRect(188, 6, 98, 14, C_LINE, C_PANEL);   /* looks like a search box */
     str("\x08 type to find", 193, 9, C_DIM);
 
@@ -402,11 +402,11 @@ static void drawHome(int sel) {
                 gfx_FillRectangle_NoClip(x, y + 1, 3, 17);
             }
             int tx = x + (row == N_FORMULA ? 8 : 10);
-            if (group(i) == G_DEF && i < groupStart[G_COMPARE] - 1) {   /* unit number */
-                const char num[2] = {'1' + i - groupStart[G_DEF], 0};
+            if (group(i) == G_DEF && i < groupStart[G_COMPARE] - 1) {   /* theme letter */
+                const char num[2] = {'A' + i - groupStart[G_DEF], 0};
                 tx = str(num, tx, y + 6, on ? C_BG : acc) + 6;
             }
-            str(i == H_COMPARE ? "Decisions" : sections[i].title,
+            str(i == H_COMPARE ? "Mix-ups" : sections[i].title,
                 tx, y + 6, on ? C_BG : C_TEXT);
         }
     }
@@ -424,7 +424,7 @@ static void drawSearch(int sel, int top) {
     if (!qlen || !nHits) {
         static const char *const help[] = {
             "Type with the letter keys (the green letters); no need to press alpha. 0 is a space.",
-            "!Typos and half words are fine: \"brek evn\" finds break-even, \"wrk cap\" finds working capital.",
+            "!Typos and half words are fine: \"colomb\" finds Coulomb's law, \"intrnl res\" finds internal resistance.",
             NULL
         };
         static const char *const none[] = {"No matches. Try fewer or different letters.", NULL};
@@ -470,7 +470,7 @@ static void drawCompare(int sel, int top) {
     gfx_FillScreen(C_BG);
     gfx_SetColor(C_PANEL);
     gfx_FillRectangle_NoClip(0, 0, 320, 22);
-    str("What changes if you switch?", pill(6, 5, "COMPARE", C_ROSE) + 8, 7, C_TEXT);
+    str("Easily mixed up", pill(6, 5, "COMPARE", C_ROSE) + 8, 7, C_TEXT);
 
     for (int i = top; i < nMenu && i < top + MENU_SHOWN; i++) {
         const int y = BODY_Y + (i - top) * MENU_H;
@@ -569,9 +569,10 @@ static void drawPage(int sect, int top) {
                 break;
             case R_PRO:
             case R_CON:
-                if (!r->cont)
-                    str(r->kind == R_PRO ? "+" : MINUS, L + 8, ty,
-                        r->kind == R_PRO ? C_TEAL : C_ROSE);
+                if (!r->cont) {   /* square bullet, colour marks the side */
+                    gfx_SetColor(r->kind == R_PRO ? C_TEAL : C_ROSE);
+                    gfx_FillRectangle_NoClip(L + 9, ty + 2, 4, 4);
+                }
                 text(r->s, r->len, x, ty, C_TEXT);
                 break;
             case R_TERM:

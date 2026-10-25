@@ -1,1118 +1,1970 @@
 #include <stddef.h>
 #include "content.h"
 
-/* IB Business Management SL, from INFO.md. HL-only content left out. */
+/* IB Physics HL: definitions in words, no equations. The first six pages
+ * are the electrostatics and electric currents test; quoted definitions
+ * there are the teacher's exact wording. */
 
-#define M " " MINUS " "
-#define X " " TIMES " "
-#define D " " DIV " "
+/* ---- test unit: electrostatics and electric currents ---- */
 
-static const char *const costs[] = {
-    "#Revenue and costs",
-    "@Total revenue",
-    "=price" X "quantity sold",
-    "@Total variable costs",
-    "=variable cost per unit" X "quantity",
-    "@Total costs",
-    "=total fixed costs + total variable costs",
-    "@Profit",
-    "=total revenue" M "total costs",
-    "=total contribution" M "total fixed costs",
-    "#Contribution",
-    "@Contribution per unit",
-    "=price" M "variable cost per unit",
-    "@Total contribution",
-    "=contribution per unit" X "quantity",
-    "=total revenue" M "total variable costs",
-    "#Break-even",
-    "@Break-even quantity",
-    "=total fixed costs" D "contribution per unit",
-    "@Margin of safety",
-    "=actual output" M "break-even quantity",
-    "@Margin of safety (%)",
-    "=margin of safety" D "actual output" X "100",
-    "#Targets",
-    "@Target profit output",
-    "=(fixed costs + target profit)" D "contribution per unit",
-    "@Target profit",
-    "=(contribution per unit" X "target output)" M "fixed costs",
-    "@Target price",
-    "=[(fixed costs + target profit)" D "target output] + variable cost per unit",
+static const char *const charge[] = {
+    "!Electrostatics mirrors gravitation: swap mass for charge. The big "
+    "difference is that charge comes in two signs.",
+    "#Electric charge",
+    "@Electric charge",
+    "A property of matter that makes it experience a force in an electric "
+    "field. It comes in two kinds, positive and negative: like charges repel, "
+    "unlike charges attract.",
+    "@Elementary charge",
+    "The smallest amount of free charge: the size of the charge on one proton "
+    "or one electron, about 1.6 times ten to the minus 19 coulombs.",
+    "@Quantization of charge",
+    "Charge only ever comes in whole-number multiples of the elementary "
+    "charge. Millikan's oil-drop experiment is the evidence.",
+    "@Conservation of charge",
+    "The total charge of an isolated system stays constant. Charge can be "
+    "moved from one object to another but never created or destroyed.",
+    "@Coulomb",
+    "The SI unit of charge: the charge that passes a point in one second when "
+    "the current is one ampere.",
+    "@Point charge",
+    "A charge whose size is negligible compared with the distances involved. "
+    "Outside a charged sphere, the field is the same as if all its charge "
+    "were a point charge at the centre.",
+    "#Coulomb's law",
+    "@Coulomb's law",
+    "The electrostatic force between two point charges is directly "
+    "proportional to the product of the charges and inversely proportional "
+    "to the square of their separation.",
+    "!\"Point charges\" and \"square of the separation\" are both marks. The "
+    "force acts along the line joining the two charges.",
+    "@Electrostatic force",
+    "The force between charges at rest. Each charge feels an equal and "
+    "opposite force (a Newton's third law pair): attractive for unlike "
+    "charges, repulsive for like charges.",
+    "@Inverse-square law",
+    "A quantity that falls with one over the distance squared: double the "
+    "separation and the force drops to a quarter; triple it and it drops to "
+    "a ninth.",
+    "@Coulomb constant",
+    "The constant of proportionality in Coulomb's law. It equals one divided "
+    "by four pi times the permittivity of free space.",
+    "@Permittivity",
+    "A property of a medium that sets how strongly charges in it interact. "
+    "The larger the permittivity, the weaker the force between two given "
+    "charges.",
+    "@Permittivity of free space",
+    "The permittivity of a vacuum, a fundamental constant. Air has almost "
+    "exactly the same value.",
+    "#Methods of charging",
+    "!Only electrons move. Protons are locked in nuclei, so an object becomes "
+    "positive by losing electrons, never by gaining protons.",
+    "@Charging by friction",
+    "Rubbing two different insulators together transfers electrons from one "
+    "surface to the other. The one that gains electrons becomes negative; "
+    "the other is left equally positive.",
+    "@Charging by contact",
+    "Touching a charged object to a conductor lets charge flow between them, "
+    "so both end up with charge of the same sign. Also called charging by "
+    "conduction.",
+    "@Charging by induction",
+    "Bring a charged object near a neutral conductor without touching it, so "
+    "the conductor's free electrons are pushed to the far side or pulled to "
+    "the near side. Earth the conductor while the object is still near, "
+    "break the earth connection, then take the object away. The conductor is "
+    "left with charge opposite in sign to the charged object.",
+    "!Order matters in induction: remove the earth connection BEFORE the "
+    "charged object, or the charge just flows back.",
+    "@Polarization of charge",
+    "The separation of positive and negative charge within a neutral object "
+    "caused by a nearby charge. The near side gains the opposite sign, which "
+    "is why a charged object attracts a neutral one.",
+    "@Earthing",
+    "Connecting a conductor to the Earth, a huge reservoir of charge at zero "
+    "potential, so electrons flow to or from it until the conductor is "
+    "neutral.",
     NULL
 };
 
-static const char *const accounts[] = {
-    "!The formula sheet is given in Paper 2, but NOT the layout of the P&L, "
-    "balance sheet or cash-flow forecast. Reproduce those from memory (see Layouts).",
-    "#Profit and loss account",
-    "@Cost of goods sold (COGS)",
-    "=opening stock + purchases" M "closing stock",
-    "@Gross profit",
-    "=sales revenue" M "cost of goods sold",
-    "@Net profit before interest and tax",
-    "=gross profit" M "expenses",
-    "@Net profit after interest and tax",
-    "=net profit before interest and tax" M "interest" M "tax",
-    "@Retained profit",
-    "=net profit after interest and tax" M "dividends",
-    "#Balance sheet",
-    "@Net fixed assets",
-    "=fixed assets" M "accumulated depreciation",
-    "@Working capital (net current assets)",
-    "=current assets" M "current liabilities",
-    "@Net assets",
-    "=total assets" M "total liabilities",
-    "@Equity",
-    "=share capital + retained profit",
-    "@Capital employed",
-    "=long-term liabilities + equity",
-    "!Net assets = equity, always. Use it as your check.",
+static const char *const fields[] = {
+    "!The field strength and potential definitions are your teacher's exact "
+    "words. Learn them word for word.",
+    "#Electric field",
+    "@Electric field",
+    "A region of space in which a charge experiences an electric force.",
+    "@Electric field strength",
+    "The force per unit charge acting on a small positive test charge placed "
+    "at that point.",
+    "A vector, pointing the way a positive charge would be pushed. Unit: "
+    "newtons per coulomb, which is the same as volts per metre.",
+    "@Test charge",
+    "A charge small enough not to disturb the field it is placed in, and "
+    "positive by convention, so the field's direction is the direction of "
+    "the force on it.",
+    "@Field of a point charge",
+    "Directly proportional to the charge and inversely proportional to the "
+    "square of the distance from it. It points radially away from a positive "
+    "charge and towards a negative one.",
+    "@Force on a charge in a field",
+    "Proportional to both the charge and the field strength. A positive "
+    "charge is pushed along the field direction; a negative charge, such as "
+    "an electron, is pushed against it.",
+    "@Superposition of fields",
+    "The resultant field at a point is the vector sum of the fields from "
+    "each charge. Draw each field as an arrow, then add them by components, "
+    "taking direction into account.",
+    "@Neutral point",
+    "A point where the fields from two or more charges cancel, so the "
+    "resultant field strength is zero. For two like charges it lies between "
+    "them, nearer the smaller charge; for two unlike charges it lies outside "
+    "them, beyond the smaller one.",
+    "#Electric potential",
+    "@Electric potential",
+    "The work done per unit charge in bringing a small positive test charge "
+    "from infinity to the point.",
+    "A scalar, measured in volts (joules per coulomb), and zero at infinity. "
+    "Positive around a positive charge, negative around a negative charge.",
+    "@Potential of a point charge",
+    "Directly proportional to the charge and inversely proportional to the "
+    "distance from it: one over the distance, not the distance squared.",
+    "@Adding potentials",
+    "Potential is a scalar, so the potentials from several charges simply "
+    "add, each with its sign. No components, no angles: much easier than "
+    "adding fields.",
+    "@Electric potential energy",
+    "The work done in bringing a charge from infinity to a point in the "
+    "field of another charge. It belongs to the pair of charges: positive "
+    "when they repel, negative when they attract.",
+    "@Potential difference in a field",
+    "The work done per unit charge in moving a small positive test charge "
+    "between two points in the field.",
+    "@Electronvolt",
+    "The energy gained by one electron when it is accelerated through a "
+    "potential difference of one volt; about 1.6 times ten to the minus 19 "
+    "joules.",
+    "#Field and potential together",
+    "@Potential gradient",
+    "The rate of change of potential with distance. The electric field "
+    "strength at a point equals minus the potential gradient there, so the "
+    "field points the way potential falls fastest.",
+    "@Equipotential surface",
+    "A surface on which every point has the same potential. No work is done "
+    "moving a charge along it, and it always meets field lines at right "
+    "angles.",
+    "@Work done moving a charge",
+    "The charge multiplied by the potential difference between the start and "
+    "end points. It depends only on those two points, not on the path taken, "
+    "and is zero along an equipotential.",
+    "@Charge released in a field",
+    "Its electric potential energy is converted to kinetic energy. The "
+    "kinetic energy gained equals the work done by the field: the charge "
+    "times the potential difference it moves through.",
+    "!Positive charges \"fall\" from high to low potential, like masses in "
+    "gravity. Electrons do the opposite: they accelerate towards higher "
+    "potential.",
     NULL
 };
 
-static const char *const pl[] = {
-    "!The layout is NOT on the formula sheet. Learn it line by line; "
-    "the figures are only an example.",
-    "#The layout",
-    "^Name of business",
-    "^Profit and loss account",
-    "^for the year ended 31 December 2025",
-    ">\t$000",
-    ">Sales revenue\t800",
-    ">Cost of goods sold\t(500)",
-    "+Gross profit\t300",
-    ">Expenses\t(180)",
-    "+Net profit before interest & tax\t120",
-    ">Interest\t(20)",
-    "+Net profit before tax\t100",
-    ">Tax\t(25)",
-    "+Net profit after interest & tax\t75",
-    ">Dividends\t(30)",
-    "*Retained profit\t45",
-    "#Cost of goods sold working",
-    ">Opening stock\t60",
-    ">Purchases\t490",
-    ">Closing stock\t(50)",
-    "*Cost of goods sold\t500",
+static const char *const plates[] = {
+    "#Parallel plates",
+    "@Uniform electric field",
+    "A field whose strength and direction are the same at every point. Its "
+    "field lines are straight, parallel and equally spaced.",
+    "@Field between parallel plates",
+    "Uniform between the plates: the same strength everywhere, directly "
+    "proportional to the potential difference across the plates and "
+    "inversely proportional to their separation.",
+    "@Field lines between plates",
+    "Straight, parallel and evenly spaced, running from the positive plate "
+    "to the negative plate and meeting both at right angles. At the ends of "
+    "the plates they bulge outwards.",
+    "@Equipotentials between plates",
+    "Flat planes parallel to the plates, equally spaced for equal steps of "
+    "potential. The potential falls steadily from the positive plate to the "
+    "negative plate.",
+    "@Edge effect",
+    "Near the ends of the plates the field lines curve outwards and spread "
+    "apart, so the field there is weaker and no longer uniform.",
+    "@Charged particle between plates",
+    "Feels the same force everywhere between the plates, so it has a "
+    "constant acceleration. Fired in at right angles to the field it follows "
+    "a parabola, like a projectile in a gravitational field.",
+    "#Millikan's oil-drop experiment",
+    "@Aim of Millikan's experiment",
+    "To measure the charge on individual oil drops. It showed that charge is "
+    "quantized and gave the value of the elementary charge.",
+    "@Millikan's method",
+    "A fine mist of oil drops is sprayed between two horizontal parallel "
+    "plates; the drops pick up charge by friction in the sprayer. Watching "
+    "through a microscope, the p.d. across the plates is adjusted until a "
+    "chosen drop hangs still.",
+    "@Balanced drop",
+    "When the drop is stationary, the upward electric force exactly balances "
+    "its weight. Knowing the p.d., the plate separation and the drop's mass "
+    "then gives its charge.",
+    "@Finding the drop's mass",
+    "Switch the field off and the drop falls at terminal velocity, where air "
+    "resistance balances its weight. The terminal speed gives its radius, "
+    "and the oil's density then gives its mass.",
+    "@Millikan's result",
+    "Every drop's charge was a whole-number multiple of the same smallest "
+    "value, about 1.6 times ten to the minus 19 coulombs: the elementary "
+    "charge. Charge is quantized.",
+    "!Direction check: to hold up a negatively charged drop, the top plate "
+    "must be positive. If the drop rises, the electric force is bigger than "
+    "its weight, so lower the p.d.",
+    NULL
+};
+
+static const char *const current[] = {
+    "!Electric currents. The p.d. and Ohm's law definitions are your "
+    "teacher's exact words.",
+    "#Current",
+    "@Electric current",
+    "The rate of flow of charge past a point in a circuit. Unit: the ampere, "
+    "one coulomb per second.",
+    "@Ampere",
+    "The SI base unit of current: a flow of one coulomb of charge per second.",
+    "@Conventional current",
+    "The direction positive charge would flow: out of the positive terminal, "
+    "round the circuit, into the negative terminal. Electrons in a metal "
+    "actually drift the opposite way.",
+    "@Charge carrier",
+    "A charged particle that is free to move and so carry a current: free "
+    "electrons in metals, ions in electrolytes and ionized gases.",
+    "@Drift speed",
+    "The small average speed of the charge carriers along a conductor when a "
+    "current flows, on top of their fast random thermal motion.",
+    "#Conductors and insulators",
+    "@Conductor",
+    "A material with many free (delocalized) electrons that can move through "
+    "it, so charge flows easily. Metals are good conductors.",
+    "@Insulator",
+    "A material in which electrons are tightly bound to their atoms, so "
+    "there are almost no free charge carriers and charge cannot flow.",
+    "@Semiconductor",
+    "A material with far fewer free charge carriers than a metal. Heating it "
+    "or shining light on it frees more carriers, so its resistance falls.",
+    "#Potential difference",
+    "@Potential difference",
+    "The work done per unit charge in moving a small positive test charge "
+    "between the two points.",
+    "In a circuit: the electrical energy converted to other forms for each "
+    "coulomb passing through a component.",
+    "@Volt",
+    "The potential difference between two points when one joule of work is "
+    "done per coulomb of charge moved between them.",
+    "#Resistance",
+    "@Electrical resistance",
+    "The ratio of the potential difference across a component to the "
+    "current through it. Unit: the ohm.",
+    "@Ohm",
+    "The resistance of a component that carries a current of one ampere when "
+    "the p.d. across it is one volt.",
+    "@Cause of resistance",
+    "Free electrons accelerated by the electric field collide with the "
+    "vibrating positive ions of the metal lattice and pass energy to them. "
+    "This limits the electrons' drift and heats the conductor.",
+    "@Resistance and temperature",
+    "Heating a metal makes its lattice ions vibrate more, so electrons "
+    "collide more often and resistance rises. In a semiconductor the extra "
+    "carriers freed by heating win, so resistance falls.",
+    "@Resistivity",
+    "A property of the material itself: the resistance of a sample of unit "
+    "length and unit cross-sectional area. Unit: the ohm metre. A wire's "
+    "resistance is proportional to its length and inversely proportional to "
+    "its cross-sectional area.",
+    "!Resistance belongs to an object; resistivity belongs to the material. "
+    "A long thin wire has more resistance than a short thick one of the same "
+    "metal, but the same resistivity.",
+    "#Ohm's law",
+    "@Ohm's law",
+    "For an ohmic device, the potential difference across the device is "
+    "directly proportional to the current through the device.",
+    "!Say \"directly proportional\" and \"ohmic device\". For a metal wire, "
+    "add \"at constant temperature\".",
+    "@Ohmic device",
+    "A component that obeys Ohm's law: its resistance stays constant "
+    "whatever the current, so its V-I graph is a straight line through the "
+    "origin. Example: a metal wire at constant temperature.",
+    "@Non-ohmic device",
+    "A component whose resistance changes with the current, so its V-I "
+    "graph is curved. Example: a filament lamp.",
+    "@Filament lamp",
+    "As the current rises the filament gets hotter, its ions vibrate more "
+    "and its resistance increases, so each extra volt gives less extra "
+    "current.",
+    "#Thermistors and LDRs",
+    "@Thermistor",
+    "A semiconductor resistor whose resistance falls as its temperature "
+    "rises (NTC type).",
+    "@Why a thermistor's resistance falls",
+    "Heating gives more electrons enough energy to break free of their "
+    "atoms, so the number of free charge carriers rises sharply. This "
+    "outweighs the extra lattice vibration that raises a metal's resistance.",
+    "@Thermistor resistance and temperature",
+    "Not linear: the resistance falls steeply at low temperatures and "
+    "levels off at high ones, never reaching zero. A small change in "
+    "temperature gives a large change in resistance, so it is very "
+    "sensitive.",
+    "@PTC thermistor",
+    "The less common type whose resistance rises as its temperature rises. "
+    "Assume NTC unless told otherwise.",
+    "@Thermistor as a component",
+    "Non-ohmic: a larger current heats it, its resistance falls, so each "
+    "extra volt gives more extra current than the last. Held at constant "
+    "temperature it behaves ohmically.",
+    "@Self-heating",
+    "The current through a thermistor warms it, so it reads its own "
+    "temperature and not just the surroundings'. Keep the current small in "
+    "a sensor circuit.",
+    "@Thermistor uses",
+    "Temperature sensors: digital thermometers, thermostats, fire alarms, "
+    "engine and battery temperature monitors.",
+    "@Light-dependent resistor",
+    "A semiconductor resistor (LDR) whose resistance falls as the intensity "
+    "of light on it increases.",
+    "@Why an LDR's resistance falls",
+    "Photons absorbed by the semiconductor give electrons enough energy to "
+    "break free, so brighter light means more free charge carriers and a "
+    "lower resistance.",
+    "@LDR resistance and light",
+    "Not linear: the resistance falls steeply as light first increases, "
+    "then levels off. Typically about a megohm in the dark, down to a few "
+    "hundred ohms in bright light.",
+    "@LDR as a component",
+    "At a constant light intensity it behaves ohmically: straight V-I "
+    "graph through the origin. It responds to changes in light slowly, over "
+    "tens of milliseconds.",
+    "@LDR uses",
+    "Light sensors: street lights and night lights that switch on at dusk, "
+    "camera light meters, burglar alarms, automatic screen brightness.",
+    "!Both are semiconductors, and in both more energy (heat or light) "
+    "frees more charge carriers, so resistance falls. Say \"more charge "
+    "carriers\", not \"electrons move faster\".",
+    "#Power and heating",
+    "@Joule heating",
+    "The heating of a conductor carrying a current, as colliding electrons "
+    "pass energy to the lattice. Also called resistive or ohmic heating.",
+    "@Joule's heating law",
+    "The rate of heat production in a resistor is proportional to the square "
+    "of the current through it, for a given resistance.",
+    "!Double the current and the heating goes up four times.",
+    "@Electrical power",
+    "The rate at which electrical energy is transferred to other forms in a "
+    "component: the p.d. across it times the current through it. Unit: the "
+    "watt, one joule per second.",
+    "@Power dissipation",
+    "The conversion of electrical energy into thermal energy in a resistor, "
+    "which then passes to the surroundings. Rated power is the most a "
+    "component can dissipate safely.",
+    "@Heating water electrically",
+    "The electrical energy supplied (power times time) becomes thermal "
+    "energy in the water (mass times specific heat capacity times "
+    "temperature rise). Allow for any energy lost to the surroundings.",
+    NULL
+};
+
+static const char *const circuits[] = {
+    "#Series and parallel",
+    "@Series circuit",
+    "Components connected one after another in a single loop. The same "
+    "current flows through each, their p.d.s add up to the total, and the "
+    "total resistance is the sum of their resistances.",
+    "@Parallel circuit",
+    "Components connected across the same two points on separate branches. "
+    "Each has the same p.d. across it, the branch currents add up to the "
+    "total, and the reciprocal of the total resistance is the sum of the "
+    "reciprocals.",
+    "!A resistor added in series always raises the total resistance. One "
+    "added in parallel always lowers it, below the smallest branch.",
+    "@Equivalent resistance",
+    "The single resistance that could replace a combination and draw the "
+    "same current from the same p.d.",
+    "#Meters",
+    "@Ammeter",
+    "Measures current. Connected in series with the component, so the same "
+    "current flows through both.",
+    "@Ideal ammeter",
+    "An ammeter with zero resistance, so there is no p.d. across it and it "
+    "does not change the current it measures.",
+    "@Voltmeter",
+    "Measures potential difference. Connected in parallel, across the "
+    "component.",
+    "@Ideal voltmeter",
+    "A voltmeter with infinite resistance, so it draws no current and does "
+    "not change the circuit it measures.",
+    "!A real voltmeter draws a little current and a real ammeter drops a "
+    "little p.d. The error is worst when the meter's resistance is close to "
+    "the component's.",
+    "#Kirchhoff's laws",
+    "@Kirchhoff's first law",
+    "The sum of the currents entering a junction equals the sum of the "
+    "currents leaving it. It is based on conservation of charge.",
+    "@Kirchhoff's second law",
+    "Around any closed loop in a circuit, the sum of the EMFs equals the sum "
+    "of the potential differences. It is based on conservation of energy.",
+    "!Both are conservation laws: the first conserves charge, the second "
+    "conserves energy. That link is often the mark.",
+    "@Junction",
+    "A point in a circuit where three or more conductors meet, so the "
+    "current divides or combines.",
+    "#Potential dividers",
+    "@Potential divider",
+    "Two or more resistors in series across a supply, sharing the supply "
+    "p.d. in proportion to their resistances. The output taken across one "
+    "resistor is a chosen fraction of the supply p.d.",
+    "@Potentiometer",
+    "A variable potential divider: a resistor with a sliding contact that "
+    "gives any output from zero up to the full supply p.d.",
+    "@Rheostat",
+    "A variable resistor used in series to control the current. Unlike a "
+    "potentiometer, it cannot bring the current down to zero.",
+    "@Sensor circuit",
+    "A potential divider with a sensor, such as a thermistor or an LDR, as "
+    "one of its resistors. When temperature or light changes, the sensor's "
+    "resistance changes, so its share of the p.d. and the output change.",
+    "!Bigger resistance, bigger share of the p.d. As a thermistor warms, its "
+    "resistance falls, so the p.d. across it falls and the p.d. across the "
+    "fixed resistor rises.",
+    "@Output that rises with temperature",
+    "Thermistor at the top, next to the positive supply; output across the "
+    "fixed resistor. Warmer: thermistor resistance falls, fixed resistor's "
+    "share rises. Used for fire alarms and cooling fans.",
+    "@Output that rises in the dark",
+    "LDR at the bottom; output across the LDR. Darker: LDR resistance "
+    "rises, its share of the p.d. rises. Used to switch on street lights.",
+    "!Swap the sensor and the fixed resistor and the output does the "
+    "opposite.",
+    "@Choosing the fixed resistor",
+    "Pick it close to the sensor's resistance in the middle of the range to "
+    "be measured: the output then changes most for a given change in "
+    "temperature or light.",
+    "@Setting the trigger point",
+    "Replace the fixed resistor with a variable resistor. Adjusting it sets "
+    "the temperature or light level at which the output reaches the value "
+    "that switches the next device.",
+    "@Sensor in series with a lamp",
+    "Warm the thermistor or light the LDR: its resistance falls, the total "
+    "resistance falls, the current rises and the lamp gets brighter.",
+    "@Loading a sensor circuit",
+    "A device connected across the output is in parallel with that "
+    "resistor and lowers its resistance, so the output falls. Its "
+    "resistance should be much larger than the resistor it is across.",
+    NULL
+};
+
+static const char *const cells[] = {
+    "!The EMF definition is your teacher's exact words. The lab to find "
+    "internal resistance is on its own page: EMF & r lab.",
+    "#Cells",
+    "@Electric cell",
+    "A device that converts chemical energy into electrical energy, driving "
+    "charge round a circuit. A battery is two or more cells joined together.",
+    "@Primary cell",
+    "A cell that cannot be recharged: its chemical reaction cannot be "
+    "reversed, so it is thrown away when used up. Example: an alkaline cell.",
+    "@Secondary cell",
+    "A rechargeable cell: driving a current backwards through it reverses "
+    "the chemical reaction and restores its stored energy. Example: a "
+    "lithium-ion cell.",
+    "@Cell capacity",
+    "The total charge a cell can deliver before it is flat, usually given in "
+    "amp-hours: the current it could supply for one hour.",
+    "@Discharge characteristic",
+    "The graph of terminal p.d. against time as a cell discharges: a quick "
+    "initial drop, a long nearly flat stretch, then a rapid fall as the cell "
+    "runs out.",
+    "#EMF and internal resistance",
+    "@EMF (electromotive force)",
+    "The work done per unit charge in driving a quantity of charge "
+    "completely around the circuit.",
+    "The chemical energy converted to electrical energy per coulomb, in "
+    "volts. Despite its name it is not a force.",
+    "@Internal resistance",
+    "The resistance of the materials inside the cell itself. Charge passing "
+    "through the cell does work against it, so some energy is dissipated "
+    "inside the cell as heat.",
+    "@Terminal potential difference",
+    "The p.d. across the cell's terminals while it delivers current: the "
+    "energy per coulomb that actually reaches the external circuit. It is "
+    "the EMF minus the lost volts.",
+    "@Lost volts",
+    "The p.d. across the internal resistance: the energy per coulomb wasted "
+    "inside the cell. It is proportional to the current, so it grows as more "
+    "current is drawn.",
+    "@Open circuit",
+    "No current flows, so there are no lost volts and the terminal p.d. "
+    "equals the EMF. A high-resistance voltmeter across a cell on its own "
+    "reads very nearly its EMF.",
+    "@Short circuit",
+    "The terminals joined by a wire of negligible resistance. The current is "
+    "limited only by the internal resistance, all the energy is dissipated "
+    "inside the cell, and the terminal p.d. is zero.",
+    "@Charging a battery",
+    "A supply forces current backwards through the cell. The terminal p.d. "
+    "is then the EMF plus the lost volts, because the supply must also push "
+    "the charge through the internal resistance.",
+    "!Discharging, terminal p.d. is less than the EMF; charging, it is more. "
+    "The data booklet only gives the normal, discharging case.",
+    NULL
+};
+
+/* ---- sketches and the lab ---- */
+
+static const char *const sketch[] = {
+    "!You must be able to draw these. Each entry says what the examiner "
+    "looks for.",
+    "#Rules for field lines",
+    "@Field line direction",
+    "Arrows point the way a positive test charge would be pushed: away from "
+    "positive charges, towards negative ones.",
+    "@Field line spacing",
+    "Lines closer together mean a stronger field. Parallel, equally spaced "
+    "lines mean a uniform field.",
+    "@Field lines never cross",
+    "The field at any point has only one direction, so two lines can never "
+    "pass through the same point.",
+    "@Field lines at conductors",
+    "Field lines meet the surface of a conductor at right angles.",
+    "@Drawing equipotentials",
+    "Always at right angles to the field lines. For equal steps of "
+    "potential, closer equipotentials mean a stronger field.",
+    "#Single charges",
+    "@Isolated positive charge",
+    "Straight radial lines, evenly spaced all round, arrows pointing "
+    "outwards. Equipotentials are concentric circles, further apart the "
+    "further out they are.",
+    "@Isolated negative charge",
+    "The same radial pattern with the arrows pointing inwards. "
+    "Equipotentials are concentric circles with the same spacing rule, at "
+    "negative potential.",
+    "@Charged conducting sphere",
+    "Outside, exactly like a point charge at the centre. Inside, no field at "
+    "all, and the potential is constant, equal to its value at the surface.",
+    "#Two charges",
+    "@Positive and negative charge",
+    "Lines leave the positive charge and curve round into the negative, "
+    "most tightly packed on the line between them. For equal charges, the "
+    "equipotential midway between them is a straight line at zero "
+    "potential.",
+    "@Two positive charges",
+    "Lines leave both charges and bend away from each other; none cross the "
+    "gap. For equal charges there is a neutral point midway. Close to each "
+    "charge the equipotentials are loops round it; further out, one loop "
+    "encloses both.",
+    "@Two negative charges",
+    "The same shape as two positive charges, with every arrow reversed.",
+    "@Unequal charges",
+    "The larger charge has more lines leaving or entering it, in proportion "
+    "to its charge. For like charges the neutral point moves towards the "
+    "smaller charge.",
+    "#Parallel plates",
+    "@Plate field lines",
+    "Straight, parallel, evenly spaced lines from the positive plate to the "
+    "negative plate, at right angles to both, curving outwards beyond the "
+    "ends of the plates.",
+    "@Plate equipotentials",
+    "Straight lines parallel to the plates, evenly spaced between them, "
+    "bending near the ends.",
+    "#Graphs to sketch",
+    "@Ohmic conductor V-I graph",
+    "A straight line through the origin, continuing into the negative "
+    "quadrant for reversed p.d. Constant gradient: constant resistance.",
+    "@Filament lamp V-I graph",
+    "Current against p.d. is an S-shape through the origin: straight near "
+    "the origin, then flattening towards the p.d. axis as the filament heats "
+    "and its resistance rises. Symmetrical for reversed p.d.",
+    "!Check which way round the axes are. Current against p.d. flattens for "
+    "a lamp; p.d. against current curves upwards.",
+    "@Thermistor V-I graph",
+    "Current against p.d. curves upwards, away from the p.d. axis, as the "
+    "thermistor heats and its resistance falls. The opposite bend to a "
+    "lamp; symmetrical for reversed p.d.",
+    "@Thermistor resistance against temperature",
+    "A curve falling steeply at first, then levelling off towards the "
+    "temperature axis without touching it. Not a straight line.",
+    "@LDR resistance against light intensity",
+    "The same shape: steep fall at low intensity, levelling off in bright "
+    "light, never reaching zero.",
+    "@Field strength against distance",
+    "For a point charge, a steep inverse-square curve falling towards zero.",
+    "@Potential against distance",
+    "For a positive charge, a positive curve falling towards zero, less "
+    "steep than the field curve; for a negative charge, a negative curve "
+    "rising towards zero. Its gradient is minus the field strength.",
+    "@Potential across parallel plates",
+    "A straight line falling steadily from the positive plate to the "
+    "negative plate, because the field is uniform.",
+    NULL
+};
+
+static const char *const lab[] = {
+    "!Flagged as important for the test. Know the set-up, the graph, and what "
+    "the graph tells you.",
+    "#Set-up",
+    "A cell in series with a variable resistor, an ammeter and a switch, "
+    "with a voltmeter directly across the cell's terminals. A small fixed "
+    "resistor in series stops the current getting dangerously large.",
+    "#Method",
+    "Close the switch, record the current and the terminal p.d., then open "
+    "it. Change the variable resistor and repeat for at least six settings, "
+    "over as wide a range of current as possible.",
+    "#The graph",
+    "^Terminal p.d. against current",
+    ">y-axis\tterminal potential difference",
+    ">x-axis\tcurrent",
+    ">Shape\tstraight line, falling",
+    ">y-intercept\tEMF",
+    ">Gradient\tminus internal resistance",
+    ">x-intercept\tshort-circuit current",
+    "@Why it is a straight line",
+    "The terminal p.d. is the EMF minus the lost volts, and the lost volts "
+    "are proportional to the current. So the terminal p.d. falls steadily "
+    "as the current rises.",
+    "@Reading the EMF",
+    "At zero current there are no lost volts, so where the line meets the "
+    "p.d. axis the terminal p.d. equals the EMF.",
+    "@Reading the internal resistance",
+    "The line drops by the same number of volts for every extra ampere; that "
+    "drop per ampere, the size of the gradient, is the internal resistance.",
     "#Getting full marks",
-    "@Title it",
-    "Business name, \"Profit and loss account for the year ended\" a date, "
-    "and the units ($ or $000). It covers a period; the balance sheet is \"as at\" one day.",
-    "@Keep the order",
-    "Sales revenue, cost of goods sold, gross profit, expenses, net profit "
-    "before interest and tax, interest, tax, net profit after interest and "
-    "tax, dividends, retained profit.",
-    "@Bracket the deductions",
-    "Show cost of goods sold, expenses, interest, tax and dividends in "
-    "brackets so it's clear they are subtracted.",
-    "@Label every profit line",
-    "Each profit level is its own named line. Ratios need the right one: "
-    "gross profit margin uses gross profit; profit margin and ROCE use net "
-    "profit before interest and tax.",
-    "@Link it to the balance sheet",
-    "Retained profit is kept in the business and appears on the balance "
-    "sheet under equity.",
+    "@Keep the current low and brief",
+    "A large current heats the cell, changing its internal resistance, and "
+    "runs it down so its EMF falls. Open the switch between readings.",
+    "@Uncertainties in the lab",
+    "Error bars come from the meters' resolution. Draw the steepest and "
+    "shallowest lines through all the error bars: their gradients give the "
+    "range of internal resistance, their intercepts the range of EMF.",
+    "@Systematic errors in the lab",
+    "A real voltmeter draws a small current and a real ammeter has some "
+    "resistance. Poor contacts add resistance that is not the cell's own.",
+    "@Other method",
+    "With only a resistance box and an ammeter: plot the reciprocal of the "
+    "current against the external resistance. The gradient is the "
+    "reciprocal of the EMF, and the line cuts the resistance axis at minus "
+    "the internal resistance.",
+    "!EMF is the energy per coulomb the cell gives; terminal p.d. is what "
+    "reaches the circuit; lost volts are what the internal resistance "
+    "keeps.",
     NULL
 };
 
-static const char *const sheet[] = {
-    "!The layout is NOT on the formula sheet. Learn it line by line; "
-    "the figures are only an example.",
-    "#The layout",
-    "^Name of business",
-    "^Balance sheet as at 31 December 2025",
-    ">\t$000",
-    "^Fixed assets",
-    ">Property, plant and equipment\t500",
-    ">Accumulated depreciation\t(100)",
-    "+Net fixed assets\t400",
-    "^Current assets",
-    ">Cash\t40",
-    ">Debtors\t60",
-    ">Stock\t50",
-    "+Total current assets\t150",
-    "*Total assets\t550",
-    "^Current liabilities",
-    ">Creditors\t50",
-    ">Overdraft\t20",
-    "+Total current liabilities\t70",
-    "^Long-term liabilities",
-    ">Long-term loans\t130",
-    "+Total long-term liabilities\t130",
-    "*Total liabilities\t200",
-    "*Net assets\t350",
-    "^Equity",
-    ">Share capital\t250",
-    ">Retained profit\t100",
-    "*Total equity\t350",
-    "!Net assets 350 = total equity 350. It balances.",
-    "#Getting full marks",
-    "@Title it",
-    "Business name, \"Balance sheet as at\" a date, and the units ($ or $000).",
-    "@Keep the order",
-    "Fixed assets, current assets, total assets. Then current and long-term "
-    "liabilities, total liabilities, net assets. Equity last.",
-    "@Label every total",
-    "Each subtotal and total gets its own named line, so the examiner can "
-    "follow and credit your working.",
-    "@Deduct depreciation",
-    "Put accumulated depreciation in brackets under the fixed assets it "
-    "belongs to.",
-    "@Make it balance",
-    "Net assets must equal total equity. If one figure is missing, work it "
-    "out from this and show the working.",
-    "@Keep P&L items out",
-    "Sales revenue, expenses and profit for the year belong in the P&L. Only "
-    "retained profit appears here, under equity.",
+/* ---- the IB themes ---- */
+
+static const char *const themeA[] = {
+    "#Kinematics",
+    "@Distance",
+    "The total length of path travelled, whatever the direction. A scalar.",
+    "@Displacement",
+    "The distance moved in a stated direction from a fixed point. A vector.",
+    "@Speed",
+    "The rate of change of distance. A scalar.",
+    "@Velocity",
+    "The rate of change of displacement. A vector.",
+    "@Acceleration",
+    "The rate of change of velocity. A vector: speeding up, slowing down and "
+    "changing direction are all acceleration.",
+    "@Instantaneous velocity",
+    "The velocity at one instant: the gradient of the tangent to a "
+    "displacement-time graph at that time.",
+    "@Average velocity",
+    "The total displacement over the total time taken.",
+    "@Free fall",
+    "Motion under gravity alone, with no air resistance. Every object in "
+    "free fall has the same acceleration.",
+    "@Projectile motion",
+    "Motion under gravity alone after launch. The horizontal velocity stays "
+    "constant while the vertical velocity changes at a constant rate; the "
+    "two are independent and the path is a parabola.",
+    "@Fluid resistance",
+    "A drag force opposing the motion of an object through a fluid, which "
+    "increases with speed.",
+    "@Terminal velocity",
+    "The constant velocity a falling object reaches when drag has grown to "
+    "equal its weight, so the resultant force and acceleration are zero.",
+    "#Forces and momentum",
+    "@Newton's first law",
+    "An object stays at rest or moves with constant velocity unless a "
+    "resultant external force acts on it.",
+    "@Newton's second law",
+    "The resultant force on an object is proportional to its rate of change "
+    "of momentum and acts in the same direction. For constant mass, the "
+    "acceleration is proportional to the resultant force.",
+    "@Newton's third law",
+    "If body A exerts a force on body B, then B exerts a force on A that is "
+    "equal in size, opposite in direction and of the same type.",
+    "!A third-law pair acts on DIFFERENT bodies. The weight of a book and "
+    "the table's push on it are not a pair.",
+    "@Inertia",
+    "The tendency of an object to resist changes to its motion, measured by "
+    "its mass.",
+    "@Mass",
+    "The amount of matter in an object, and a measure of its inertia. A "
+    "scalar, in kilograms.",
+    "@Weight",
+    "The gravitational force on an object's mass. A vector, in newtons, "
+    "towards the centre of the planet.",
+    "@Normal force",
+    "The contact force a surface exerts on an object, perpendicular to the "
+    "surface.",
+    "@Friction",
+    "A force that opposes relative motion, or attempted motion, between two "
+    "surfaces in contact, acting parallel to the surfaces.",
+    "@Static friction",
+    "Friction while the surfaces are not sliding. It grows to match the "
+    "applied force up to a maximum; beyond that, sliding starts.",
+    "@Dynamic friction",
+    "Friction while the surfaces slide over each other. Usually less than "
+    "the maximum static friction.",
+    "@Coefficient of friction",
+    "The ratio of the friction force to the normal force for a pair of "
+    "surfaces. It has no units.",
+    "@Tension",
+    "The pulling force in a stretched string, rope or cable, acting along "
+    "it.",
+    "@Hooke's law",
+    "The extension of a spring is directly proportional to the force "
+    "applied, provided the limit of proportionality is not exceeded.",
+    "@Spring constant",
+    "The force needed per unit extension of a spring: a measure of its "
+    "stiffness.",
+    "@Upthrust",
+    "The upward force a fluid exerts on an object in it, equal to the weight "
+    "of fluid displaced (Archimedes' principle). Also called buoyancy.",
+    "@Translational equilibrium",
+    "The state of an object when the resultant force on it is zero, so it is "
+    "at rest or moving at constant velocity.",
+    "@Linear momentum",
+    "The product of an object's mass and its velocity. A vector.",
+    "@Impulse",
+    "The change in momentum of an object: the average resultant force times "
+    "the time it acts for, or the area under a force-time graph.",
+    "@Conservation of linear momentum",
+    "The total momentum of a system stays constant provided no resultant "
+    "external force acts on it.",
+    "@Elastic collision",
+    "A collision in which total kinetic energy is conserved, as well as "
+    "momentum.",
+    "@Inelastic collision",
+    "A collision in which some kinetic energy is transferred to other forms, "
+    "such as heat and sound. Momentum is still conserved.",
+    "@Explosion",
+    "Objects at rest push apart. Total momentum stays zero, so they move off "
+    "with equal and opposite momenta; kinetic energy comes from stored "
+    "energy.",
+    "#Circular motion",
+    "@Uniform circular motion",
+    "Motion in a circle at constant speed. The direction, and so the "
+    "velocity, keeps changing, so the object is accelerating.",
+    "@Centripetal acceleration",
+    "The acceleration of an object in circular motion, directed towards the "
+    "centre of the circle.",
+    "@Centripetal force",
+    "The resultant force towards the centre that keeps an object moving in a "
+    "circle. It is not an extra force: gravity, tension, friction or a "
+    "normal force provides it.",
+    "@Angular velocity",
+    "The rate of change of the angle swept out by the radius, in radians per "
+    "second.",
+    "#Work, energy and power",
+    "@Work done",
+    "The product of a force and the displacement in the direction of the "
+    "force. A scalar, in joules.",
+    "@Joule",
+    "The work done when a force of one newton moves its point of application "
+    "one metre in the direction of the force.",
+    "@Energy",
+    "The capacity to do work. Work done is energy transferred.",
+    "@Conservation of energy",
+    "Energy cannot be created or destroyed, only transferred from one form "
+    "to another. The total energy of an isolated system is constant.",
+    "@Kinetic energy",
+    "The energy an object has because of its motion.",
+    "@Elastic potential energy",
+    "The energy stored in a deformed elastic object, such as a stretched "
+    "spring: the area under its force-extension graph.",
+    "@Power",
+    "The rate of doing work, or the rate of energy transfer. Unit: the watt, "
+    "one joule per second.",
+    "@Efficiency",
+    "The ratio of useful energy (or power) output to total energy (or power) "
+    "input, often as a percentage.",
+    "@Energy density",
+    "The energy released per unit volume of a fuel.",
+    "@Specific energy",
+    "The energy released per unit mass of a fuel.",
+    "#Rigid bodies (HL)",
+    "@Torque",
+    "The turning effect of a force about an axis: the force times the "
+    "perpendicular distance from the axis to its line of action.",
+    "@Couple",
+    "Two equal, opposite, parallel forces not along the same line. They "
+    "produce a turning effect but no resultant force.",
+    "@Rotational equilibrium",
+    "The state of a body when the resultant torque on it is zero, so its "
+    "angular velocity is constant.",
+    "@Moment of inertia",
+    "A body's resistance to changes in its rotation, depending on its mass "
+    "and how that mass is spread about the axis.",
+    "@Angular acceleration",
+    "The rate of change of angular velocity.",
+    "@Angular momentum",
+    "The product of moment of inertia and angular velocity. Conserved when "
+    "no resultant external torque acts.",
+    "@Angular impulse",
+    "The change in angular momentum: the torque times the time it acts for.",
+    "#Relativity (HL)",
+    "@Reference frame",
+    "A coordinate system from which an observer measures the positions and "
+    "times of events.",
+    "@Inertial reference frame",
+    "A frame that is not accelerating, in which Newton's first law holds.",
+    "@Galilean relativity",
+    "The classical view that time and distance are the same for all "
+    "observers and velocities simply add. It fails near the speed of light.",
+    "@Postulates of special relativity",
+    "First: the laws of physics are the same in all inertial reference "
+    "frames. Second: the speed of light in a vacuum is the same for all "
+    "inertial observers.",
+    "@Event",
+    "Something that happens at a single point in space at a single instant.",
+    "@Proper time",
+    "The time between two events in the frame where they happen at the same "
+    "place. It is the shortest time any observer measures.",
+    "@Proper length",
+    "The length of an object in the frame where it is at rest. It is the "
+    "longest length any observer measures.",
+    "@Time dilation",
+    "A clock moving relative to an observer is measured to run slow: the "
+    "time between two events is longest outside their rest frame.",
+    "@Length contraction",
+    "An object moving relative to an observer is measured to be shorter "
+    "along its direction of motion than its proper length.",
+    "@Relativity of simultaneity",
+    "Two events at different places that are simultaneous in one frame are "
+    "not simultaneous in a frame moving relative to it.",
+    "@Spacetime interval",
+    "A combination of the time and space separations of two events that has "
+    "the same value in every inertial frame.",
+    "@Invariant quantity",
+    "A quantity all inertial observers agree on: the speed of light, proper "
+    "time, proper length, rest mass and the spacetime interval.",
     NULL
 };
 
-static const char *const ratios[] = {
-    "!Uses figures from Final accounts. Know which profit goes in: "
-    "profit margin and ROCE use net profit BEFORE interest and tax.",
-    "#Profitability (answers in %)",
-    "@Gross profit margin",
-    "=gross profit" D "sales revenue" X "100",
-    "@Profit margin",
-    "=net profit before interest and tax" D "sales revenue" X "100",
-    "@Return on capital employed (ROCE)",
-    "=net profit before interest and tax" D "capital employed" X "100",
-    "#Liquidity (plain numbers)",
-    "@Current ratio",
-    "=current assets" D "current liabilities",
-    "@Acid test (quick) ratio",
-    "=(current assets" M "stock)" D "current liabilities",
-    "!Write 1.6, not 160%.",
+static const char *const themeB[] = {
+    "!Electric current and circuits are on the test pages: Current & Ohm, "
+    "Circuits & meters, Cells & EMF.",
+    "#Thermal energy",
+    "@Temperature",
+    "A measure of the average kinetic energy of the particles of a "
+    "substance. It decides which way thermal energy flows.",
+    "@Internal energy",
+    "The total of the random kinetic energies and intermolecular potential "
+    "energies of all the particles in a substance.",
+    "@Thermal energy",
+    "Energy transferred from a region of higher temperature to one of lower "
+    "temperature because of the temperature difference. Also called heat.",
+    "@Thermal equilibrium",
+    "Two objects in thermal contact are at the same temperature, so there is "
+    "no net transfer of thermal energy between them.",
+    "@Absolute zero",
+    "The lowest possible temperature, zero kelvin (about minus 273 degrees "
+    "Celsius), where particles have minimum kinetic energy.",
+    "@Kelvin",
+    "The SI unit of temperature on the absolute scale, which starts at "
+    "absolute zero. A change of one kelvin equals a change of one degree "
+    "Celsius.",
+    "@Density",
+    "Mass per unit volume.",
+    "@Specific heat capacity",
+    "The energy needed to raise the temperature of one kilogram of a "
+    "substance by one kelvin.",
+    "@Specific latent heat",
+    "The energy needed to change the phase of one kilogram of a substance at "
+    "constant temperature.",
+    "@Latent heat of fusion",
+    "The energy needed to melt one kilogram of a solid into liquid at "
+    "constant temperature.",
+    "@Latent heat of vaporization",
+    "The energy needed to turn one kilogram of a liquid into gas at constant "
+    "temperature.",
+    "@Phase change",
+    "While a substance melts or boils, the energy supplied raises the "
+    "intermolecular potential energy, not the kinetic energy, so the "
+    "temperature stays constant.",
+    "@Conduction",
+    "Transfer of thermal energy through a material by collisions between "
+    "neighbouring particles, and in metals by free electrons, without the "
+    "material itself moving.",
+    "@Convection",
+    "Transfer of thermal energy by bulk movement of a fluid: warmer, less "
+    "dense fluid rises and cooler, denser fluid sinks.",
+    "@Thermal radiation",
+    "Transfer of energy by electromagnetic waves, mainly infrared. It needs "
+    "no medium.",
+    "#Radiation and climate",
+    "@Black body",
+    "A perfect absorber and emitter of radiation: it absorbs all radiation "
+    "falling on it and emits the most possible for its temperature.",
+    "@Emissivity",
+    "The power radiated per unit area by a surface as a fraction of the "
+    "power radiated per unit area by a black body at the same temperature.",
+    "@Stefan-Boltzmann law",
+    "The total power radiated by a black body is proportional to its surface "
+    "area and to the fourth power of its absolute temperature.",
+    "@Wien's displacement law",
+    "The wavelength at which a black body emits most strongly is inversely "
+    "proportional to its absolute temperature: hotter bodies peak at shorter "
+    "wavelengths.",
+    "@Luminosity",
+    "The total power radiated by a star.",
+    "@Apparent brightness",
+    "The power from a star received per unit area at the observer, "
+    "perpendicular to the direction of the light.",
+    "@Albedo",
+    "The total power reflected or scattered by a surface as a fraction of "
+    "the total power falling on it.",
+    "@Solar constant",
+    "The power of the Sun's radiation per unit area arriving at the top of "
+    "the Earth's atmosphere, perpendicular to the rays.",
+    "@Greenhouse effect",
+    "Greenhouse gases absorb infrared radiation emitted by the Earth's "
+    "surface and re-emit it in all directions, some back to the surface, "
+    "warming it above what it would otherwise be.",
+    "@Greenhouse gas",
+    "A gas whose molecules absorb infrared because it matches their natural "
+    "vibration frequencies: carbon dioxide, methane, water vapour, nitrous "
+    "oxide.",
+    "@Enhanced greenhouse effect",
+    "The extra warming caused by higher concentrations of greenhouse gases "
+    "from human activity, such as burning fossil fuels.",
+    "#Gases",
+    "@Pressure",
+    "The force acting normally per unit area. Unit: the pascal, one newton "
+    "per square metre.",
+    "@Mole",
+    "The amount of substance that contains exactly Avogadro's number of "
+    "particles.",
+    "@Avogadro constant",
+    "The number of particles in one mole: about 6.02 times ten to the 23.",
+    "@Molar mass",
+    "The mass of one mole of a substance.",
+    "@Ideal gas",
+    "A gas that obeys the ideal gas law exactly at all pressures, volumes "
+    "and temperatures, with no forces between its molecules except during "
+    "collisions.",
+    "@Kinetic model assumptions",
+    "Molecules are identical, in random motion, and of negligible volume "
+    "compared with the container. Collisions are elastic and take negligible "
+    "time. No intermolecular forces except during collisions.",
+    "@Gas pressure explained",
+    "Molecules hit the walls and change momentum. The rate of change of "
+    "momentum is a force on the walls, and force per unit area is pressure.",
+    "@Boyle's law",
+    "For a fixed mass of gas at constant temperature, the pressure is "
+    "inversely proportional to the volume.",
+    "@Charles's law",
+    "For a fixed mass of gas at constant pressure, the volume is directly "
+    "proportional to the absolute temperature.",
+    "@Pressure law",
+    "For a fixed mass of gas at constant volume, the pressure is directly "
+    "proportional to the absolute temperature.",
+    "@Real gas",
+    "Behaves like an ideal gas at low pressure and high temperature, but not "
+    "at high pressure or low temperature, when molecular volume and "
+    "intermolecular forces matter.",
+    "#Thermodynamics (HL)",
+    "@First law of thermodynamics",
+    "The thermal energy transferred to a system equals the increase in its "
+    "internal energy plus the work done by the system. It is conservation "
+    "of energy.",
+    "@Second law of thermodynamics",
+    "The total entropy of an isolated system never decreases. Equivalently, "
+    "thermal energy cannot flow by itself from a colder to a hotter body, "
+    "and no heat engine can turn all the heat it takes in into work.",
+    "@Entropy",
+    "A measure of the disorder of a system: of how many ways its particles "
+    "and energy can be arranged.",
+    "@Isovolumetric process",
+    "A change at constant volume, so no work is done by or on the gas.",
+    "@Isobaric process",
+    "A change at constant pressure.",
+    "@Isothermal process",
+    "A change at constant temperature, so the internal energy of an ideal "
+    "gas does not change.",
+    "@Adiabatic process",
+    "A change with no thermal energy transferred into or out of the gas. "
+    "Compression heats it; expansion cools it.",
+    "@Heat engine",
+    "A device that takes thermal energy from a hot reservoir, turns part of "
+    "it into work and passes the rest to a cold reservoir, in a repeating "
+    "cycle.",
+    "@Carnot cycle",
+    "The most efficient possible heat engine cycle: two isothermal and two "
+    "adiabatic processes. Its efficiency depends only on the two reservoir "
+    "temperatures.",
     NULL
 };
 
-static const char *const cash[] = {
-    "#Cash flow",
-    "@Net cash flow",
-    "=total cash inflows" M "total cash outflows",
-    "@Closing balance",
-    "=opening balance + net cash flow",
-    "@Opening balance",
-    "=previous month's closing balance",
-    "#Investment appraisal",
-    "@Payback period (even annual flows)",
-    "=initial investment" D "annual net cash flow",
-    "@Payback period (uneven flows)",
-    "=completed years + (amount still owed" D "next year's inflow)" X "12",
-    "!Give the answer in years and months.",
-    "@Average rate of return (ARR)",
-    "=[(total returns" M "capital cost)" D "years of use]" D "capital cost" X "100",
+static const char *const themeC[] = {
+    "#Simple harmonic motion",
+    "@Oscillation",
+    "A repeated back-and-forth motion about an equilibrium position.",
+    "@Simple harmonic motion",
+    "Oscillation in which the acceleration is directly proportional to the "
+    "displacement from the equilibrium position and always directed towards "
+    "it.",
+    "@Equilibrium position",
+    "The position where the resultant force on the oscillating object is "
+    "zero.",
+    "@Restoring force",
+    "The force that always acts to return an oscillating object to its "
+    "equilibrium position.",
+    "@Amplitude",
+    "The maximum displacement from the equilibrium position.",
+    "@Period",
+    "The time taken for one complete oscillation.",
+    "@Frequency",
+    "The number of complete oscillations per unit time. Unit: the hertz, one "
+    "per second.",
+    "@Phase difference",
+    "How far one oscillation is ahead of or behind another, given as a "
+    "fraction of a cycle or an angle.",
+    "@Isochronous",
+    "Describes an oscillation whose period does not depend on its amplitude, "
+    "as in simple harmonic motion.",
+    "@Energy in SHM",
+    "Energy moves back and forth between kinetic and potential. Kinetic is "
+    "greatest at equilibrium, potential at maximum displacement; without "
+    "damping the total is constant.",
+    "#Travelling waves",
+    "@Wave",
+    "A disturbance that transfers energy from one place to another without "
+    "transferring matter.",
+    "@Transverse wave",
+    "A wave in which the particles of the medium oscillate perpendicular to "
+    "the direction of energy transfer. Example: light.",
+    "@Longitudinal wave",
+    "A wave in which the particles of the medium oscillate parallel to the "
+    "direction of energy transfer. Example: sound.",
+    "@Compression",
+    "A region of a longitudinal wave where particles are closer together "
+    "than normal, at higher pressure.",
+    "@Rarefaction",
+    "A region of a longitudinal wave where particles are further apart than "
+    "normal, at lower pressure.",
+    "@Wavelength",
+    "The shortest distance between two points on a wave that oscillate in "
+    "phase, such as crest to crest.",
+    "@Wave speed",
+    "The distance a wave travels per unit time: the speed at which it "
+    "transfers energy.",
+    "@Wave displacement",
+    "The distance of a particle of the medium from its equilibrium position.",
+    "@Wavefront",
+    "A line or surface joining points of a wave that are in phase, such as "
+    "all the crests.",
+    "@Ray",
+    "A line showing the direction of energy transfer, always perpendicular "
+    "to the wavefronts.",
+    "@Intensity",
+    "The power per unit area received by a surface perpendicular to the "
+    "wave. It is proportional to the amplitude squared.",
+    "@Electromagnetic wave",
+    "A transverse wave of oscillating electric and magnetic fields at right "
+    "angles to each other. It travels through a vacuum at the speed of "
+    "light.",
+    "@Electromagnetic spectrum",
+    "In order of increasing wavelength: gamma rays, X-rays, ultraviolet, "
+    "visible light, infrared, microwaves, radio waves.",
+    "#Wave phenomena",
+    "@Reflection",
+    "A wave bouncing back from a boundary into the medium it came from. The "
+    "angle of incidence equals the angle of reflection.",
+    "@Refraction",
+    "The change in direction of a wave crossing a boundary between media at "
+    "an angle, caused by the change in its speed.",
+    "@Refractive index",
+    "The ratio of the speed of light in a vacuum to the speed of light in "
+    "the medium.",
+    "@Snell's law",
+    "For a wave crossing a boundary, the ratio of the sine of the angle of "
+    "incidence to the sine of the angle of refraction is constant.",
+    "@Critical angle",
+    "The angle of incidence in the denser medium for which the angle of "
+    "refraction is 90 degrees.",
+    "@Total internal reflection",
+    "All of a wave reflects back into the denser medium when it meets the "
+    "boundary at more than the critical angle.",
+    "@Diffraction",
+    "The spreading of a wave as it passes through a gap or round an "
+    "obstacle; greatest when the gap is about the size of the wavelength.",
+    "@Principle of superposition",
+    "When two or more waves meet at a point, the resultant displacement is "
+    "the sum of their individual displacements.",
+    "@Interference",
+    "The superposition of waves from coherent sources, giving regions of "
+    "reinforcement and cancellation.",
+    "@Coherent sources",
+    "Sources with the same frequency and a constant phase difference.",
+    "@Path difference",
+    "The difference in the distances two waves travel from their sources to "
+    "a given point.",
+    "@Constructive interference",
+    "Waves arrive in phase, with a path difference of a whole number of "
+    "wavelengths, giving maximum amplitude.",
+    "@Destructive interference",
+    "Waves arrive in antiphase, with a path difference of an odd number of "
+    "half wavelengths, giving minimum amplitude.",
+    "@Double-slit interference",
+    "Coherent light through two narrow slits gives equally spaced bright and "
+    "dark fringes on a screen.",
+    "@Single-slit diffraction",
+    "Light through one narrow slit gives a broad bright central maximum, "
+    "twice as wide as the dimmer maxima either side.",
+    "@Diffraction grating",
+    "Many equally spaced parallel slits. It gives very sharp, bright, widely "
+    "spaced maxima, used to measure wavelengths accurately.",
+    "#Standing waves and resonance",
+    "@Standing wave",
+    "The superposition of two waves of the same frequency and amplitude "
+    "travelling in opposite directions. It stores energy instead of "
+    "transferring it.",
+    "@Node",
+    "A point on a standing wave where the displacement is always zero.",
+    "@Antinode",
+    "A point on a standing wave where the amplitude is greatest.",
+    "@Fundamental",
+    "The lowest frequency at which a standing wave forms on a string or in a "
+    "pipe; the first harmonic.",
+    "@Harmonics",
+    "The frequencies at which standing waves can form: whole-number "
+    "multiples of the fundamental, only odd ones for a pipe closed at one "
+    "end.",
+    "@Natural frequency",
+    "The frequency at which a system oscillates when displaced and left to "
+    "oscillate freely.",
+    "@Forced oscillation",
+    "Oscillation driven by a periodic external force, at the driving "
+    "frequency.",
+    "@Resonance",
+    "The large increase in amplitude when the driving frequency equals the "
+    "natural frequency of the system.",
+    "@Damping",
+    "The loss of energy from an oscillating system to its surroundings, "
+    "usually by friction or drag, so the amplitude falls.",
+    "@Light damping",
+    "The system still oscillates, but its amplitude falls gradually.",
+    "@Critical damping",
+    "Just enough damping to return the system to equilibrium in the "
+    "shortest time without oscillating.",
+    "@Heavy damping",
+    "So much damping that the system returns to equilibrium slowly, without "
+    "oscillating.",
+    "#Doppler effect",
+    "@Doppler effect",
+    "The change in the observed frequency and wavelength of a wave when the "
+    "source and the observer move relative to each other.",
+    "@Redshift",
+    "The increase in wavelength of light from a source moving away. "
+    "Blueshift is the decrease from a source moving closer.",
     NULL
 };
 
-static const char *const market[] = {
-    "#Marketing",
-    "@Market share",
-    "=firm's sales" D "total industry sales" X "100",
-    "!Say whether by value or by volume.",
-    "@Market growth",
-    "=(this year's market size" M "last year's)" D "last year's market size" X "100",
-    "#Human resources",
-    "@Labour turnover",
-    "=number of staff leaving in a period" D "average number employed" X "100",
-    "@Labour productivity",
-    "=total output" D "number of employees",
+static const char *const themeD[] = {
+    "!Electric fields are on the test pages. Gravitational fields follow the "
+    "same logic with mass in place of charge.",
+    "#Gravitational fields",
+    "@Kepler's first law",
+    "Each planet moves in an ellipse with the Sun at one focus.",
+    "@Kepler's second law",
+    "The line joining a planet to the Sun sweeps out equal areas in equal "
+    "times.",
+    "@Kepler's third law",
+    "The square of a planet's orbital period is proportional to the cube of "
+    "its mean distance from the Sun.",
+    "@Newton's law of gravitation",
+    "Every point mass attracts every other point mass with a force directly "
+    "proportional to the product of their masses and inversely proportional "
+    "to the square of their separation.",
+    "@Gravitational field",
+    "A region of space in which a mass experiences a gravitational force.",
+    "@Gravitational field strength",
+    "The force per unit mass acting on a small test mass placed at that "
+    "point.",
+    "@Gravitational potential",
+    "The work done per unit mass in bringing a small test mass from infinity "
+    "to that point. Always negative, because gravity attracts.",
+    "@Gravitational potential energy",
+    "The work done in bringing a mass from infinity to a point in the field "
+    "of another mass. Negative, rising to zero at infinity. Near the "
+    "Earth's surface its change is weight times change in height.",
+    "@Gravitational equipotential",
+    "A surface of constant gravitational potential, at right angles to the "
+    "field lines: concentric spheres round a planet.",
+    "@Escape speed",
+    "The minimum speed an object needs at a planet's surface to escape to "
+    "infinity with no further propulsion, ignoring air resistance.",
+    "@Orbital speed",
+    "The speed of a satellite in a circular orbit, where gravity provides "
+    "exactly the centripetal force needed.",
+    "@Geostationary orbit",
+    "An orbit above the equator with a period of one day, in the direction "
+    "the Earth turns, so the satellite stays above one point.",
+    "@Weightlessness",
+    "The feeling in free fall, such as in orbit. Gravity still acts, but "
+    "nothing provides a normal force because everything falls together.",
+    "#Magnetic fields",
+    "@Magnetic field",
+    "A region of space in which a moving charge, a current-carrying "
+    "conductor or a magnetic material experiences a force.",
+    "@Magnetic field lines",
+    "Show the way a north pole would be pushed: from north to south outside "
+    "a magnet. They never cross and are closer where the field is stronger.",
+    "@Field of a straight wire",
+    "Concentric circles round the wire, further apart with distance, in the "
+    "direction given by the right-hand grip rule.",
+    "@Field of a solenoid",
+    "Strong, uniform and parallel inside; outside, like a bar magnet's, with "
+    "the ends acting as north and south poles.",
+    "@Right-hand grip rule",
+    "Grip the wire with the right thumb along the conventional current; the "
+    "curled fingers show the direction of the magnetic field.",
+    "@Magnetic flux density",
+    "The force per unit length per unit current on a conductor at right "
+    "angles to the field. Unit: the tesla.",
+    "@Tesla",
+    "The flux density that gives a force of one newton on each metre of a "
+    "wire carrying one ampere at right angles to the field.",
+    "#Motion in fields",
+    "@Force on a current-carrying conductor",
+    "A wire carrying current across a magnetic field feels a force at right "
+    "angles to both the current and the field: greatest when perpendicular, "
+    "zero when parallel.",
+    "@Force on a moving charge",
+    "A charge moving across a magnetic field feels a force at right angles "
+    "to both its velocity and the field, proportional to its charge, its "
+    "speed and the flux density.",
+    "@Direction of magnetic force",
+    "Given by a right-hand rule (or Fleming's left-hand rule) using "
+    "conventional current. For a negative charge, reverse it.",
+    "@Circular motion in a magnetic field",
+    "The magnetic force is always at right angles to the velocity, so it "
+    "does no work: the speed stays constant and the particle moves in a "
+    "circle.",
+    "@Charge in a uniform electric field",
+    "The force is along the field lines and constant, so the charge follows "
+    "a parabola and gains or loses kinetic energy.",
+    "@Force between parallel wires",
+    "Parallel currents in the same direction attract; in opposite "
+    "directions they repel. Each wire sits in the other's magnetic field.",
+    "#Induction (HL)",
+    "@Magnetic flux",
+    "The product of the magnetic flux density and the area at right angles "
+    "to the field it passes through. Unit: the weber.",
+    "@Magnetic flux linkage",
+    "The magnetic flux through a coil times its number of turns.",
+    "@Electromagnetic induction",
+    "The production of an EMF in a conductor when the magnetic flux linking "
+    "it changes.",
+    "@Faraday's law",
+    "The induced EMF equals the rate of change of magnetic flux linkage.",
+    "@Lenz's law",
+    "The induced EMF acts in the direction that makes any induced current "
+    "oppose the change that caused it. It follows from conservation of "
+    "energy.",
+    "@Alternating current generator",
+    "A coil turning in a magnetic field has a constantly changing flux "
+    "linkage, which induces an alternating EMF. Faster turning gives a "
+    "bigger EMF at a higher frequency.",
+    "@Weber",
+    "The unit of magnetic flux: one tesla times one square metre.",
     NULL
 };
 
-static const char *const stats[] = {
-    "#Descriptive statistics",
-    "@Mean",
-    "=sum of values" D "number of values",
-    "@Median",
-    "=middle value once ordered",
-    "!Even count: mean of the middle two.",
-    "@Mode",
-    "=most frequent value",
-    "@Range",
-    "=highest" M "lowest",
-    "!Usually tested by interpretation: the mean is distorted by outliers, so "
-    "the median describes a skewed set better. A wide range or large standard "
-    "deviation means the data is spread out and less safe to plan from.",
+static const char *const themeE[] = {
+    "#The atom",
+    "@Nucleus",
+    "The small, dense, positively charged centre of an atom, holding almost "
+    "all its mass; made of protons and neutrons.",
+    "@Nucleon",
+    "A proton or a neutron: a particle in the nucleus.",
+    "@Proton number",
+    "The number of protons in a nucleus; it identifies the element. Also "
+    "called atomic number.",
+    "@Nucleon number",
+    "The total number of protons and neutrons in a nucleus. Also called mass "
+    "number.",
+    "@Isotopes",
+    "Atoms of the same element, with the same number of protons but "
+    "different numbers of neutrons.",
+    "@Nuclide",
+    "A particular nucleus, identified by its proton number and nucleon "
+    "number.",
+    "@Rutherford scattering",
+    "Alpha particles fired at thin gold foil mostly passed straight through, "
+    "but a few bounced back through large angles. So the atom is mostly "
+    "empty space with a tiny, dense, positive nucleus.",
+    "@Energy level",
+    "One of the discrete energies an electron in an atom is allowed to have.",
+    "@Ground state",
+    "The lowest energy level of an atom.",
+    "@Photon",
+    "A discrete packet of electromagnetic energy, whose energy is "
+    "proportional to its frequency.",
+    "@Emission spectrum",
+    "Bright lines at specific wavelengths, emitted when electrons fall from "
+    "higher to lower energy levels, each releasing a photon.",
+    "@Absorption spectrum",
+    "Dark lines in a continuous spectrum where a cool gas has absorbed "
+    "photons of exactly the energy needed to lift electrons to higher "
+    "levels.",
+    "@Ionization energy",
+    "The minimum energy needed to remove an electron from an atom in its "
+    "ground state.",
+    "#Quantum physics (HL)",
+    "@Photoelectric effect",
+    "The emission of electrons from a metal surface when electromagnetic "
+    "radiation above a certain frequency falls on it.",
+    "@Work function",
+    "The minimum energy needed to remove an electron from the surface of a "
+    "metal.",
+    "@Threshold frequency",
+    "The minimum frequency of radiation that releases electrons from a given "
+    "metal surface.",
+    "@Evidence for photons",
+    "Below the threshold frequency no electrons are released however bright "
+    "the light; emission is instant; the electrons' maximum kinetic energy "
+    "depends on frequency, not intensity. Waves cannot explain this.",
+    "@Stopping potential",
+    "The p.d. needed to just stop the most energetic photoelectrons.",
+    "@Wave-particle duality",
+    "Light and matter show both wave properties (diffraction, interference) "
+    "and particle properties (the photoelectric effect, collisions).",
+    "@De Broglie wavelength",
+    "The wavelength of a moving particle, inversely proportional to its "
+    "momentum.",
+    "@Electron diffraction",
+    "Electrons passing through a thin crystal form a diffraction pattern, "
+    "showing that particles behave as waves.",
+    "@Compton scattering",
+    "A photon scattered by an electron loses energy, so its wavelength "
+    "increases. Evidence that photons carry momentum.",
+    "#Radioactive decay",
+    "@Radioactive decay",
+    "The spontaneous and random emission of radiation from an unstable "
+    "nucleus as it becomes more stable.",
+    "@Random decay",
+    "It is impossible to predict which nucleus will decay next or when; only "
+    "the probability of decay per unit time is fixed.",
+    "@Spontaneous decay",
+    "Decay is not affected by outside conditions such as temperature, "
+    "pressure or chemical state.",
+    "@Alpha particle",
+    "A helium nucleus: two protons and two neutrons. Strongly ionizing; "
+    "stopped by paper or a few centimetres of air.",
+    "@Beta-minus particle",
+    "A fast electron emitted when a neutron in the nucleus turns into a "
+    "proton, with an antineutrino. Stopped by a few millimetres of "
+    "aluminium.",
+    "@Beta-plus particle",
+    "A positron emitted when a proton in the nucleus turns into a neutron, "
+    "with a neutrino.",
+    "@Gamma ray",
+    "A high-energy photon emitted by a nucleus losing energy. Weakly "
+    "ionizing; reduced by thick lead or concrete.",
+    "@Neutrino",
+    "A neutral particle of almost zero mass emitted in beta decay. It "
+    "explains why beta particles have a range of energies.",
+    "@Half-life",
+    "The time taken for half the radioactive nuclei in a sample to decay, or "
+    "for its activity to fall to half.",
+    "@Activity",
+    "The number of decays per second in a sample. Unit: the becquerel, one "
+    "decay per second.",
+    "@Decay constant",
+    "The probability per unit time that a given nucleus will decay.",
+    "@Ionizing radiation",
+    "Radiation with enough energy to knock electrons out of atoms, creating "
+    "ions.",
+    "@Background radiation",
+    "Ionizing radiation that is always present, from rocks, radon gas and "
+    "cosmic rays, and from sources such as medical use.",
+    "#Binding energy",
+    "@Strong nuclear force",
+    "The force between nucleons that holds the nucleus together: attractive "
+    "and very short range, repulsive at very small separations.",
+    "@Mass defect",
+    "The total mass of the separate nucleons minus the mass of the nucleus "
+    "they form.",
+    "@Binding energy",
+    "The energy needed to separate a nucleus completely into its nucleons, "
+    "or the energy released when it forms. It is the energy equivalent of "
+    "the mass defect.",
+    "@Binding energy per nucleon",
+    "The binding energy shared over the nucleons; a measure of stability. "
+    "It peaks near iron.",
+    "@Mass-energy equivalence",
+    "Mass and energy are equivalent: a change in one is a change in the "
+    "other, linked by the speed of light squared.",
+    "@Unified atomic mass unit",
+    "One twelfth of the mass of a carbon-12 atom.",
+    "#Fission",
+    "@Nuclear fission",
+    "A heavy nucleus splitting into two smaller nuclei of similar mass, "
+    "releasing energy and a few neutrons, usually after absorbing a neutron.",
+    "@Chain reaction",
+    "Neutrons released by one fission cause further fissions, so the "
+    "reaction keeps itself going.",
+    "@Critical mass",
+    "The minimum mass of fissile material that can sustain a chain reaction.",
+    "@Moderator",
+    "A material such as water or graphite that slows fast neutrons by "
+    "collisions, so they are more likely to cause fission.",
+    "@Control rods",
+    "Rods of a neutron-absorbing material such as boron, moved in or out to "
+    "control the rate of fission.",
+    "@Heat exchanger",
+    "Passes thermal energy from the reactor's coolant to water, making steam "
+    "to drive the turbines.",
+    "@Shielding",
+    "Thick concrete and steel round the reactor that absorbs radiation and "
+    "neutrons.",
+    "#Fusion and stars",
+    "@Nuclear fusion",
+    "Two light nuclei joining to form a heavier nucleus, releasing energy. "
+    "It needs very high temperature and density to overcome electrostatic "
+    "repulsion.",
+    "@Stellar equilibrium",
+    "In a stable star, the inward pull of gravity is balanced by the outward "
+    "radiation and gas pressure from fusion.",
+    "@Main sequence",
+    "The band on the HR diagram where stars spend most of their lives, "
+    "fusing hydrogen into helium in their cores.",
+    "@Hertzsprung-Russell diagram",
+    "A plot of stars' luminosity against surface temperature, with "
+    "temperature decreasing to the right.",
+    "@Red giant",
+    "A large, cool, luminous star that has used up the hydrogen in its core "
+    "and fuses helium and heavier elements.",
+    "@White dwarf",
+    "The small, hot, dense core left by a low-mass star, no longer fusing, "
+    "held up by electron degeneracy pressure.",
+    "@Chandrasekhar limit",
+    "The largest possible mass of a white dwarf, about 1.4 solar masses.",
+    "@Supernova",
+    "The explosive death of a massive star, briefly outshining its galaxy "
+    "and scattering heavy elements.",
+    "@Neutron star",
+    "The extremely dense remnant of a massive star after a supernova, held "
+    "up by neutron degeneracy pressure.",
+    "@Black hole",
+    "The remnant of a very massive star, whose gravity is so strong that "
+    "nothing, not even light, can escape.",
+    "@Stellar parallax",
+    "The apparent shift of a nearby star against distant stars as the Earth "
+    "orbits the Sun, used to find its distance.",
+    "@Parsec",
+    "The distance at which a star has a parallax angle of one arcsecond; "
+    "about 3.26 light-years.",
+    "@Light-year",
+    "The distance light travels in a vacuum in one year.",
+    "@Astronomical unit",
+    "The mean distance from the Earth to the Sun.",
     NULL
 };
 
-static const char *const unit1[] = {
-    "#Types of organization",
-    "@Sole trader",
-    "A business owned and controlled by one person, who has unlimited liability for its debts.",
-    "@Partnership",
-    "A business owned by two or more people who share capital, decisions and profits, usually with unlimited liability.",
-    "@Privately held company",
-    "An incorporated business with limited liability whose shares cannot be sold to the general public and can only be transferred with the other shareholders' agreement.",
-    "@Publicly held company",
-    "An incorporated business with limited liability whose shares are traded freely on a stock exchange and whose accounts must be published.",
-    "@Limited liability",
-    "Owners' losses are capped at the amount they invested; their personal assets cannot be taken to pay business debts.",
-    "@Cooperative",
-    "A business owned and democratically run by its members, who share in the decisions and in any surplus, with each member having one vote.",
-    "@Social enterprise",
-    "An organization that trades commercially but exists primarily to achieve a social or environmental objective, reinvesting its surplus into that purpose.",
-    "@Non-governmental organization",
-    "A private, non-profit organization independent of government that operates to further a social, humanitarian or environmental cause.",
-    "@Public sector",
-    "The part of the economy owned and run by the government, providing services such as education, health care and policing.",
-    "#Sectors and entrepreneurs",
-    "@Primary sector",
-    "Business activity that extracts raw materials from the earth, such as farming, fishing and mining.",
-    "@Secondary sector",
-    "Business activity that processes raw materials into finished or semi-finished goods.",
-    "@Tertiary sector",
-    "Business activity that provides services rather than goods, such as retail, banking and transport.",
-    "@Entrepreneur",
-    "An individual who organizes the factors of production and takes the financial risk of starting and running a business in pursuit of profit.",
-    "#Objectives",
-    "@Vision statement",
-    "A statement of what an organization ultimately aspires to become or achieve in the long term.",
-    "@Mission statement",
-    "A statement of an organization's core purpose: what it does, for whom, and why it exists.",
-    "@Aim",
-    "A general long-term goal that gives an organization direction.",
-    "@Objective",
-    "A specific, measurable target set to achieve an aim, usually within a stated time frame.",
-    "@SMART objective",
-    "An objective that is specific, measurable, achievable, relevant and time-bound.",
-    "@Stakeholder",
-    "Any individual or group with an interest in, or affected by, the activities of an organization.",
-    "@Internal stakeholder",
-    "A stakeholder who is a member of the organization, such as an employee, manager or shareholder.",
-    "#Growth",
-    "@Economies of scale",
-    "The fall in average cost per unit that a business achieves as it increases its scale of output.",
-    "@Diseconomies of scale",
-    "The rise in average cost per unit that occurs when a business grows too large to manage efficiently.",
-    "@Merger",
-    "Two businesses agreeing to combine to form a single new legal entity.",
-    "@Acquisition / takeover",
-    "One business buying a controlling interest in another, which continues as part of the buyer.",
-    "@Joint venture",
-    "Two or more businesses creating a jointly owned separate entity to pursue a shared project, sharing costs, risks and profits.",
-    "@Strategic alliance",
-    "An agreement between businesses to cooperate on a specific objective while remaining independent organizations.",
-    "@Franchise",
-    "An arrangement in which a business sells the right to use its name, products and business model to another party in return for a fee and a share of revenue.",
-    "@Multinational company",
-    "A business with production or service operations in more than one country, controlled from a headquarters in its home country.",
+static const char *const tools[] = {
+    "#Measurement",
+    "@SI base units",
+    "The seven base units: metre, kilogram, second, ampere, kelvin, mole and "
+    "candela. Every other unit is built from them.",
+    "@Derived unit",
+    "A unit made from base units, such as the newton: a kilogram metre per "
+    "second squared.",
+    "@Scalar",
+    "A quantity with size only, such as mass, distance, energy or potential.",
+    "@Vector",
+    "A quantity with size and direction, such as displacement, force or "
+    "field strength.",
+    "@Random error",
+    "Unpredictable scatter of readings either side of the true value. "
+    "Reduced by repeating readings and averaging.",
+    "@Systematic error",
+    "An error that shifts every reading the same way, such as a zero error "
+    "or a badly calibrated meter. Repeating does not reduce it.",
+    "@Zero error",
+    "An instrument reading something other than zero when it should read "
+    "zero.",
+    "@Accuracy",
+    "How close a measurement is to the true value.",
+    "@Precision",
+    "How close repeated measurements are to each other: how small the "
+    "random error is.",
+    "@Absolute uncertainty",
+    "The range either side of a measured value within which the true value "
+    "is expected to lie, in the same units as the value.",
+    "@Fractional uncertainty",
+    "The absolute uncertainty as a fraction of the measured value.",
+    "@Percentage uncertainty",
+    "The fractional uncertainty given as a percentage.",
+    "@Propagating uncertainties",
+    "Adding or subtracting quantities: add the absolute uncertainties. "
+    "Multiplying or dividing: add the percentage uncertainties. A power: "
+    "multiply the percentage uncertainty by the power.",
+    "@Significant figures",
+    "Give an answer to the same number of significant figures as the least "
+    "precise data. Give uncertainties to one significant figure.",
+    "@Error bars",
+    "Bars on a plotted point showing the absolute uncertainty in its value.",
+    "@Line of best fit",
+    "A straight line or smooth curve passing as close as possible to all the "
+    "points, through the error bars, with points evenly spread either side.",
+    "@Gradient uncertainty",
+    "Draw the steepest and shallowest lines that still pass through all the "
+    "error bars; half the difference in their gradients is the "
+    "uncertainty.",
+    "@Independent variable",
+    "The variable deliberately changed in an experiment.",
+    "@Dependent variable",
+    "The variable measured as a result.",
+    "@Control variable",
+    "A variable kept constant so it does not affect the result.",
+    "#Writing definitions",
+    "@Command terms",
+    "Define: give the precise meaning. State: a name, value or short answer. "
+    "Outline: a brief account. Describe: a detailed account. Explain: give "
+    "the reasons or causes.",
+    "@Per unit",
+    "\"Per unit charge\", \"per unit mass\" and \"per unit area\" carry the "
+    "mark in most field and electricity definitions. Leave them out and the "
+    "mark goes.",
+    "@Small positive test charge",
+    "Field strength and potential definitions need it: small, so it does not "
+    "disturb the field; positive, to fix the direction.",
+    "@From infinity",
+    "Potential definitions start at infinity, where the potential is zero, "
+    "and bring the test charge or mass TO the point.",
+    "!What earns the marks: say what kind of quantity it is (a force, a work "
+    "done, a ratio), then per unit of what, then under what conditions.",
     NULL
 };
 
-static const char *const unit2[] = {
-    "#Workforce planning",
-    "@Human resource planning",
-    "Forecasting an organization's future workforce needs in number and skill, and planning how to meet them.",
-    "@Labour turnover",
-    "The rate at which employees leave an organization over a period, as a percentage of the average number employed.",
-    "@Internal recruitment",
-    "Filling a vacancy with someone already employed by the organization.",
-    "@Induction training",
-    "Training given to new employees to familiarize them with the organization, their role and its procedures.",
-    "@On-the-job training",
-    "Training carried out at the workplace while the employee performs their actual job.",
-    "@Appraisal",
-    "The formal assessment of an employee's performance against agreed targets, used to guide development and reward.",
-    "@360-degree feedback",
-    "An appraisal method in which feedback is gathered from a range of people around an employee: managers, peers, subordinates and sometimes customers.",
-    "@Redundancy",
-    "Ending employment because the job itself is no longer needed, usually with compensation, rather than because of the employee's conduct.",
-    "@Dismissal",
-    "Ending a person's employment because of their conduct or inability to do the job.",
-    "#Structure",
-    "@Organizational structure",
-    "The formal arrangement of roles, responsibilities and reporting relationships within an organization.",
-    "@Span of control",
-    "The number of subordinates directly accountable to one manager.",
-    "@Chain of command",
-    "The formal line of authority through which instructions pass from the top of an organization to the bottom.",
-    "@Levels of hierarchy",
-    "The number of layers of authority in an organization, each with its own degree of responsibility.",
-    "@Delegation",
-    "Passing authority for a task from a manager to a subordinate, while the manager keeps overall accountability.",
-    "@Centralization",
-    "Concentrating decision-making authority in the hands of senior management at the top of the organization.",
-    "@Delayering",
-    "Removing one or more levels of hierarchy to flatten the structure and cut costs.",
-    "#Leadership",
-    "@Leadership",
-    "The ability to influence and inspire others towards achieving a shared goal.",
-    "@Autocratic leadership",
-    "A style in which the leader makes decisions alone and expects them to be followed without consultation.",
-    "@Democratic leadership",
-    "A style in which the leader consults employees and involves them in decision-making before deciding.",
-    "@Laissez-faire leadership",
-    "A style in which the leader sets broad objectives and leaves employees largely free to decide how to achieve them.",
-    "#Motivation",
-    "@Motivation",
-    "The internal and external factors that drive a person to put effort into their work and to keep doing so.",
-    "@Financial reward",
-    "A monetary payment used to motivate, such as salary, wage, commission, performance-related pay or profit-related pay.",
-    "@Performance-related pay",
-    "Additional payment linked to an employee meeting measured performance targets.",
-    "@Job enlargement",
-    "Widening a job by adding more tasks at a similar level of responsibility.",
-    "@Job enrichment",
-    "Deepening a job by adding more challenging tasks and greater responsibility or autonomy.",
-    "@Job rotation",
-    "Moving employees between different tasks or roles to reduce monotony and build a wider skill set.",
-    "@Teleworking",
-    "Working away from the employer's premises, usually from home, using communications technology to stay connected.",
-    "@Flexitime",
-    "An arrangement in which employees work a set number of hours but choose, within limits, when to start and finish.",
+/* ---- easily confused pairs ---- */
+
+static const char *const cmpGravity[] = {
+    "@Electric field vs gravitational field",
+    "Both are inverse-square fields defined the same way: field strength is "
+    "force per unit charge or mass, potential is work per unit charge or "
+    "mass from infinity.",
+    "%Electric field",
+    "~Acts on charge.",
+    "~Attractive or repulsive: charge comes in two signs.",
+    "~Potential can be positive or negative.",
+    "~Very strong: dominates between particles.",
+    "%Gravitational field",
+    "-Acts on mass.",
+    "-Always attractive: mass has only one sign.",
+    "-Potential is always negative.",
+    "-Very weak: only noticeable for huge masses.",
+    "!Turn an electric definition into a gravitational one by swapping "
+    "\"charge\" for \"mass\" and dropping \"positive\" from the test charge.",
     NULL
 };
 
-static const char *const unit3[] = {
-    "#Sources of finance",
-    "@Capital expenditure",
-    "Money spent on acquiring or improving fixed assets that will be used repeatedly over the long term.",
-    "@Revenue expenditure",
-    "Money spent on the day-to-day running of a business, such as wages, utilities and stock.",
-    "@Internal source of finance",
-    "Money raised from within the business itself, such as retained profit, personal funds or the sale of assets.",
-    "@Retained profit",
-    "The portion of profit after interest, tax and dividends that is kept in the business for reinvestment.",
-    "@Share capital",
-    "The money raised by a company from selling shares to its owners, which does not have to be repaid.",
-    "@Overdraft",
-    "An arrangement allowing a business to withdraw more money than it holds in its bank account, up to an agreed limit.",
-    "@Leasing",
-    "Paying a regular fee to use an asset owned by someone else, rather than buying it outright.",
-    "@Trade credit",
-    "An arrangement to buy goods or services now and pay the supplier at an agreed later date.",
-    "#Costs and profit",
-    "@Fixed cost",
-    "A cost that does not change with the level of output, and is incurred even when nothing is produced.",
-    "@Variable cost",
-    "A cost that changes in direct proportion to the level of output.",
-    "@Direct cost",
-    "A cost that can be clearly traced to the production of a specific product or project.",
-    "@Indirect cost (overhead)",
-    "A cost that cannot be attributed to any single product, but is incurred by the business as a whole.",
-    "@Contribution",
-    "The amount each unit sold contributes towards covering fixed costs, calculated as price minus variable cost per unit.",
-    "@Gross profit",
-    "The profit left after deducting the direct cost of producing the goods sold from sales revenue.",
-    "#Balance sheet and liquidity",
-    "@Current assets",
-    "Items owned by or owed to a business that are expected to be converted into cash within twelve months.",
-    "@Current liabilities",
-    "Debts a business is due to repay within twelve months.",
-    "@Liquidity",
-    "The ability of a business to convert assets into cash in order to pay its short-term debts as they fall due.",
-    "@Working capital",
-    "The funds available for a firm's day-to-day operations, equal to current assets minus current liabilities.",
-    "@Depreciation",
-    "The fall in the recorded value of a fixed asset over time, due to wear and tear or obsolescence.",
-    "@Intangible asset",
-    "A non-physical asset of long-term value to a business, such as a patent, trademark, copyright or goodwill.",
-    "@Goodwill",
-    "The extra value of a business above its net assets, arising from reputation, brand and customer relationships.",
-    "#Cash flow and investment",
-    "@Cash-flow forecast",
-    "A prediction of the money flowing into and out of a business over a future period, month by month.",
-    "@Investment appraisal",
-    "The quantitative techniques used to assess whether a proposed investment is financially worthwhile.",
-    "@Payback period",
-    "The time taken for an investment to generate enough net cash flow to recover its initial cost.",
-    "@Average rate of return",
-    "The average annual profit of an investment expressed as a percentage of its initial cost.",
+static const char *const cmpFieldPot[] = {
+    "@Electric field strength vs electric potential",
+    "Two ways to describe the same field: one with forces, one with energy.",
+    "%Field strength",
+    "~Force per unit charge on a small positive test charge.",
+    "~A vector: add with directions, by components.",
+    "~Newtons per coulomb, or volts per metre.",
+    "~Falls with distance squared for a point charge.",
+    "%Potential",
+    "-Work per unit charge bringing a small positive test charge from "
+    "infinity.",
+    "-A scalar: just add, keeping signs.",
+    "-Volts, or joules per coulomb.",
+    "-Falls with distance, not squared, for a point charge.",
+    "!Field strength is minus the potential gradient: where equipotentials "
+    "crowd together, the field is strong. Midway between equal positive "
+    "charges the field is zero but the potential is not.",
     NULL
 };
 
-static const char *const unit4[] = {
-    "#Marketing and markets",
-    "@Marketing",
-    "The management process of identifying customer needs and satisfying them profitably.",
-    "@Market orientation",
-    "An outward-looking approach in which a business researches customer needs first and designs its products around them.",
-    "@Product orientation",
-    "An inward-looking approach in which a business focuses on making a high-quality product and assumes customers will follow, rather than researching the market first.",
-    "@Market share",
-    "The proportion of total sales in a market, by value or volume, held by one business or product.",
-    "@Market segmentation",
-    "Dividing a market into distinct groups of consumers with similar characteristics or needs.",
-    "@Target market",
-    "The specific group of consumers a business aims its product and marketing at.",
-    "@Niche market",
-    "A small, narrowly defined market segment with specific needs that a specialized product is designed to meet.",
-    "@Mass market",
-    "A large, undifferentiated market at which a product is aimed with a single marketing approach.",
-    "@Unique selling point",
-    "The feature of a product or business that distinguishes it from competitors in the minds of consumers.",
-    "@Market positioning",
-    "How a product is perceived by consumers in relation to competing products.",
-    "#Market research",
-    "@Primary market research",
-    "The collection of original data directly from the market, for the specific purpose at hand.",
-    "@Secondary market research",
-    "The use of data already collected by someone else for a different purpose.",
-    "@Focus group",
-    "A small, selected group of consumers brought together to discuss their views on a product or idea in depth.",
-    "@Random sampling",
-    "A method in which every member of the population has an equal chance of being selected.",
-    "@Quota sampling",
-    "A method in which the sample is divided into groups and a set number is selected from each, without random selection within them.",
-    "#Product",
-    "@Branding",
-    "Creating a distinct identity (name, design, symbol) that distinguishes a product from competitors.",
-    "@Brand loyalty",
-    "The tendency of consumers to keep buying the same brand rather than switching to a competitor.",
-    "@Product life cycle",
-    "The stages a product passes through from launch to withdrawal: research and development, introduction, growth, maturity and decline.",
-    "@Extension strategy",
-    "An action taken to prolong the maturity stage of a product's life cycle and delay its decline.",
-    "#Price",
-    "@Cost-plus pricing",
-    "Setting price by adding a fixed mark-up or profit margin to the cost of producing each unit.",
-    "@Penetration pricing",
-    "Setting a deliberately low price on launch in order to win market share quickly.",
-    "@Price skimming",
-    "Setting a high initial price for a new product to recoup development costs, then lowering it over time.",
-    "@Premium pricing",
-    "Setting a consistently high price to signal superior quality or exclusivity.",
-    "@Loss leader",
-    "Pricing a product below cost to attract customers who will then buy other, profitable products.",
-    "#Promotion and place",
-    "@Above-the-line promotion",
-    "Paid promotion through independent mass media, such as television, radio or press advertising.",
-    "@Below-the-line promotion",
-    "Promotion the business controls directly, such as direct mail, sponsorship, sales promotions and point-of-sale displays.",
-    "@Channel of distribution",
-    "The route a product takes from producer to final consumer, including any intermediaries.",
-    "@E-commerce",
-    "The buying and selling of goods and services electronically, usually over the internet.",
+static const char *const cmpPotEnergy[] = {
+    "@Electric potential vs electric potential energy",
+    "Potential describes a point in the field; potential energy describes a "
+    "charge placed there.",
+    "%Potential",
+    "~A property of a point in the field.",
+    "~Per unit charge: exists with no charge there.",
+    "~Measured in volts.",
+    "%Potential energy",
+    "-A property of a charge at that point, or of the pair of charges.",
+    "-Total energy: depends on the size and sign of the charge placed there.",
+    "-Measured in joules.",
+    "!Potential energy is the charge times the potential. A negative charge "
+    "at a positive potential has negative potential energy.",
     NULL
 };
 
-static const char *const unit5[] = {
-    "#Production methods",
-    "@Operations management",
-    "The business function responsible for turning inputs into finished goods or services.",
-    "@Job production",
-    "Producing one unique item at a time, made to the individual requirements of a customer.",
-    "@Batch production",
-    "Producing a group of identical items together, completing each stage for the whole batch before moving on.",
-    "@Mass (flow) production",
-    "Producing large volumes of a standardized product continuously along a production line.",
-    "@Cellular production",
-    "Organizing flow production into self-contained teams, each responsible for a complete stage of the process.",
-    "#Location",
-    "@Outsourcing",
-    "Contracting a business function or process out to an external provider instead of carrying it out in-house.",
-    "@Offshoring",
-    "Relocating a business function to another country, whether or not it is contracted out.",
-    "@Reshoring",
-    "Bringing previously offshored operations back to the home country.",
-    "#Output and efficiency",
-    "@Break-even point",
-    "The level of output at which total revenue exactly equals total costs, so the business makes neither profit nor loss.",
-    "@Margin of safety",
-    "The amount by which current or forecast output exceeds the break-even quantity.",
-    "@Capacity utilization",
-    "The proportion of a firm's maximum possible output that it is currently producing.",
-    "@Productivity rate",
-    "A measure of efficiency, expressing output produced relative to the inputs used to produce it.",
-    "@Circular business model",
-    "A model designed to eliminate waste by reusing, repairing, refurbishing and recycling materials so resources stay in use.",
+static const char *const cmpLines[] = {
+    "@Field lines vs equipotentials",
+    "The two sets of lines you draw for every field. They always cross at "
+    "right angles.",
+    "%Field lines",
+    "~Show the direction of the force on a positive charge.",
+    "~Closer together: stronger field.",
+    "~Start on positive charges, end on negative charges.",
+    "~Never cross each other.",
+    "%Equipotentials",
+    "-Join points at the same potential.",
+    "-Closer together, for equal steps: stronger field.",
+    "-Always cross field lines at right angles.",
+    "-No work is done moving a charge along one.",
+    "!Point charge: radial lines and concentric circles. Parallel plates: "
+    "parallel lines and planes parallel to the plates.",
     NULL
 };
 
-static const char *const concepts[] = {
-    "#The four key concepts",
-    "Creativity, change, ethics and sustainability run through the whole course.",
-    "!Tie a judgement to one of them (the ethical cost of an option, or whether "
-    "it's sustainable as the market changes) to lift a conclusion above a "
-    "straight cost comparison.",
-    "#Define the term: 2 marks",
-    "1 mark for partial understanding, 2 for a full definition. No application "
-    "needed and examples earn nothing on their own: give the general meaning in "
-    "one sentence with two ideas in it.",
-    "!Name the category the term belongs to, then the feature that sets it apart. "
-    "\"A variable cost is a cost\" gets nothing; \"a cost that changes in direct "
-    "proportion to output\" gets two.",
-    "#Using the formula sheet",
-    "It can't tell you which formula the question wants, or which profit figure "
-    "goes into it. Know them well enough to never open it, and buy minutes for "
-    "the 10-marker.",
+static const char *const cmpInduction[] = {
+    "@Charging by contact vs charging by induction",
+    "Both charge a conductor; the difference is whether the charged object "
+    "touches it.",
+    "%By contact",
+    "~The objects touch.",
+    "~Electrons pass directly between the two objects.",
+    "~The conductor ends with the SAME sign as the charged object.",
+    "~The charged object loses some of its charge.",
+    "%By induction",
+    "-The charged object never touches the conductor.",
+    "-Electrons flow to or from earth through a temporary earth connection.",
+    "-The conductor ends with the OPPOSITE sign to the charged object.",
+    "-The charged object keeps all its charge.",
+    "!Friction charges two insulators equally and oppositely; contact shares "
+    "charge; induction needs earthing. In all three, only electrons move.",
     NULL
 };
 
-/* ---- comparisons: what changes if a business moves from X to Y ----
- * '%' is a sub-heading search ignores, '~' an advantage, '-' a drawback. */
-
-static const char *const cmpPartner[] = {
-    "@Sole trader to partnership",
-    "Taking on partners under a deed of partnership. Capital, work and decisions "
-    "are shared, but liability normally stays unlimited.",
-    "%Advantages",
-    "~More capital, as every partner invests in the business.",
-    "~Partners bring extra skills and specialist knowledge.",
-    "~Workload and stress are shared, so illness and holidays are covered.",
-    "~Losses and debts are shared instead of carried alone.",
-    "~Still quick and cheap to set up, with no accounts to publish.",
-    "%Disadvantages",
-    "-Liability stays unlimited, so personal assets are still at risk.",
-    "-Profits are shared, so the founder's own income may fall.",
-    "-Decisions must be agreed, which slows the business down.",
-    "-Each partner is bound by what the others do in the firm's name.",
-    "-No continuity: the partnership usually ends if a partner dies or leaves.",
-    "!Right when the owner needs skills and capital more than control. If the "
-    "real worry is personal risk, incorporating protects the owner properly and "
-    "a partnership does not.",
+static const char *const cmpConductor[] = {
+    "@Conductor vs insulator",
+    "The difference is whether there are free charge carriers.",
+    "%Conductor",
+    "~Many free, delocalized electrons.",
+    "~Charge flows easily; low resistivity.",
+    "~Charge put on it spreads over its surface.",
+    "~Examples: metals, graphite.",
+    "%Insulator",
+    "-Electrons bound to their atoms.",
+    "-Almost no current flows; very high resistivity.",
+    "-Charge put on it stays where it is put.",
+    "-Examples: plastic, glass, rubber.",
+    "!That is why insulators are charged by friction, and conductors by "
+    "contact or induction.",
     NULL
 };
 
-static const char *const cmpIncorporate[] = {
-    "@Sole trader to private limited company",
-    "Incorporating. The business becomes a separate legal person and shares are "
-    "sold privately to family, friends or invited investors.",
-    "%Advantages",
-    "~Limited liability: the owner risks only the money invested.",
-    "~Capital can be raised by selling shares to invited investors.",
-    "~Continuity: the company survives the death or exit of an owner.",
-    "~Banks and suppliers treat an incorporated firm as more credible.",
-    "~Shares cannot be sold to the public, so the founder keeps control.",
-    "%Disadvantages",
-    "-Formation costs and legal formalities to complete and maintain.",
-    "-Accounts must be filed and can be inspected, so privacy is lost.",
-    "-Profits are shared with shareholders as dividends.",
-    "-Control is diluted: other shareholders have a say.",
-    "-More regulation, and accountants to pay for it.",
-    "!Worth it once the business has real debts or assets at stake. Limited "
-    "liability and continuity are what the paperwork buys; if neither matters "
-    "yet, staying a sole trader is cheaper.",
+static const char *const cmpResistivity[] = {
+    "@Resistance vs resistivity",
+    "Resistance belongs to one object; resistivity belongs to the material "
+    "it is made of.",
+    "%Resistance",
+    "~A property of a particular component.",
+    "~Depends on length, cross-sectional area, material and temperature.",
+    "~Measured in ohms.",
+    "~The ratio of p.d. to current.",
+    "%Resistivity",
+    "-A property of the material alone.",
+    "-The same for any size or shape of sample at the same temperature.",
+    "-Measured in ohm metres.",
+    "-The resistance of a sample of unit length and unit cross-sectional "
+    "area.",
+    "!Double the length: the resistance doubles. Double the area: it halves. "
+    "The resistivity stays the same either way.",
     NULL
 };
 
-static const char *const cmpFloat[] = {
-    "@Private limited company to public limited company",
-    "Going public. Shares are floated on a stock exchange in an initial public "
-    "offering, so anyone can buy them.",
-    "%Advantages",
-    "~Very large amounts of capital can be raised from the public.",
-    "~Shares are freely traded, so they are easier to sell and worth more.",
-    "~A listing raises the firm's profile with customers and lenders.",
-    "~Borrowing gets cheaper: lenders see a larger, transparent business.",
-    "~Shares can be used to pay for takeovers and to reward senior staff.",
-    "%Disadvantages",
-    "-Risk of takeover, because anyone can buy the shares.",
-    "-Ownership is divorced from control, so founders can be outvoted.",
-    "-The flotation itself is expensive in legal, banking and marketing fees.",
-    "-Full accounts must be published, so rivals see the figures.",
-    "-Pressure for dividends and a rising share price crowds out long-term aims.",
-    "!Only for a business needing capital on a scale its owners cannot supply, "
-    "whose owners accept losing some control. Many profitable firms stay "
-    "private for exactly that reason.",
+static const char *const cmpOhmic[] = {
+    "@Ohmic vs non-ohmic device",
+    "The difference is whether the resistance stays constant as the current "
+    "changes.",
+    "%Ohmic",
+    "~Obeys Ohm's law: p.d. directly proportional to current.",
+    "~Constant resistance.",
+    "~V-I graph: a straight line through the origin.",
+    "~Example: a metal wire at constant temperature.",
+    "%Non-ohmic",
+    "-Does not obey Ohm's law.",
+    "-Resistance changes with the current.",
+    "-V-I graph: curved.",
+    "-Example: a filament lamp.",
+    "!For a non-ohmic device, the resistance at a point is the p.d. over the "
+    "current at that point, never the gradient of the graph.",
     NULL
 };
 
-static const char *const cmpExternal[] = {
-    "@Internal growth to external growth",
-    "Growing by merger, takeover or joint venture instead of expanding the firm's "
-    "own capacity out of its own profits.",
-    "%Advantages",
-    "~Much faster than building capacity from scratch.",
-    "~Buys ready-made market share, brands, patents and customers.",
-    "~Removes a competitor and increases market power.",
-    "~Synergy: the combined firm can cost less to run than the two apart.",
-    "~Diversification spreads risk across products and markets.",
-    "%Disadvantages",
-    "-Expensive, and usually financed by heavy borrowing.",
-    "-Culture clash between the two workforces damages motivation.",
-    "-Diseconomies of scale: the bigger firm is harder to coordinate.",
-    "-Redundancies harm morale and the firm's reputation.",
-    "-Regulators may block the deal on competition grounds.",
-    "!Internal growth is slower but keeps control and culture. External growth "
-    "buys time, which is what a fast-moving market punishes a firm for losing.",
+static const char *const cmpSeries[] = {
+    "@Series vs parallel",
+    "Two ways to connect components, with opposite rules for current and "
+    "p.d.",
+    "%Series",
+    "~One path: the same current through every component.",
+    "~The p.d.s add up to the supply p.d.",
+    "~Total resistance is the sum: more than any one resistor.",
+    "~One break stops everything.",
+    "%Parallel",
+    "-Separate branches: the branch currents add up to the total.",
+    "-The same p.d. across every branch.",
+    "-Total resistance is less than the smallest branch.",
+    "-Each branch works independently.",
+    "!Both follow from Kirchhoff's laws: currents at a junction (charge) and "
+    "p.d.s round a loop (energy).",
     NULL
 };
 
-static const char *const cmpFranchise[] = {
-    "@Own outlets to franchising",
-    "Selling franchisees the right to trade under the firm's name and business "
-    "model for a fee and a share of their revenue.",
-    "%Advantages",
-    "~Rapid expansion: the franchisee supplies the capital for each outlet.",
-    "~Steady income from franchise fees and royalties at low risk.",
-    "~Franchisees are owner-managers, so they are highly motivated.",
-    "~Buying for the whole chain brings economies of scale.",
-    "~Local franchisees understand regions or countries the firm does not.",
-    "%Disadvantages",
-    "-Profit per outlet is lower than running it yourself.",
-    "-Quality is hard to control, and one bad outlet damages the whole brand.",
-    "-Franchisees resist central decisions and new products.",
-    "-Training, supporting and monitoring franchisees costs money.",
-    "-Disputes over territory and fees can end in expensive legal action.",
-    "!Growth without the capital cost, paid for in control and margin. It "
-    "suits a proven, easily copied format; it is dangerous where quality is "
-    "the brand.",
+static const char *const cmpMeters[] = {
+    "@Ammeter vs voltmeter",
+    "Opposite connections and opposite ideal resistances.",
+    "%Ammeter",
+    "~Measures current.",
+    "~Connected in series.",
+    "~Ideal: zero resistance.",
+    "~Must not change the current it measures.",
+    "%Voltmeter",
+    "-Measures potential difference.",
+    "-Connected in parallel, across the component.",
+    "-Ideal: infinite resistance.",
+    "-Must draw no current from the circuit.",
+    "!Swap them and the circuit fails: a voltmeter in series stops the "
+    "current; an ammeter in parallel short-circuits the component.",
     NULL
 };
 
-static const char *const cmpFlat[] = {
-    "@Tall structure to flat structure",
-    "Delayering. Levels of hierarchy are removed, so each manager has a wider "
-    "span of control and the chain of command is shorter.",
-    "%Advantages",
-    "~Cuts costs, as whole layers of managerial salaries go.",
-    "~Communication is faster and less distorted down a short chain.",
-    "~Wide spans force delegation, which develops and motivates staff.",
-    "~Decisions are taken closer to the customer, so the firm reacts faster.",
-    "%Disadvantages",
-    "-Redundancies damage morale, loyalty and reputation.",
-    "-Managers can be overloaded by too wide a span of control.",
-    "-Fewer levels means fewer promotions, weakening career paths.",
-    "-Less supervision can mean slipping standards and more stress.",
-    "!Flat suits skilled staff doing varied work. Tall still suits work needing "
-    "close supervision or tight control, such as safety-critical production.",
+static const char *const cmpEmf[] = {
+    "@EMF vs terminal potential difference",
+    "Both are energy per coulomb in volts; the difference is the lost volts "
+    "inside the cell.",
+    "%EMF",
+    "~Work per unit charge driving charge completely round the circuit.",
+    "~Energy converted INTO electrical energy per coulomb.",
+    "~Fixed by the cell's chemistry.",
+    "~Equal to the terminal p.d. when no current flows.",
+    "%Terminal p.d.",
+    "-Energy per coulomb delivered to the external circuit.",
+    "-Energy converted FROM electrical energy outside the cell.",
+    "-Falls as more current is drawn.",
+    "-The EMF minus the lost volts.",
+    "!When a battery is being charged, the terminal p.d. is bigger than the "
+    "EMF, not smaller.",
     NULL
 };
 
-static const char *const cmpDecentral[] = {
-    "@Centralization to decentralization",
-    "Passing decision-making authority down from head office to divisions, "
-    "branches or teams.",
-    "%Advantages",
-    "~Decisions are faster: no waiting for approval from the top.",
-    "~Local managers know their own market and customers best.",
-    "~Delegation motivates and trains the next generation of managers.",
-    "~Senior managers are freed to concentrate on strategy.",
-    "~Responsibility is a motivator in its own right (Herzberg).",
-    "%Disadvantages",
-    "-Branches become inconsistent, which confuses customers.",
-    "-Junior managers may lack the experience to decide well.",
-    "-Roles and resources are duplicated across sites, raising costs.",
-    "-A single strategy is harder to coordinate and enforce.",
-    "-Loss of the economies of scale that central buying gives.",
-    "!Centralize in a crisis, or where the brand must be identical everywhere. "
-    "Decentralize where local knowledge and speed win the sale.",
+static const char *const cmpCells[] = {
+    "@Primary cell vs secondary cell",
+    "The difference is whether the chemical reaction can be reversed.",
+    "%Primary",
+    "~Single use: cannot be recharged.",
+    "~The reaction cannot be reversed.",
+    "~Thrown away when used up.",
+    "~Example: an alkaline cell.",
+    "%Secondary",
+    "-Rechargeable many times.",
+    "-The reaction is reversed by driving current backwards through it.",
+    "-Charged from a supply whose p.d. exceeds its EMF.",
+    "-Example: a lithium-ion or lead-acid cell.",
+    "!Both have an EMF and an internal resistance, and both show the same "
+    "shape of discharge curve.",
     NULL
 };
 
-static const char *const cmpDemocratic[] = {
-    "@Autocratic leadership to democratic leadership",
-    "The leader stops deciding alone and consults employees before taking "
-    "decisions.",
-    "%Advantages",
-    "~Staff feel valued and listened to, which raises motivation.",
-    "~Better decisions: the people doing the job see problems first.",
-    "~Employees are committed to decisions they helped to make.",
-    "~Develops the judgement of future managers.",
-    "~Lower labour turnover and absenteeism.",
-    "%Disadvantages",
-    "-Consultation is slow and useless in an emergency.",
-    "-Meetings and discussion cost management time.",
-    "-Employees may lack the expertise or the full picture.",
-    "-Not everyone wants the responsibility of deciding.",
-    "-Consultation that is ignored breeds more cynicism than autocracy.",
-    "!Match the style to the situation: autocratic in a crisis or with "
-    "untrained staff, democratic with skilled staff and time to decide.",
+static const char *const cmpConventional[] = {
+    "@Conventional current vs electron flow",
+    "The same current described in two opposite directions.",
+    "%Conventional current",
+    "~The direction positive charge would flow.",
+    "~Positive terminal to negative, round the external circuit.",
+    "~Used for all circuit rules and right-hand rules.",
+    "%Electron flow",
+    "-The actual movement of electrons in a metal.",
+    "-Negative terminal to positive, round the external circuit.",
+    "-Opposite to conventional current.",
+    "!In a magnetic force question with an electron beam, reverse the "
+    "direction your right-hand rule gives.",
     NULL
 };
 
-static const char *const cmpRecruit[] = {
-    "@Internal recruitment to external recruitment",
-    "Filling a vacancy from outside the organization instead of promoting or "
-    "transferring someone already employed.",
-    "%Advantages",
-    "~A far wider pool of applicants to choose from.",
-    "~New ideas and fresh ways of working come into the firm.",
-    "~Buys experience and skills the firm does not have and has not paid to build.",
-    "~Avoids the resentment caused by promoting one colleague over another.",
-    "~Advertising the post raises the firm's profile.",
-    "%Disadvantages",
-    "-Expensive: advertising, agency fees and selection time.",
-    "-Slower, and the newcomer needs induction before being productive.",
-    "-A weak appointment is a real risk; references and interviews mislead.",
-    "-Existing staff are demotivated when promotion is blocked.",
-    "-The newcomer does not know the culture or the customers.",
-    "!Internal is cheap, quick and motivating but only reshuffles the same "
-    "skills. Recruit externally when the firm needs a capability it does not "
-    "already have.",
+static const char *const cmpDisplacement[] = {
+    "@Distance vs displacement",
+    "A scalar and its vector partner. Speed and velocity split the same way.",
+    "%Distance",
+    "~Total length of the path travelled.",
+    "~Scalar.",
+    "~Can never decrease.",
+    "~Rate of change: speed.",
+    "%Displacement",
+    "-Straight-line distance from the start, in a stated direction.",
+    "-Vector.",
+    "-Can be zero after a round trip.",
+    "-Rate of change: velocity.",
+    "!After one lap of a circular track, the distance is the circumference "
+    "but the displacement is zero.",
     NULL
 };
 
-static const char *const cmpOffJob[] = {
-    "@On-the-job training to off-the-job training",
-    "Training away from the workplace, by specialists, instead of learning while "
-    "doing the actual job.",
-    "%Advantages",
-    "~Taught by specialists with current, expert knowledge.",
-    "~No disruption to production or to customers.",
-    "~Broader, recognised qualifications rather than one firm's habits.",
-    "~Trainees can concentrate without the distractions of the job.",
-    "~Brings new ideas and outside contacts back into the business.",
-    "%Disadvantages",
-    "-Expensive: course fees, travel and output lost while staff are away.",
-    "-May not match the firm's own equipment or procedures.",
-    "-The qualification makes the employee attractive to competitors.",
-    "-Staff must still be shown how it applies back at work.",
-    "-Hard to judge the quality of the provider in advance.",
-    "!On-the-job is cheap and directly relevant but passes on bad habits. Use "
-    "off-the-job where the skill is technical, legal or entirely new.",
+static const char *const cmpWeight[] = {
+    "@Mass vs weight",
+    "Mass is how much matter; weight is the pull of gravity on it.",
+    "%Mass",
+    "~Amount of matter; measures inertia.",
+    "~Scalar, in kilograms.",
+    "~The same everywhere.",
+    "%Weight",
+    "-The gravitational force on the mass.",
+    "-Vector, in newtons, towards the planet's centre.",
+    "-Changes with the gravitational field strength.",
+    "!On the Moon an astronaut has the same mass but about a sixth of the "
+    "weight.",
     NULL
 };
 
-static const char *const cmpNonFin[] = {
-    "@Financial rewards to non-financial rewards",
-    "Motivating through job enrichment, enlargement, rotation, empowerment and "
-    "teamwork rather than through more pay.",
-    "%Advantages",
-    "~Cheaper than a permanent rise in the wage bill.",
-    "~Herzberg: pay only removes dissatisfaction, the motivators are in the work.",
-    "~Enrichment raises quality and pride in the job.",
-    "~Rotation and enlargement build a flexible, multi-skilled workforce.",
-    "~Cuts labour turnover, absenteeism and recruitment costs.",
-    "%Disadvantages",
-    "-Staff on low pay want the money first (Maslow's lower needs).",
-    "-Enrichment needs training and time before it works.",
-    "-Can be seen as more work for no extra reward.",
-    "-Effects are hard to measure, so hard to justify to owners.",
-    "-Managers must give up authority, and many resist.",
-    "!Pay must be fair before anything else motivates. Beyond that point, "
-    "non-financial methods give more motivation per dollar spent.",
+static const char *const cmpCollision[] = {
+    "@Elastic vs inelastic collision",
+    "Momentum is conserved in both; only kinetic energy tells them apart.",
+    "%Elastic",
+    "~Momentum conserved.",
+    "~Kinetic energy conserved.",
+    "~The objects bounce apart.",
+    "~Example: ideal gas molecules.",
+    "%Inelastic",
+    "-Momentum conserved.",
+    "-Kinetic energy NOT conserved: some becomes heat, sound or deformation.",
+    "-Totally inelastic: the objects stick together.",
+    "-Example: a car crash.",
+    "!Total energy is conserved in every collision. Only kinetic energy can "
+    "be lost.",
     NULL
 };
 
-static const char *const cmpTelework[] = {
-    "@Office working to teleworking",
-    "Employees work away from the firm's premises, usually at home, staying in "
-    "touch through communications technology.",
-    "%Advantages",
-    "~Saves office space, rent and running costs.",
-    "~Recruits from anywhere, with no commute to put candidates off.",
-    "~Flexibility improves work-life balance, so good staff stay.",
-    "~Fewer interruptions can raise productivity on focused work.",
-    "~Fewer commuting journeys supports sustainability targets.",
-    "%Disadvantages",
-    "-Harder to supervise, and output must be measured instead of hours.",
-    "-Teamwork, culture and informal communication all weaken.",
-    "-Costs of laptops, software and data security.",
-    "-Isolation demotivates and can harm wellbeing.",
-    "-Impossible for production, retail or face-to-face service roles.",
-    "!Best as a hybrid: keep the collaboration and induction that need a room, "
-    "move the focused work home.",
+static const char *const cmpHeat[] = {
+    "@Temperature vs thermal energy",
+    "Temperature is about the average particle; thermal energy is energy "
+    "moving because of a temperature difference.",
+    "%Temperature",
+    "~Measures the average kinetic energy of the particles.",
+    "~Does not depend on the amount of substance.",
+    "~Kelvin or degrees Celsius.",
+    "~Decides which way thermal energy flows.",
+    "%Thermal energy",
+    "-Energy transferred because of a temperature difference.",
+    "-Depends on the amount of substance.",
+    "-Joules.",
+    "-Flows from hot to cold until the temperatures are equal.",
+    "!A warm bath holds far more internal energy than a spark, though the "
+    "spark is much hotter.",
     NULL
 };
 
-static const char *const cmpLoan[] = {
-    "@Retained profit to bank loan",
-    "Funding expansion with external long-term finance instead of the profit the "
-    "business has kept.",
-    "%Advantages",
-    "~A large sum is available now, so growth need not wait for profits.",
-    "~The firm keeps its own cash for day-to-day working capital.",
-    "~Repayments are fixed and known, so cash flow can be forecast.",
-    "~No ownership or control is given away.",
-    "~Interest is a business expense, and the lender shares no profit.",
-    "%Disadvantages",
-    "-Interest raises fixed costs and is paid in bad years as well as good.",
-    "-Collateral is usually required, putting assets at risk.",
-    "-High gearing makes the firm vulnerable to a rise in interest rates.",
-    "-The bank sets conditions, and can simply refuse a new business.",
-    "-Retained profit is free; a loan is not.",
-    "!Retained profit costs nothing but limits growth to past success and may "
-    "annoy shareholders expecting dividends. Borrow for assets that will earn "
-    "more than the interest.",
+static const char *const cmpWaves[] = {
+    "@Transverse vs longitudinal wave",
+    "The difference is which way the medium oscillates compared with the way "
+    "the energy travels.",
+    "%Transverse",
+    "~Oscillation perpendicular to the energy transfer.",
+    "~Crests and troughs.",
+    "~Can be polarized.",
+    "~Examples: light and all EM waves, waves on a string.",
+    "%Longitudinal",
+    "-Oscillation parallel to the energy transfer.",
+    "-Compressions and rarefactions.",
+    "-Cannot be polarized.",
+    "-Examples: sound, seismic P-waves.",
+    "!Both transfer energy without transferring matter.",
     NULL
 };
 
-static const char *const cmpShares[] = {
-    "@Loan capital to share capital",
-    "Raising long-term finance by selling shares instead of borrowing.",
-    "%Advantages",
-    "~No interest and no repayment date: the capital is permanent.",
-    "~No collateral is needed, so assets are not pledged.",
-    "~Gearing falls, so the firm is safer in a downturn.",
-    "~Dividends can be cut in a bad year; interest cannot.",
-    "~Investors may bring expertise and contacts with their money.",
-    "%Disadvantages",
-    "-Ownership is diluted and control is shared with new shareholders.",
-    "-Dividends are paid out of taxed profit, forever.",
-    "-Issuing shares is slow and expensive.",
-    "-New shareholders may push for short-term returns.",
-    "-Widely held shares open the door to a takeover.",
-    "!Debt is cheaper while trading is good; equity is safer when it is not. "
-    "Check gearing and how stable the firm's cash flow is before deciding.",
+static const char *const cmpFission[] = {
+    "@Fission vs fusion",
+    "Both release energy by moving nuclei towards higher binding energy per "
+    "nucleon.",
+    "%Fission",
+    "~A heavy nucleus splits into two lighter ones.",
+    "~Triggered by absorbing a neutron.",
+    "~Releases neutrons, so a chain reaction is possible.",
+    "~Used in nuclear power stations.",
+    "%Fusion",
+    "-Light nuclei join into a heavier one.",
+    "-Needs extreme temperature and density to overcome electrostatic "
+    "repulsion.",
+    "-Powers the stars.",
+    "-More energy per kilogram of fuel.",
+    "!On the binding energy per nucleon curve, fission moves down from the "
+    "heavy end and fusion up from the light end, both towards iron.",
     NULL
 };
 
-static const char *const cmpLease[] = {
-    "@Buying to leasing",
-    "Paying a regular fee to use an asset owned by someone else instead of "
-    "buying it outright.",
-    "%Advantages",
-    "~No large initial outlay, so cash flow and liquidity are protected.",
-    "~Maintenance and repairs are usually the lessor's responsibility.",
-    "~Equipment can be upgraded, so obsolescence is the lessor's problem.",
-    "~Easier for a new firm to arrange than a bank loan.",
-    "~The cost is a predictable monthly expense, easy to budget.",
-    "%Disadvantages",
-    "-Total cost over the asset's life is higher than buying.",
-    "-The asset is never owned: no resale value and nothing on the balance sheet.",
-    "-Contracts run for years and are expensive to cancel.",
-    "-Conditions may restrict how the asset is used or modified.",
-    "!Lease what dates quickly, such as IT and vehicles. Buy what lasts and "
-    "holds value, if the cash is there.",
+static const char *const cmpErrors[] = {
+    "@Random error vs systematic error",
+    "Random errors spoil precision; systematic errors spoil accuracy.",
+    "%Random error",
+    "~Scatters readings either side of the true value.",
+    "~Reduced by repeating and averaging.",
+    "~Affects precision.",
+    "~Shown by the spread of points and the size of error bars.",
+    "%Systematic error",
+    "-Shifts every reading the same way.",
+    "-Not reduced by repeating.",
+    "-Affects accuracy.",
+    "-Shown by a graph that misses the expected intercept.",
+    "!A zero error is systematic: a line that should pass through the origin "
+    "is shifted up or down.",
     NULL
 };
 
-static const char *const cmpCredit[] = {
-    "@Cash sales to trade credit",
-    "Letting customers take the goods now and pay in 30 or 60 days.",
-    "%Advantages",
-    "~Attracts customers and encourages larger orders.",
-    "~Matches rivals who already offer credit terms.",
-    "~Builds long-term relationships with business customers.",
-    "~A slightly higher price can be charged for the convenience.",
-    "%Disadvantages",
-    "-Cash arrives later, squeezing working capital and liquidity.",
-    "-Bad debts if a customer fails before paying.",
-    "-Credit control and chasing payment cost time and money.",
-    "-An overdraft may be needed to bridge the gap, and interest with it.",
-    "!Cash flow, not profit, closes businesses. Offer credit only with credit "
-    "checks, clear terms and a forecast that survives late payers.",
-    NULL
-};
-
-static const char *const cmpMarketOrient[] = {
-    "@Product orientation to market orientation",
-    "Researching what customers want and designing the product around them, "
-    "instead of making a good product and hoping it sells.",
-    "%Advantages",
-    "~Products match real customer needs, so they sell.",
-    "~Much lower risk of an expensive product failure.",
-    "~The firm spots changes in taste and reacts to competitors.",
-    "~Research guides price, promotion and place, not just the product.",
-    "~Satisfied customers come back, building brand loyalty.",
-    "%Disadvantages",
-    "-Market research costs money and takes time.",
-    "-Research can be biased, out of date or simply wrong.",
-    "-Customers cannot ask for a product they have never imagined.",
-    "-Rivals research the same market, so products converge.",
-    "-Chasing the customer can smother genuine innovation.",
-    "!Most firms need both: research to avoid the obvious failures, and the "
-    "creativity to offer something the research could not have asked for.",
-    NULL
-};
-
-static const char *const cmpNiche[] = {
-    "@Mass market to niche market",
-    "Targeting one small, clearly defined segment with a specialised product "
-    "rather than selling to the whole market.",
-    "%Advantages",
-    "~Far less competition, especially from large firms.",
-    "~Customers will pay a premium price for a specialised product.",
-    "~Strong brand loyalty within a small, well-understood group.",
-    "~Marketing is targeted, so less of the budget is wasted.",
-    "~A small firm can be profitable against much larger rivals.",
-    "%Disadvantages",
-    "-Low volume, so few economies of scale and high unit costs.",
-    "-All eggs in one basket if tastes or the economy change.",
-    "-A large firm can enter the niche and outspend you.",
-    "-Growth is capped by the size of the segment.",
-    "!A niche is the safest place for a small firm to start and the most "
-    "dangerous place to stay once a large competitor notices it.",
-    NULL
-};
-
-static const char *const cmpPenetration[] = {
-    "@Cost-plus pricing to penetration pricing",
-    "Launching at a deliberately low price to win market share, instead of "
-    "adding a fixed mark-up to unit cost.",
-    "%Advantages",
-    "~Wins market share quickly in a competitive market.",
-    "~Encourages trial, word of mouth and repeat purchase.",
-    "~High volume brings economies of scale and lower unit costs.",
-    "~Discourages new rivals from entering at that price.",
-    "~Builds loyalty before the price is raised later.",
-    "%Disadvantages",
-    "-Margins are thin or negative at first, so losses are likely.",
-    "-Sets a low reference price that customers resist leaving.",
-    "-A low price can signal low quality.",
-    "-Capacity must be there to meet demand, or the goodwill is lost.",
-    "-May start a price war the firm cannot win.",
-    "!Penetration suits a mass market with repeat purchase. Skimming suits a "
-    "distinctive new product with development costs to recover.",
-    NULL
-};
-
-static const char *const cmpPrimary[] = {
-    "@Secondary research to primary research",
-    "Collecting original data from the market for this specific decision, "
-    "rather than using data someone else already gathered.",
-    "%Advantages",
-    "~The data answers the firm's own question exactly.",
-    "~It is up to date, not written for a different year.",
-    "~The firm owns it, so competitors do not have it.",
-    "~The method and sample fit the firm's target market.",
-    "~Reveals opinions and reasons, not just numbers.",
-    "%Disadvantages",
-    "-Expensive, which weighs heavily on a small firm.",
-    "-Slow to collect and to analyse.",
-    "-Bias in the questions, the interviewer or the sample distorts it.",
-    "-A small or unrepresentative sample misleads.",
-    "-Needs expertise to design and to interpret properly.",
-    "!Do secondary first: it is cheap and shows what is already known, so the "
-    "primary research can be aimed only at what is still missing.",
-    NULL
-};
-
-static const char *const cmpEcommerce[] = {
-    "@Physical shop to e-commerce",
-    "Selling online instead of, or as well as, from a physical outlet.",
-    "%Advantages",
-    "~Open 24 hours a day to a national or global market.",
-    "~Lower fixed costs than high street premises and shop staff.",
-    "~Customer data can be used to target marketing precisely.",
-    "~Stock can be held centrally instead of in every store.",
-    "~Cheap market entry, so a small firm can compete on reach.",
-    "%Disadvantages",
-    "-Delivery and returns are costly and hard to get right.",
-    "-Customers cannot touch, try or take the product away today.",
-    "-Prices are compared in seconds, so competition is brutal.",
-    "-Needs investment in IT and in security against fraud.",
-    "-Loses personal service, impulse buying and the store experience.",
-    "!Most retailers end up multi-channel: the website for reach and price, "
-    "the store for service, trust and returns.",
-    NULL
-};
-
-static const char *const cmpBatch[] = {
-    "@Job production to batch production",
-    "Making identical items in groups, completing each stage for the whole "
-    "batch, instead of one unique item at a time.",
-    "%Advantages",
-    "~Lower unit costs: the same set-up serves the whole batch.",
-    "~Some variety is kept, as each batch can differ.",
-    "~Less skilled labour is needed, so the wage bill falls.",
-    "~Output per worker rises and orders are met faster.",
-    "%Disadvantages",
-    "-Individual customer requirements can no longer be met.",
-    "-Time and money are lost changing over between batches.",
-    "-Stocks of work-in-progress and finished goods build up.",
-    "-Repetitive work demotivates skilled staff.",
-    "!Batch fits a firm with steady demand for a few varieties. Keep job "
-    "production where the customer is paying for exactly what they asked for.",
-    NULL
-};
-
-static const char *const cmpMass[] = {
-    "@Batch production to mass production",
-    "Producing a standardised product continuously on a production line.",
-    "%Advantages",
-    "~Very low unit costs from large economies of scale.",
-    "~Huge output, so a mass market can be supplied.",
-    "~No changeover time: the line runs continuously.",
-    "~Quality is consistent because every unit is identical.",
-    "~Mostly unskilled labour, often automated.",
-    "%Disadvantages",
-    "-Enormous set-up cost for the line and the machinery.",
-    "-Inflexible: changing the product is slow and expensive.",
-    "-One breakdown stops the entire line.",
-    "-Highly repetitive work causes boredom, absence and turnover.",
-    "-Large stocks tie up cash and storage space.",
-    "!Only worth it if demand is large, standardised and reliable. Cellular "
-    "production keeps much of the efficiency with better motivation.",
-    NULL
-};
-
-static const char *const cmpOutsource[] = {
-    "@In-house operations to outsourcing",
-    "Contracting a function such as production, IT or customer service out to "
-    "an external provider.",
-    "%Advantages",
-    "~A specialist provider can do it cheaper, faster or better.",
-    "~Turns fixed costs into variable costs that flex with demand.",
-    "~Frees management to focus on the firm's core activity.",
-    "~Avoids investing in equipment, premises and training.",
-    "~Capacity can be scaled up or down quickly.",
-    "%Disadvantages",
-    "-Less control over quality, timing and the customer's experience.",
-    "-The provider's ethics and working conditions become the firm's "
-    "reputation risk.",
-    "-Redundancies damage morale and industrial relations.",
-    "-Sensitive information and know-how leave the business.",
-    "-Dependence on one supplier, who can raise prices later.",
-    "!Outsource what is routine and easy to specify. Keep in-house whatever "
-    "the customer judges the firm on.",
-    NULL
-};
-
-static const char *const cmpCircular[] = {
-    "@Linear model to circular business model",
-    "Designing waste out: products are made to be reused, repaired, "
-    "refurbished and recycled instead of thrown away.",
-    "%Advantages",
-    "~Lower material and waste disposal costs over time.",
-    "~Less exposure to raw material shortages and price swings.",
-    "~Stays ahead of tightening environmental law and taxes.",
-    "~Appeals to ethical consumers and helps recruit staff.",
-    "~New revenue from repair, resale, refill and recycling.",
-    "%Disadvantages",
-    "-Redesign, new suppliers and new equipment need heavy investment.",
-    "-Unit costs can rise in the short term.",
-    "-Customers and suppliers must change long-standing habits.",
-    "-Payback is long and hard to measure, so owners may resist.",
-    "-Exaggerated claims invite accusations of greenwashing.",
-    "!The clearest link to the sustainability key concept: a cost now against "
-    "resilience, reputation and lower costs later.",
-    NULL
-};
-
-#define TO " " G_RIGHT " "
+#define VS " vs "
 
 const section_t sections[N_SECTIONS] = {
-    {"Costs & break-even", costs},
-    {"Final accounts", accounts},
-    {"Ratios", ratios},
-    {"Cash & investment", cash},
-    {"Market & workforce", market},
-    {"Statistics", stats},
-    {"P&L account", pl},
-    {"Balance sheet", sheet},
-    {"Business intro", unit1},
-    {"Human resources", unit2},
-    {"Finance", unit3},
-    {"Marketing", unit4},
-    {"Operations", unit5},
-    {"Concepts & tips", concepts},
-    {"Sole trader" TO "Partner", cmpPartner},
-    {"Sole trader" TO "Ltd co.", cmpIncorporate},
-    {"Ltd company" TO "Plc", cmpFloat},
-    {"Internal growth" TO "M&A", cmpExternal},
-    {"Own outlets" TO "Franchise", cmpFranchise},
-    {"Tall" TO "Flat structure", cmpFlat},
-    {"Central" TO "Decentralized", cmpDecentral},
-    {"Autocratic" TO "Democratic", cmpDemocratic},
-    {"Promote" TO "Hire outside", cmpRecruit},
-    {"On-the-job" TO "Off-site", cmpOffJob},
-    {"Pay" TO "Job enrichment", cmpNonFin},
-    {"Office" TO "Teleworking", cmpTelework},
-    {"Retained profit" TO "Loan", cmpLoan},
-    {"Loan" TO "Share capital", cmpShares},
-    {"Buying" TO "Leasing", cmpLease},
-    {"Cash" TO "Trade credit", cmpCredit},
-    {"Product" TO "Market focus", cmpMarketOrient},
-    {"Mass" TO "Niche market", cmpNiche},
-    {"Cost-plus" TO "Penetration", cmpPenetration},
-    {"Secondary" TO "Primary", cmpPrimary},
-    {"Shop" TO "E-commerce", cmpEcommerce},
-    {"Job" TO "Batch production", cmpBatch},
-    {"Batch" TO "Mass production", cmpMass},
-    {"In-house" TO "Outsourcing", cmpOutsource},
-    {"Linear" TO "Circular model", cmpCircular},
+    {"Charge & Coulomb", charge},
+    {"Field & potential", fields},
+    {"Plates & Millikan", plates},
+    {"Current & Ohm", current},
+    {"Circuits & meters", circuits},
+    {"Cells & EMF", cells},
+    {"Sketches", sketch},
+    {"EMF & r lab", lab},
+    {"Motion & energy", themeA},
+    {"Matter & heat", themeB},
+    {"Wave behaviour", themeC},
+    {"Fields", themeD},
+    {"Atoms & nuclei", themeE},
+    {"Tools & tips", tools},
+    {"Electric" VS "gravity", cmpGravity},
+    {"Field strength" VS "potential", cmpFieldPot},
+    {"Potential" VS "PE", cmpPotEnergy},
+    {"Field lines" VS "equipotentials", cmpLines},
+    {"Contact" VS "induction", cmpInduction},
+    {"Conductor" VS "insulator", cmpConductor},
+    {"Resistance" VS "resistivity", cmpResistivity},
+    {"Ohmic" VS "non-ohmic", cmpOhmic},
+    {"Series" VS "parallel", cmpSeries},
+    {"Ammeter" VS "voltmeter", cmpMeters},
+    {"EMF" VS "terminal p.d.", cmpEmf},
+    {"Primary" VS "secondary cell", cmpCells},
+    {"Conventional" VS "electron flow", cmpConventional},
+    {"Distance" VS "displacement", cmpDisplacement},
+    {"Mass" VS "weight", cmpWeight},
+    {"Elastic" VS "inelastic", cmpCollision},
+    {"Temperature" VS "heat", cmpHeat},
+    {"Transverse" VS "longitudinal", cmpWaves},
+    {"Fission" VS "fusion", cmpFission},
+    {"Random" VS "systematic error", cmpErrors},
 };
 
 /* the topic each comparison starts, NULL to continue the previous one */
 const char *const compareTopic[N_COMPARE] = {
-    "ORGANIZATION & GROWTH", NULL, NULL, NULL, NULL,
-    "HUMAN RESOURCES", NULL, NULL, NULL, NULL, NULL, NULL,
-    "FINANCE", NULL, NULL, NULL,
-    "MARKETING", NULL, NULL, NULL, NULL,
-    "OPERATIONS", NULL, NULL, NULL,
+    "ELECTROSTATICS", NULL, NULL, NULL, NULL,
+    "ELECTRIC CURRENTS", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    "OTHER UNITS", NULL, NULL, NULL, NULL, NULL, NULL,
 };
