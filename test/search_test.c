@@ -78,6 +78,17 @@ int main(void) {
     assert(top("terminal pd", "Terminal", 3));
     assert(top("thermistor", "Thermistor", 2));
     assert(top("ldr", "LDR", 3));
+    assert(top("lenz", "Lenz's law", 2));
+    assert(top("faraday", "Faraday's law", 3));
+    assert(top("velocity selectr", "Velocity selector", 2));
+    assert(top("flux linkage", "Magnetic flux linkage", 3));
+    assert(top("ampere definition", "Definition of the ampere", 3));
+    assert(top("bainbridge", "Bainbridge", 3));
+    assert(top("fleming", "Fleming", 2));
+    assert(top("helical", "Helical motion", 2));
+    assert(top("charge to mass", "Charge-to-mass ratio", 3));
+    assert(top("motional emf", "Motional EMF", 3));
+    assert(top("rotating coil", "EMF of a rotating coil", 3));
     /* phrase matching used for links */
     assert(phraseAt("contribution per unit" TIMES " quantity", "Contribution per unit") == 21);
     assert(phraseAt("fixed costs + x", "Fixed cost") == 11);            /* plural */
@@ -93,6 +104,7 @@ int main(void) {
     assert(top("series parallel", "Series vs parallel", 3));
     assert(top("ohmic non ohmic", "Ohmic vs non-ohmic", 3));
     assert(top("gravitational field", "Electric field vs gravitational field", 5));
+    assert(top("faraday lenz", "Faraday's law vs Lenz's law", 3));
     checkComparisons();
     checkFits();
 

@@ -20,11 +20,11 @@ typedef struct {
     const char *const *lines;
 } section_t;
 
-/* sections[] order: test unit, sketches & lab, IB themes, comparisons */
+/* sections[] order: test unit, sketches & maxi problem, IB themes, comparisons */
 #define N_FORMULA 6
 #define N_LAYOUT 2
 #define N_DEF 6
-#define N_COMPARE 20
+#define N_COMPARE 30
 #define N_SECTIONS (N_FORMULA + N_LAYOUT + N_DEF + N_COMPARE)
 extern const section_t sections[N_SECTIONS];
 

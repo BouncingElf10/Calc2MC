@@ -141,7 +141,7 @@ static int str(const char *s, int x, int y, uint8_t color) {
 }
 
 enum { G_FORMULA, G_LAYOUT, G_DEF, G_COMPARE };
-static const char *const groupName[] = {"TEST UNIT", "SKETCH & LAB", "IB THEMES", "COMPARE"};
+static const char *const groupName[] = {"TEST UNIT", "SKETCH & MAXI", "IB THEMES", "COMPARE"};
 static const uint8_t groupColor[] = {C_TEAL, C_VIOLET, C_AMBER, C_ROSE};
 static const int groupStart[] = {0, N_FORMULA, N_FORMULA + N_LAYOUT,
                                  N_FORMULA + N_LAYOUT + N_DEF};
