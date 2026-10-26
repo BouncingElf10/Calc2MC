@@ -1,0 +1,41 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;width:640px;height:480px;overflow:hidden;background:#fbfaf6}
+.scr{width:320px;height:240px;transform:scale(2);transform-origin:0 0;position:relative;background:#fbfaf6;color:#1d2433;font:11px/1 'Atkinson Hyperlegible',sans-serif}
+.top{height:20px;background:#0b6e64;color:#fbfaf6;display:flex;align-items:center;padding:0 8px;gap:8px}
+.top .p{flex:1;white-space:nowrap}
+.sm{font-size:8px}
+.dim{color:#6b7383}
+.ans{margin:6px 8px 0;background:#dcefeb;border-left:3px solid #0b6e64;padding:4px 6px;display:flex;align-items:center;gap:6px;height:26px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:10px;line-height:10px}
+.fr i{font-style:normal;border-top:1px solid currentColor;padding-top:1px}
+sup{font-size:7px;vertical-align:5px;line-height:0}
+.steps{position:absolute;top:60px;left:0;right:0;bottom:15px;overflow:hidden}
+.st{display:flex;padding:4px 8px 3px 0}
+.tab{width:18px;flex:none;text-align:center;font-size:8px;color:#0b6e64;font-weight:700;padding-top:1px}
+.body{flex:1;min-width:0}
+.cap{font-size:8px;color:#6b7383;margin-bottom:3px}
+.ex{white-space:nowrap}
+.sel{background:#eef6f4}
+.sel .tab{color:#fbfaf6;background:#0b6e64;margin:-4px 0 -3px;padding-top:5px}
+.sub{padding:3px 0 2px 8px;border-left:1px solid #b9d9d3;margin-top:3px}
+.foot{position:absolute;bottom:0;left:0;right:0;height:14px;border-top:1px solid #d9dcd6;display:flex;align-items:center;gap:9px;padding:0 8px;font-size:8px;color:#6b7383}
+.foot b{color:#1d2433}
+</style></head><body>
+<div class="scr">
+  <div class="top"><span class="p">2sin<sup>2</sup>x − sin x − 1 = 0</span><span class="sm">0 ≤ x ≤ 2π</span><span class="sm" style="font-weight:700">RAD</span></div>
+  <div class="ans"><span>x =</span>
+    <span class="fr">π<i>2</i></span>,<span class="fr">7π<i>6</i></span>,<span class="fr">11π<i>6</i></span>
+    <span class="dim sm" style="margin-left:auto">≈ 1.571, 3.665, 5.760</span></div>
+  <div class="steps">
+    <div class="st"><div class="tab">1</div><div class="body"><div class="cap">Let u = sin x</div><div class="ex">2u<sup>2</sup> − u − 1 = 0</div></div></div>
+    <div class="st sel"><div class="tab">2</div><div class="body"><div class="cap">Factor ▾</div><div class="ex">(2u + 1)(u − 1) = 0</div>
+      <div class="sub"><div class="cap">Split −u into −2u + u</div><div class="ex">2u<sup>2</sup> − 2u + u − 1 = 0</div></div>
+      <div class="sub"><div class="cap">Group in pairs</div><div class="ex">2u(u − 1) + (u − 1) = 0</div></div></div></div>
+    <div class="st"><div class="tab">3</div><div class="body"><div class="cap">Set each factor to 0</div><div class="ex">u = −&thinsp;<span class="fr">1<i>2</i></span> <span class="dim">or</span> u = 1</div></div></div>
+  </div>
+  <div class="foot"><span><b>▲▼</b> step</span><span><b>enter</b> collapse</span><span><b>y=</b> back</span><span><b>mode</b> deg</span><span style="margin-left:auto"><b>clear</b> quit</span></div>
+</div>
+</body></html>

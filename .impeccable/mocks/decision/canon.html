@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;width:640px;height:480px;overflow:hidden;background:#fff}
+.scr{width:320px;height:240px;transform:scale(2);transform-origin:0 0;position:relative;background:#fff;color:#111;font:11px/1 'Atkinson Hyperlegible',sans-serif}
+.top{height:16px;background:#d9dde3;display:flex;align-items:center;padding:0 6px;font-size:8px;gap:6px}
+.p{padding:5px 8px;border-bottom:1px solid #d9dde3;display:flex}
+.sm{font-size:8px}
+.dim{color:#666}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:10px;line-height:10px}
+.fr i{font-style:normal;border-top:1px solid currentColor;padding-top:1px}
+sup{font-size:7px;vertical-align:5px;line-height:0}
+.st{padding:4px 8px;border-bottom:1px solid #eceef1}
+.cap{font-size:8px;color:#666;margin-bottom:3px}
+.sel{background:#2259b8;color:#fff}
+.sel .cap{color:#fff}
+.sub{padding:3px 0 0 10px}
+.ans{padding:5px 8px;font-weight:700;display:flex;align-items:center;gap:5px}
+.foot{position:absolute;bottom:0;left:0;right:0;height:14px;background:#d9dde3;display:flex;align-items:center;gap:9px;padding:0 6px;font-size:8px}
+</style></head><body>
+<div class="scr">
+  <div class="top"><span>MATH</span><span style="margin-left:auto">RADIAN</span></div>
+  <div class="p"><span style="flex:1">2sin<sup>2</sup>x − sin x − 1 = 0</span><span class="sm dim">0≤x≤2π</span></div>
+  <div class="st"><div class="cap">Let u = sin x</div>2u<sup>2</sup> − u − 1 = 0</div>
+  <div class="st sel"><div class="cap">Factor</div>(2u + 1)(u − 1) = 0
+    <div class="sub"><div class="cap">Split −u into −2u + u</div>2u<sup>2</sup> − 2u + u − 1 = 0</div>
+    <div class="sub"><div class="cap">Group in pairs</div>2u(u − 1) + (u − 1) = 0</div></div>
+  <div class="st"><div class="cap">Set each factor to 0</div>u = −&thinsp;<span class="fr">1<i>2</i></span> or u = 1</div>
+  <div class="ans">x = <span class="fr">π<i>2</i></span>, <span class="fr">7π<i>6</i></span>, <span class="fr">11π<i>6</i></span></div>
+  <div class="foot"><span>▲▼ STEP</span><span>ENTER OPEN</span><span>Y= BACK</span><span style="margin-left:auto">CLEAR QUIT</span></div>
+</div>
+</body></html>

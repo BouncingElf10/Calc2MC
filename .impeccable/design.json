@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T00:00:00Z",
+  "title": "Design System: MATH for the TI-84 Plus CE",
+  "extensions": {
+    "colorMeta": {
+      "teal": { "role": "primary", "displayName": "Textbook Teal", "canonical": "#0B6E64", "tonalRamp": ["#00110D", "#002D28", "#005047", "#107066", "#3E9388", "#63B6AB", "#88DBCF", "#CAFAF2"] },
+      "tint": { "role": "primary", "displayName": "Answer Tint", "canonical": "#DCEFEB", "tonalRamp": ["#060D0B", "#1F2725", "#364643", "#556562", "#758783", "#98AAA6", "#BBCECA", "#E6F1EF"] },
+      "pale": { "role": "primary", "displayName": "Selection Pale", "canonical": "#EEF6F4", "tonalRamp": ["#090C0B", "#222625", "#3D4442", "#5C6361", "#7D8482", "#9FA7A5", "#C3CBC9", "#EBF0EE"] },
+      "sub-rule": { "role": "primary", "displayName": "Sub-step Rule", "canonical": "#B9D9D3", "tonalRamp": ["#020E0C", "#192826", "#2C4844", "#4B6863", "#6C8A84", "#8EADA7", "#B1D1CB", "#E0F3F0"] },
+      "paper": { "role": "neutral", "displayName": "Paper", "canonical": "#FBFAF6", "tonalRamp": ["#0C0B0A", "#252523", "#43423F", "#62615E", "#83827F", "#A6A5A1", "#CAC9C5", "#EFEEEC"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1D2433", "tonalRamp": ["#080B13", "#21252E", "#3A4252", "#596173", "#7A8295", "#9CA5B9", "#C0C9DD", "#E9EFFB"] },
+      "secondary": { "role": "neutral", "displayName": "Secondary Grey", "canonical": "#5F6676", "tonalRamp": ["#080B12", "#21252D", "#3B4251", "#5A6171", "#7B8293", "#9DA5B6", "#C1C9DB", "#E9EEFA"] },
+      "rule": { "role": "neutral", "displayName": "Rule Grey", "canonical": "#D9DCD6", "tonalRamp": ["#0A0C09", "#242623", "#40433E", "#60625D", "#81837E", "#A3A6A0", "#C7CAC4", "#EDEFEB"] },
+      "error": { "role": "neutral", "displayName": "Error Red", "canonical": "#B02E3E", "tonalRamp": ["#210002", "#411317", "#751E28", "#9A4046", "#BF6266", "#E68587", "#FFA9AA", "#FFDCDC"] }
+    },
+    "typographyMeta": {
+      "body": { "displayName": "Body", "purpose": "DrSans bitmap, 14 px line, 11 px ascent. Problem, answer, step maths, menu labels, typed input." },
+      "label": { "displayName": "Label", "purpose": "DrSans bitmap, 10 px line, 8 px ascent. Captions, step numbers, panel titles, footer, mode, approximations, errors; exponents and bounds inside maths." }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": [
+      { "name": "lcd", "value": "320px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Title Strip",
+      "kind": "nav",
+      "refersTo": "title-strip",
+      "description": "Teal band at the top of every screen: title or problem on the left, mode on the right.",
+      "html": "<div class=\"ds-strip\"><span>2x + 3 = 7</span><small>RAD</small></div>",
+      "css": ".ds-strip { display: flex; justify-content: space-between; align-items: center; width: 320px; height: 20px; padding: 0 8px; box-sizing: border-box; background: #0B6E64; color: #FBFAF6; font: 14px/14px monospace; } .ds-strip small { font-size: 10px; line-height: 10px; }"
+    },
+    {
+      "name": "Answer Box",
+      "kind": "card",
+      "refersTo": "answer-box",
+      "description": "Tinted box with a 3 px teal left bar; exact answer in ink, approximation in teal on the right.",
+      "html": "<div class=\"ds-answer\"><span>x = 2</span><small>&#8776; 2</small></div>",
+      "css": ".ds-answer { display: flex; justify-content: space-between; align-items: baseline; width: 304px; padding: 5px 8px 5px 10px; box-sizing: border-box; background: #DCEFEB; border-left: 3px solid #0B6E64; color: #1D2433; font: 14px/14px monospace; } .ds-answer small { color: #0B6E64; font-size: 10px; line-height: 10px; }"
+    },
+    {
+      "name": "Step Row",
+      "kind": "custom",
+      "refersTo": "step-row",
+      "description": "Numbered step: teal number in an 18 px margin tab, caption above in secondary, maths below in ink.",
+      "html": "<div class=\"ds-step\"><div class=\"ds-step-tab\">1</div><div><div class=\"ds-step-cap\">Subtract 3 from both sides</div><div>2x = 4</div></div></div>",
+      "css": ".ds-step { display: flex; width: 320px; background: #FBFAF6; color: #1D2433; font: 14px/14px monospace; padding: 4px 0 5px; } .ds-step-tab { width: 18px; margin-right: 6px; text-align: center; color: #0B6E64; font-size: 10px; line-height: 10px; } .ds-step-cap { color: #5F6676; font-size: 10px; line-height: 10px; margin-bottom: 2px; }"
+    },
+    {
+      "name": "Step Row Selected",
+      "kind": "custom",
+      "refersTo": "step-row-selected",
+      "description": "The selected step: pale row, tab filled teal, number in paper. Teal triangle after the caption when it has sub-steps.",
+      "html": "<div class=\"ds-step-sel\"><div class=\"ds-step-sel-tab\">2</div><div><div class=\"ds-step-sel-cap\">Divide both sides by 2 <b>&#9660;</b></div><div>x = 2</div></div></div>",
+      "css": ".ds-step-sel { display: flex; width: 320px; background: #EEF6F4; color: #1D2433; font: 14px/14px monospace; } .ds-step-sel-tab { width: 18px; margin-right: 6px; padding-top: 4px; text-align: center; background: #0B6E64; color: #FBFAF6; font-size: 10px; line-height: 10px; } .ds-step-sel > div:last-child { padding: 4px 0 5px; } .ds-step-sel-cap { color: #5F6676; font-size: 10px; line-height: 10px; margin-bottom: 2px; } .ds-step-sel-cap b { color: #0B6E64; font-weight: normal; }"
+    },
+    {
+      "name": "Sub-step",
+      "kind": "custom",
+      "refersTo": "step-row",
+      "description": "An opened sub-step: no number, indented 10 px behind a 1 px sub-step rule, maths at body size.",
+      "html": "<div class=\"ds-sub\"><div class=\"ds-sub-cap\">Do the same to both sides</div><div>2x/2 = 4/2</div></div>",
+      "css": ".ds-sub { margin-left: 26px; padding: 4px 0 5px 7px; border-left: 1px solid #B9D9D3; background: #FBFAF6; color: #1D2433; font: 14px/14px monospace; } .ds-sub-cap { color: #5F6676; font-size: 10px; line-height: 10px; margin-bottom: 2px; }"
+    },
+    {
+      "name": "Menu Panel",
+      "kind": "custom",
+      "refersTo": "menu-panel",
+      "description": "Framed paper panel with a secondary title; selected row marked with the pale row and the filled teal tab.",
+      "html": "<div class=\"ds-menu\"><div class=\"ds-menu-title\">What to do</div><div class=\"ds-menu-row ds-menu-row-sel\">Simplify</div><div class=\"ds-menu-row\">Expand</div><div class=\"ds-menu-row\">Factor</div></div>",
+      "css": ".ds-menu { width: 304px; padding: 6px 0 4px; box-sizing: border-box; background: #FBFAF6; border: 1px solid #D9DCD6; font: 14px/14px monospace; } .ds-menu-title { padding-left: 26px; height: 16px; color: #5F6676; font-size: 10px; line-height: 10px; } .ds-menu-row { height: 20px; line-height: 20px; padding-left: 26px; color: #1D2433; } .ds-menu-row-sel { background: linear-gradient(to right, #0B6E64 18px, #EEF6F4 18px); }"
+    },
+    {
+      "name": "Footer",
+      "kind": "nav",
+      "refersTo": "footer",
+      "description": "Key hints for the current screen only: key in ink, action in secondary. Teal down-triangle at the right when more steps are below.",
+      "html": "<div class=\"ds-foot\"><span><b>enter</b> close</span><span><b>&#8593;&#8595;</b> step</span><span><b>y=</b> back</span><span><b>clear</b> quit</span><i>&#9660;</i></div>",
+      "css": ".ds-foot { position: relative; display: flex; gap: 9px; width: 320px; height: 14px; padding: 2px 6px 0; box-sizing: border-box; background: #FBFAF6; border-top: 1px solid #D9DCD6; color: #5F6676; font: 10px/10px monospace; } .ds-foot b { color: #1D2433; font-weight: normal; margin-right: 3px; } .ds-foot i { position: absolute; right: 6px; color: #0B6E64; font-style: normal; }"
+    },
+    {
+      "name": "Error Text",
+      "kind": "custom",
+      "refersTo": "error-text",
+      "description": "Error message under the input rule, label size, error red.",
+      "html": "<div class=\"ds-err\">Check the interval</div>",
+      "css": ".ds-err { color: #B02E3E; font: 10px/10px monospace; padding-left: 10px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Worked Example",
+    "overview": "Every result is set like a worked example in a maths textbook: the problem sits in a teal strip at the top, the answer sits in a tinted box under it, and the method follows as numbered steps, each with a short caption above its line of maths. Any step that has smaller rewrites inside it opens in place to show them, indented behind a thin rule.\n\nThe screen is a sheet of warm paper with dark ink and one teal. Teal carries the structure (strip, step numbers, the answer box's left bar, the cursor, approximations, disclosure marks); everything else is ink, a muted secondary grey, or a 1 px rule. Hierarchy comes from two font sizes, colour and position, never from weight, boxes-in-boxes or shadow. The look rejects both the stock TI-OS look (grey bars, a full-width blue selection bar) and the phone-app look (a stack of rounded cards).\n\nThe platform sets hard limits: 320x240 pixels, an 8-bit palette, two bitmap fonts, keypad only. Density is moderate on purpose: the answer must read at a glance, and a step should fit on one line before any fallback kicks in.",
+    "keyCharacteristics": [
+      "Paper ground, ink text, one teal for structure.",
+      "Two bitmap sizes, no bold.",
+      "Square corners, 1 px rules, no shadows.",
+      "One selection mark everywhere: the 18 px filled teal margin tab on a pale row.",
+      "Maths drawn in 2D: real fractions, raised exponents, drawn radicals, integrals and stretched brackets.",
+      "A footer that lists only the keys that act on the current screen."
+    ],
+    "rules": [
+      { "name": "The One Teal Rule", "body": "Teal is the only accent. Anything that marks structure, selection or a secondary reading of the answer is teal or one of its two tints; no second hue is added for emphasis.", "section": "colors" },
+      { "name": "The Quiet Words Rule", "body": "Words that frame the maths (captions, \"or\", footer actions, panel titles) are secondary grey; the maths itself is ink.", "section": "colors" },
+      { "name": "The Two Sizes Rule", "body": "There are exactly two sizes and one weight. A new kind of text takes one of the two sizes and is told apart by colour or position, not by a third size or bold.", "section": "typography" },
+      { "name": "The Caption Above Rule", "body": "A step's caption sits above its maths in the label size, secondary grey, the way a textbook writes the reason above the line.", "section": "typography" },
+      { "name": "The Flat Paper Rule", "body": "Nothing casts a shadow. A panel that sits over another screen is separated by its 1 px rule frame and nothing else.", "section": "elevation" }
+    ],
+    "dos": [
+      "**Do** mark every selection, in any list, with the pale row and the 18 px filled teal tab.",
+      "**Do** set step captions above the maths, label size, secondary grey.",
+      "**Do** show approximations in teal at the label size, after the exact answer.",
+      "**Do** draw fractions, exponents, roots, integrals and limits in 2D, and stretch brackets with the content.",
+      "**Do** list in the footer only the keys that act on the current screen.",
+      "**Do** keep panels, boxes and rules on the 8 px side inset."
+    ],
+    "donts": [
+      "**Don't** add a second accent colour, a third font size, or bold.",
+      "**Don't** round corners or add shadows.",
+      "**Don't** use a full-width solid selection bar or grey title bars (the stock TI-OS look).",
+      "**Don't** stack results as separate rounded cards (the phone-app look).",
+      "**Don't** list keys in the footer that do nothing on the screen shown."
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/*.html"
+        ],
+        "createdAt": "2026-10-26T17:38:45.452Z",
+        "reason": "agent: sketches model a 320x240 calculator screen drawn at 2x via transform; 11px renders at 22px and matches the CE's bitmap font sizes"
+      },
+      {
+        "rule": "undersized-ui-text",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/*.html"
+        ],
+        "createdAt": "2026-10-26T18:27:35.354Z",
+        "reason": "agent: decision sketches of a 320x240 calculator screen drawn at 2x; sizes and padding model the CE's bitmap fonts, the shipped UI is native C"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/*.html"
+        ],
+        "createdAt": "2026-10-26T18:27:35.550Z",
+        "reason": "agent: decision sketches of a 320x240 calculator screen drawn at 2x; sizes and padding model the CE's bitmap fonts, the shipped UI is native C"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/*.html"
+        ],
+        "createdAt": "2026-10-26T18:36:04.229Z",
+        "reason": "agent: decision sketches used Atkinson Hyperlegible as a browser stand-in before the DrSans bitmap fonts were chosen; the shipped UI uses DrSans as DESIGN.md records"
+      }
+    ]
+  }
+}
