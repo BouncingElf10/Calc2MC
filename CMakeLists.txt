@@ -5,12 +5,7 @@ project(ti84busman C)
 # This is never used to actually build anything
 set(CEDEV "C:/CEdev")
 
-add_executable(ti84busman src/main.c
-        src/content.c
-        src/content.h
-        src/search.c
-        src/search.h
-)
+add_executable(ti84busman src/main.c)
 
 target_include_directories(ti84busman PRIVATE
         ${CEDEV}/include

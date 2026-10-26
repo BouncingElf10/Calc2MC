@@ -1,6 +1,6 @@
-NAME = PHYSICS
+NAME = HELLO
 ICON = iconmc.png
-DESCRIPTION = "IB Physics HL"
+DESCRIPTION = "Hello world"
 COMPRESSED = YES
 ARCHIVED = YES
 CFLAGS = -Wall -Wextra
