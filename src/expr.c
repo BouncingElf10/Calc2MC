@@ -6,6 +6,7 @@
 #include "cas.h"
 
 static uint8_t *mem0, *memp, *memend;
+static uintptr_t stackFloor;
 const char *cas_err;
 jmp_buf cas_jb;
 
@@ -20,6 +21,10 @@ void fail(const char *msg) {
 void cas_init(void *mem, size_t size) {
     mem0 = mem;
     memend = mem0 + size;
+    /* the CE stack is 4 KB and running past it crashes the calculator; the
+     * budget scales with pointer size so host tests stop at the same depth */
+    char top;
+    stackFloor = (uintptr_t)&top - sizeof(void *) * 1000;
     cas_reset();
 }
 
@@ -44,7 +49,13 @@ void cas_release(uint8_t *m) {
     memp = m;
 }
 
+void cas_deeper(void) {
+    char probe;
+    if ((uintptr_t)&probe < stackFloor) fail("Too complex");
+}
+
 static void *alloc(size_t n) {
+    cas_deeper();
     n = (n + sizeof(void *) - 1) & ~(sizeof(void *) - 1);
     if ((size_t)(memend - memp) < n) fail("Too complex");
     void *p = memp;
@@ -363,7 +374,8 @@ static const struct { const char *s; uint8_t type, op, args; } names[] = {
     {"asin", N_FN, F_ASIN, 1}, {"acos", N_FN, F_ACOS, 1}, {"atan", N_FN, F_ATAN, 1},
     {"sin", N_FN, F_SIN, 1}, {"cos", N_FN, F_COS, 1}, {"tan", N_FN, F_TAN, 1},
     {"logb", N_FN, F_LOGB, 2}, {"log", N_FN, F_LOG, 1}, {"ln", N_FN, F_LN, 1},
-    {"abs", N_FN, F_ABS, 1}, {"sqrt", N_POW, 2, 1}, {"root", N_POW, 0, 2},
+    {"abs", N_FN, F_ABS, 1}, {"ncr", N_FN, F_NCR, 2}, {"npr", N_FN, F_NPR, 2},
+    {"sqrt", N_POW, 2, 1}, {"root", N_POW, 0, 2},
     {"frac", N_MUL, 0, 2}, {"der", N_DERIV, 0, 2}, {"int", N_INTEG, 0, 0},
     {"lim", N_LIMIT, 0, 3}, {"pi", N_CONST, C_PI, 0}, {"inf", N_CONST, C_INF, 0},
 };
@@ -389,6 +401,7 @@ static node_t *pnumber(void) {
 }
 
 static node_t *patom(void) {
+    cas_deeper();
     skip();
     const char c = *ps;
     if ((c >= '0' && c <= '9') || c == '.') return pnumber();
@@ -444,6 +457,7 @@ static node_t *patom(void) {
 
 static node_t *ppower(void) {
     node_t *b = patom();
+    while (accept('!')) b = fn(F_FACT, b);
     if (accept('^')) return pw(b, punary());
     return b;
 }
@@ -655,7 +669,7 @@ static void prprod(out_t *o, const node_t *e) {
     if (p) put(o, ")");
 }
 
-static const char *const fnames[] = {"sin", "cos", "tan", "asin", "acos", "atan", "ln", "log", "logb", "abs"};
+static const char *const fnames[] = {"sin", "cos", "tan", "asin", "acos", "atan", "ln", "log", "logb", "abs", "ncr", "npr"};
 
 static void pr(out_t *o, const node_t *e) {
     char buf[24];
@@ -717,6 +731,11 @@ static void pr(out_t *o, const node_t *e) {
                 put(o, "|"), pr(o, e->k[0]), put(o, "|");
                 break;
             }
+            if (e->op == F_FACT) {
+                prwrap(o, e->k[0], !atomic(e->k[0]) || e->k[0]->type == N_FN);
+                put(o, "!");
+                break;
+            }
             put(o, fnames[e->op]);
             put(o, "(");
             for (int i = 0; i < e->n; i++) {
@@ -734,10 +753,13 @@ static void pr(out_t *o, const node_t *e) {
                 pr(o, e->k[i]);
             }
             break;
-        case N_PM:
-            pr(o, e->k[0]), put(o, "+-");
-            prwrap(o, e->k[1], e->k[1]->type == N_ADD || negative(e->k[1]));
+        case N_PM: {   /* a +- b, or +-b on its own */
+            const node_t *b = e->k[e->n - 1];
+            if (e->n == 2) pr(o, e->k[0]);
+            put(o, "+-");
+            prwrap(o, b, b->type == N_ADD || negative(b));
             break;
+        }
         case N_DERIV:
             put(o, "d/d"), pr(o, e->k[1]), put(o, "("), pr(o, e->k[0]), put(o, ")");
             break;

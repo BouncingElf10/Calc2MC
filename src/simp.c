@@ -171,8 +171,9 @@ static int flatten(node_t **u, int n, uint8_t type, node_t **out) {
 }
 
 static node_t *sprod(node_t **u, int n) {
-    node_t *f[MAXOPS], *base[MAXGRP], *orig[MAXGRP], *ex[MAXGRP][8];
-    int nex[MAXGRP], nb = 0, nnum = 0;
+    node_t *f[MAXOPS], *base[MAXGRP];
+    uint8_t g[MAXOPS], nex[MAXGRP];   /* g: the group of each factor */
+    int nb = 0, nnum = 0;
     n = flatten(u, n, N_MUL, f);
     node_t *c = num(1);
     for (int i = 0; i < n; i++) {
@@ -186,10 +187,11 @@ static node_t *sprod(node_t **u, int n) {
         while (j < nb && !same(base[j], b)) j++;
         if (j == nb) {
             if (nb == MAXGRP) fail("Too complex");
-            base[nb] = b, orig[nb] = f[i], nex[nb++] = 0;
+            base[nb] = b, nex[nb++] = 0;
         }
         if (nex[j] == 8) fail("Too complex");
-        ex[j][nex[j]++] = expof(f[i]);
+        nex[j]++;
+        g[i] = j;
     }
     if (iszero(c)) return c;
 
@@ -197,12 +199,12 @@ static node_t *sprod(node_t **u, int n) {
     int nr = 0;
     bool again = false;
     for (int j = 0; j < nb; j++) {
-        node_t *p = nex[j] == 1 ? orig[j] : spow(base[j], ssum(ex[j], nex[j]));
-        if (nex[j] > 1) {
-            node_t *from[8];
-            for (int i = 0; i < nex[j]; i++) from[i] = isone(ex[j][i]) ? base[j] : pw(base[j], ex[j][i]);
-            note(K_POWERS, "Add the exponents", mkv(N_MUL, nex[j], from), p);
-        }
+        node_t *from[8], *ex[8];
+        int k = 0;
+        for (int i = 0; i < n; i++)
+            if (!isnum(f[i]) && g[i] == j) from[k] = f[i], ex[k++] = expof(f[i]);
+        node_t *p = k == 1 ? from[0] : spow(base[j], ssum(ex, k));
+        if (k > 1) note(K_POWERS, "Add the exponents", mkv(N_MUL, k, from), p);
         if (isnum(p) || p->type == N_MUL) again = true;
         if (!isone(p)) r[nr++] = p;
     }
@@ -211,22 +213,21 @@ static node_t *sprod(node_t **u, int n) {
         return sprod(r, nr);
     }
     if (nnum > 1 && logging) {
-        node_t *nums[MAXOPS];
         int k = 0;
         bool sign = false;
-        for (int i = 0; i < n; i++)
-            if (isnum(f[i])) nums[k++] = f[i], sign |= isval(f[i], -1) || isone(f[i]);
-        if (!(sign && k == 2)) note(K_CALC, "Calculate", mkv(N_MUL, k, nums), c);
+        for (int i = 0; i < n; i++)   /* f is done with, so the numbers gather in it */
+            if (isnum(f[i])) f[k++] = f[i], sign |= isval(f[i], -1) || isone(f[i]);
+        if (!(sign && k == 2)) note(K_CALC, "Calculate", mkv(N_MUL, k, f), c);
     }
     if (!nr) return c;
     sort(r, nr, false);
     /* a number times a sum: distribute */
     if (nr == 1 && r[0]->type == N_ADD && !isone(c)) {
-        node_t *t[MAXOPS];
-        for (int i = 0; i < r[0]->n; i++) t[i] = sprod((node_t *[]){c, r[0]->k[i]}, 2);
-        node_t *s = ssum(t, r[0]->n);
-        note(K_DIST, "Distribute", mul(c, r[0]), s);
-        return s;
+        node_t *s = r[0];
+        for (int i = 0; i < s->n; i++) f[i] = sprod((node_t *[]){c, s->k[i]}, 2);
+        node_t *d = ssum(f, s->n);
+        note(K_DIST, "Distribute", mul(c, s), d);
+        return d;
     }
     if (isone(c)) return nr == 1 ? r[0] : mkv(N_MUL, nr, r);
     memmove(r + 1, r, nr * sizeof *r);
@@ -255,9 +256,12 @@ static node_t *withcoef(node_t *c, node_t *rest) {
     return mkv(N_MUL, rest->n + 1, k);
 }
 
+/* ssum() never runs inside itself, so its tables are static to keep them
+ * off the 4 KB stack */
 static node_t *ssum(node_t **u, int n) {
-    node_t *t[MAXOPS], *rest[MAXGRP], *cf[MAXGRP], *grp[MAXGRP][4];
-    int ng[MAXGRP], nr = 0, nnum = 0;
+    static node_t *t[MAXOPS], *rest[MAXGRP], *cf[MAXGRP], *grp[MAXGRP][4], *out[MAXOPS], *nums[MAXOPS];
+    static uint8_t ng[MAXGRP];
+    int nr = 0, nnum = 0;
     n = flatten(u, n, N_ADD, t);
     node_t *c = num(0);
     for (int i = 0; i < n; i++) {
@@ -276,7 +280,6 @@ static node_t *ssum(node_t **u, int n) {
         cf[j] = nadd(cf[j], k);
         if (ng[j] < 4) grp[j][ng[j]++] = t[i];
     }
-    node_t *out[MAXOPS];
     int no = 0;
     for (int j = 0; j < nr; j++) {
         node_t *term = iszero(cf[j]) ? NULL : withcoef(cf[j], rest[j]);
@@ -284,7 +287,6 @@ static node_t *ssum(node_t **u, int n) {
         if (term) out[no++] = term;
     }
     if (nnum > 1 && logging) {
-        node_t *nums[MAXOPS];
         int k = 0;
         bool zero = false;
         for (int i = 0; i < n; i++)
@@ -383,8 +385,80 @@ static double evalfn(uint8_t f, double x, double y) {
         case F_LN: return log(x);
         case F_LOG: return log10(x);
         case F_LOGB: return log(y) / log(x);
+        case F_NCR: case F_NPR: {
+            double v = 1;
+            for (int i = 0; i < y; i++) v *= f == F_NCR ? (x - i) / (i + 1) : x - i;
+            return v;
+        }
+        case F_FACT: {
+            double v = 1;
+            for (int i = 2; i <= x; i++) v *= i;
+            return v;
+        }
         default: return fabs(x);
     }
+}
+
+/* ---- counting ---- */
+
+static node_t *bang(int32_t n) {
+    return fn(F_FACT, num(n));
+}
+
+/* a decimal past what a float holds */
+static node_t *fits(node_t *v) {
+    if (v->type == N_FLT && !(fabs(v->v.f) < 1e37)) fail("Too large");
+    return v;
+}
+
+/* nCr and nPr for a whole number r: n(n-1)...(n-r+1), over r! for nCr */
+static node_t *counting(uint8_t f, node_t *self, node_t *n, node_t *r) {
+    const bool C = f == F_NCR;
+    int32_t k, m;
+    if (!isint(r, &k)) return NULL;
+    if (k < 0) fail("r can't be negative");
+    const bool whole = isint(n, &m) && m >= 0;
+    if (whole && k > m) fail("r can't be bigger than n");
+    if (!isnum(n) && k > MAXDEG) return NULL;   /* in n it stays a polynomial the solver can take */
+    if (k > 100) fail("Too complex");
+    node_t *from = self;
+    if (whole) {
+        node_t *ff = dvd(bang(m), C ? mul(bang(k), bang(m - k)) : bang(m - k));
+        note(K_EXACT, C ? "Use nCr = n!/(r!(n\x96r)!)" : "Use nPr = n!/(n\x96r)!", from, ff);
+        from = ff;
+        if (C && m - k < k) k = m - k;   /* the bigger factorial on the bottom cancels */
+    }
+    node_t *t[MAXDEG], *v = num(1);
+    int32_t kf = 1;   /* k!, only needed while k <= MAXDEG */
+    for (int i = 0; i < k; i++) {
+        node_t *fi = !i ? n : isnum(n) ? nadd(n, num(-i)) : add(n, num(-i));
+        if (i < MAXDEG) t[i] = fi, kf *= i + 1;
+        if (isnum(n)) v = nmul(v, C ? nmul(fi, frac(1, i + 1)) : fi);
+    }
+    if (!k) return num(1);
+    const char *rule = C ? "Use nCr = n(n\x96" "1)...(n\x96r+1)/r!" : "Use nPr = n(n\x96" "1)...(n\x96r+1)";
+    if (!isnum(n)) {
+        node_t *top = k == 1 ? t[0] : mkv(N_MUL, k, t);
+        note(K_EXACT, rule, from, C && k > 1 ? dvd(top, bang(k)) : top);
+        return simp(C ? dvd(top, num(kf)) : top);
+    }
+    if (whole && k <= MAXDEG) {
+        node_t *top = k == 1 ? t[0] : mkv(N_MUL, k, t);
+        node_t *shown = C && k > 1 ? dvd(top, bang(k)) : top;
+        if (m - k > 1) {
+            seen |= K_EXACT;
+            if (logging) substep("Cancel @", bang(m - k), eq(from, shown));
+        } else {
+            note(K_EXACT, "Write out the factorial", from, shown);
+        }
+        from = shown;
+    }
+    if (whole) {
+        if (!same(from, v)) note(K_CALC, "Calculate", from, v);
+    } else {
+        note(K_EXACT, rule, from, v);
+    }
+    return fits(v);
 }
 
 static bool isneg(const node_t *e) {
@@ -436,6 +510,25 @@ static node_t *sfn(uint8_t f, node_t **a, int n) {
             }
             if (!r && isnum(x) && numval(x) <= 0) fail("log is undefined there");
             break;
+        }
+        case F_NCR: case F_NPR:
+            if ((r = counting(f, self, a[0], x))) return r;
+            break;
+        case F_FACT: {
+            int32_t m;
+            if (!isnum(x)) break;
+            if (!isint(x, &m) || m < 0) fail("! needs a whole number");
+            if (m > 100) fail("Too large");
+            node_t *v = num(1), *from = self;
+            for (int i = m; i > 1; i--) v = nmul(v, num(i));
+            if (m >= 3 && m <= MAXDEG) {
+                node_t *t[MAXDEG];
+                for (int i = 0; i < m; i++) t[i] = num(m - i);
+                from = mkv(N_MUL, m, t);
+                note(K_EXACT, "Multiply down to 1", self, from);
+            }
+            note(K_CALC, "Calculate", from, v);
+            return fits(v);
         }
         case F_ABS:
             if (isnum(x)) r = numval(x) < 0 ? nmul(x, num(-1)) : x, cap = "Calculate", kind = K_CALC;
@@ -503,7 +596,7 @@ node_t *tidy(node_t *e, const char *cap) {
 
 static node_t *xprod(node_t *r, node_t *s) {
     if (r->type == N_ADD) {
-        node_t *t[MAXOPS];
+        node_t *t[r->n];
         for (int i = 0; i < r->n; i++) t[i] = xprod(r->k[i], s);
         return ssum(t, r->n);
     }

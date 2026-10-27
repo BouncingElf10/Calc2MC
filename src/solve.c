@@ -77,23 +77,24 @@ static void branch(node_t **eqs, int n, sols_t *s) {
 
 /* ---- polynomials ---- */
 
-static void linear(node_t *l, node_t *r, sols_t *s) {
-    node_t *t[MAXDEG * 4], *lc[16], *rx[16];
-    int nlc = 0, nrx = 0;
-    int n = terms(r, t);
+/* the terms of e with x (or without), as one sum; NULL when there are none */
+static node_t *part(node_t *e, bool withX) {
+    node_t *t[e->type == N_ADD ? e->n : 1];
+    int n = terms(e, t), m = 0;
     for (int i = 0; i < n; i++)
-        if (has(t[i], X)) rx[nrx++] = t[i];
-    node_t *e = eq(l, r);
-    if (nrx) e = subtractBoth(e->k[0], e->k[1], sumof(rx, nrx));
+        if (has(t[i], X) == withX) t[m++] = t[i];
+    return m ? sumof(t, m) : NULL;
+}
+
+static void linear(node_t *l, node_t *r, sols_t *s) {
+    node_t *e = eq(l, r), *rx = part(r, true);
+    if (rx) e = subtractBoth(e->k[0], e->k[1], rx);
     if (!has(e->k[0], X)) {   /* the x terms ended up on the right */
         e = eq(e->k[1], e->k[0]);
         step("Swap the sides", NULL, e);
     }
-    nlc = 0;
-    n = terms(e->k[0], t);
-    for (int i = 0; i < n; i++)
-        if (!has(t[i], X)) lc[nlc++] = t[i];
-    if (nlc) e = subtractBoth(e->k[0], e->k[1], sumof(lc, nlc));
+    node_t *lc = part(e->k[0], false);
+    if (lc) e = subtractBoth(e->k[0], e->k[1], lc);
     poly_t p;
     topoly(e->k[0], X, &p);
     if (!same(e->k[0], X)) {
@@ -354,7 +355,7 @@ static bool peel(node_t *l, node_t *r, sols_t *s) {
     node_t *e;
     switch (l->type) {
         case N_ADD: {
-            node_t *t[64], *rest[64];
+            node_t *t[l->n], *rest[l->n];
             int nt = terms(l, t), nx = 0, nhard = 0, nr = 0;
             for (int i = 0; i < nt; i++) {
                 nx += has(t[i], X);
@@ -367,7 +368,7 @@ static bool peel(node_t *l, node_t *r, sols_t *s) {
             break;
         }
         case N_MUL: {
-            node_t *c[48];
+            node_t *c[l->n];
             int nc = 0, nx = 0;
             for (int i = 0; i < l->n; i++)
                 if (has(l->k[i], X)) nx++;
@@ -503,6 +504,15 @@ static node_t *splitExp(node_t *e, node_t *base, node_t *g) {
     return r;
 }
 
+static node_t *firstTrig(node_t *e) {
+    if (e->type == N_FN && (e->op == F_SIN || e->op == F_COS) && has(e, X)) return e;
+    for (int i = 0; i < e->n; i++) {
+        node_t *f = firstTrig(e->k[i]);
+        if (f) return f;
+    }
+    return NULL;
+}
+
 static node_t *firstExp(node_t *e) {
     if (e->type == N_POW && !has(e->k[0], X) && has(e->k[1], X)) return e;
     for (int i = 0; i < e->n; i++) {
@@ -538,15 +548,7 @@ static bool substitute(node_t *d, sols_t *s) {
     kernel = NULL;
     if (!findKernel(d) || !kernel) {
         /* sin and cos of the same thing: rewrite one in terms of the other */
-        node_t *sinx = NULL;
-        node_t *stack[64];
-        int sp = 0;
-        stack[sp++] = d;
-        while (sp && !sinx) {
-            node_t *e = stack[--sp];
-            if (e->type == N_FN && (e->op == F_SIN || e->op == F_COS) && has(e, X)) sinx = e;
-            for (int i = 0; i < e->n && sp < 64; i++) stack[sp++] = e->k[i];
-        }
+        node_t *sinx = firstTrig(d);
         if (!sinx) return false;
         node_t *in = sinx->k[0];
         for (uint8_t from = F_SIN; from <= F_COS; from++) {
@@ -571,9 +573,9 @@ static bool substitute(node_t *d, sols_t *s) {
     solveEq(frompoly(&p, u), num(0), &us);
     X = saveX;
     if (!us.n) return true;
-    node_t *back[MAXSOL];
-    for (int i = 0; i < us.n; i++) back[i] = eq(k, us.v[i]);
-    step("Put back u = @", k, us.n == 1 ? back[0] : mkv(N_OR, us.n, back));
+    node_t *back = mkv(N_OR, us.n, us.v);
+    for (int i = 0; i < us.n; i++) back->k[i] = eq(k, us.v[i]);
+    step("Put back u = @", k, us.n == 1 ? back->k[0] : back);
     const bool hadNone = none;
     for (int i = 0; i < us.n; i++) {
         none = false;
@@ -632,7 +634,7 @@ static void solveEq(node_t *l, node_t *r, sols_t *s) {
     if (!hasDenominator(d) && topoly(d, X, &p) && p.deg >= 1) {
         polynomial(l, r, &p, s);
     } else if (hasDenominator(d)) {
-        node_t *dens[8], *tm[64];
+        node_t *dens[8], *tm[d->type == N_ADD ? d->n : 1];
         const int nd = denominators(d, dens, 0);
         node_t *lcd = nd == 1 ? dens[0] : simp(mkv(N_MUL, nd, dens));
         const int nt = terms(d, tm);
@@ -698,6 +700,14 @@ static bool works(node_t *orig, node_t *v) {
     return !ok || fabs(val) < 1e-6 * scale;
 }
 
+/* nCr, nPr and ! only count whole numbers of things */
+static bool counts(const node_t *e) {
+    if (e->type == N_FN && e->op >= F_NCR) return true;
+    for (int i = 0; i < e->n; i++)
+        if (counts(e->k[i])) return true;
+    return false;
+}
+
 static void solveTop(node_t *e, sols_t *s) {
     if (e->type != N_EQ) e = eq(e, num(0));
     level = 0;
@@ -705,8 +715,12 @@ static void solveTop(node_t *e, sols_t *s) {
     solveEq(e->k[0], e->k[1], s);
     /* check every answer in the original equation */
     sols_t ok = {.n = 0};
+    const bool whole = counts(e);
     for (int i = 0; i < s->n; i++) {
-        if (hasvar(s->v[i], 'k') || works(e, s->v[i])) ok.v[ok.n++] = s->v[i];
+        int32_t k;
+        if (whole && !(isint(s->v[i], &k) && k >= 0))
+            step("Reject @: it has to be a whole number", eq(X, s->v[i]), NULL);
+        else if (hasvar(s->v[i], 'k') || works(e, s->v[i])) ok.v[ok.n++] = s->v[i];
         else step("Check: @ doesn't work in the original equation", eq(X, s->v[i]), NULL);
     }
     *s = ok;

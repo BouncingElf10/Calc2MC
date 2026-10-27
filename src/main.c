@@ -27,7 +27,7 @@ static const keydef_t keys[] = {
     {7, kb_Left, K_LEFT, K_LEFT, 0}, {7, kb_Right, K_RIGHT, K_RIGHT, 0},
     {6, kb_Enter, K_ENTER, K_ENTER, 0}, {6, kb_Clear, K_QUIT, K_QUIT, 0},
     {6, kb_Add, '+', '+', 0}, {6, kb_Sub, '-', '-', 'w'}, {6, kb_Mul, '*', '*', 'r'},
-    {6, kb_Div, '/', '/', 'm'}, {6, kb_Power, A_BOX + B_POW, TOKEN + T_PI, 'h'},
+    {6, kb_Div, '/', 'e', 'm'}, {6, kb_Power, A_BOX + B_POW, TOKEN + T_PI, 'h'},
     {1, kb_Yequ, K_BACK, K_BACK, 0}, {1, kb_2nd, K_2ND, K_2ND, 0}, {1, kb_Mode, K_MODE, K_MODE, 0},
     {1, kb_Del, K_DEL, K_CLEARIN, 0},
     {2, kb_Sto, '=', '=', 'x'}, {2, kb_Ln, TOKEN + T_LN, K_EPOW, 's'}, {2, kb_Log, TOKEN + T_LOG, K_TENPOW, 'n'},
@@ -130,11 +130,14 @@ static int pan;
 static const char *const mathItems[] = {
     "n-th root", "Absolute value", "Log with a base", "Derivative d/dx",
     "Integral", "Integral with bounds", "Limit", "Infinity",
+    "Combinations nCr", "Permutations nPr", "Factorial !",
 };
 static const uint16_t mathActs[] = {
     A_BOX + B_ROOT, A_BOX + B_ABS, A_BOX + B_LOGB, A_BOX + B_DERIV,
     A_BOX + B_INT, A_BOX + B_DEFINT, A_BOX + B_LIM, TOKEN + T_INF,
+    A_BOX + B_NCR, A_BOX + B_NPR, '!',
 };
+#define NMATH (sizeof mathItems / sizeof mathItems[0])
 
 /* ---- layout helpers ---- */
 
@@ -205,21 +208,25 @@ static void strip(const char *title) {
 
 #define TAB 18   /* the numbered margin tab; menus mark their row with it too */
 
+#define ROWS 8   /* a longer list scrolls */
+
 /* a list of choices; the chosen one gets the filled margin tab */
 static void list(const char *title, int n, const char *(*label)(int)) {
-    const int rowH = 20, h = 26 + n * rowH, top = (H - FOOT - h) / 2 + 8;
+    const int rows = n < ROWS ? n : ROWS, from = sel < rows ? 0 : sel - rows + 1;
+    const int rowH = 20, h = 26 + rows * rowH, top = (H - FOOT - h) / 2 + 8;
     fill(8, top, W - 16, h, C_PAPER);
     gfx_SetColor(C_RULE);
     gfx_Rectangle(8, top, W - 16, h);
     say(title, 9 + TAB + 8, top + 16, F_SMALL, C_SEC);
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < rows; i++) {
         const int y = top + 22 + i * rowH;
-        if (i == sel) {
+        if (from + i == sel) {
             fill(9, y, W - 18, rowH, C_PALE);
             fill(9, y, TAB, rowH, C_TEAL);
         }
-        say(label(i), 9 + TAB + 8, y + 14, F_BODY, C_INK);
+        say(label(from + i), 9 + TAB + 8, y + 14, F_BODY, C_INK);
     }
+    if (from + rows < n) say(G_DOWN, W - 24, top + 16, F_SMALL, C_TEAL);   /* more below */
 }
 
 static const char *menuLabel(int i) {
@@ -333,6 +340,13 @@ static void go(void) {
     useRange = false;
     if (strstr(input, "der(") || strstr(input, "int(") || strstr(input, "lim(")) {
         action = A_CALC;
+        solveVar = 'x';
+        run();
+        return;
+    }
+    /* counting has one thing to do: work it out */
+    if (!strchr(input, '=') && (strstr(input, "ncr(") || strstr(input, "npr(") || strchr(input, '!'))) {
+        action = A_SIMPLIFY;
         solveVar = 'x';
         run();
         return;
@@ -576,7 +590,7 @@ static void render(void) {
         }
         case S_MATH: {
             drawEditor();
-            list("Insert a template", 8, mathLabel);
+            list("Insert a template", NMATH, mathLabel);
             static const char *const hints[] = {G_UPDOWN, "choose", "enter", "insert", "y=", "back", NULL};
             footer(hints);
             break;
@@ -673,7 +687,7 @@ int main(void) {
                 break;
             case S_MENU:
             case S_MATH: {
-                const uint8_t n = screen == S_MENU ? nmenu : 8;
+                const uint8_t n = screen == S_MENU ? nmenu : NMATH;
                 if (k == K_UP) sel = sel ? sel - 1 : n - 1;
                 else if (k == K_DOWN) sel = sel + 1 < n ? sel + 1 : 0;
                 else if (k == K_BACK) screen = S_EDIT;

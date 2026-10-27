@@ -6,9 +6,9 @@ const char *const tokenText[T_COUNT] = {
 };
 
 /* slots per box type, the slot the cursor starts in, and which slots get an x */
-static const uint8_t nslots[] = {2, 1, 1, 2, 1, 2, 2, 2, 4, 3, 2};
-static const uint8_t first[] = {0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0};
-static const uint8_t xslot[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0, 1, 3, 0, 0xFF};
+static const uint8_t nslots[] = {2, 1, 1, 2, 1, 2, 2, 2, 4, 3, 2, 2, 2};
+static const uint8_t first[] = {0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0};
+static const uint8_t xslot[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0, 1, 3, 0, 0xFF, 0xFF, 0xFF};
 
 void ed_clear(ed_t *e) {
     memset(e, 0, sizeof *e);
@@ -64,10 +64,18 @@ bool ed_text(ed_t *e, const char *s) {
     return true;
 }
 
+/* how many boxes the row sits inside */
+static int depth(const ed_t *e, int row) {
+    int d = 0;
+    for (uint8_t b; (b = e->rows[row].box) != 0xFF; row = e->boxes[b].row) d++;
+    return d;
+}
+
 bool ed_box(ed_t *e, uint8_t type) {
     int b = 0;
     while (b < ED_BOXES && e->boxes[b].used) b++;
-    if (b == ED_BOXES || e->rows[e->row].n == ED_LEN) return false;
+    /* deeper nesting would not fit the 4 KB stack when drawn */
+    if (b == ED_BOXES || e->rows[e->row].n == ED_LEN || depth(e, e->row) == 6) return false;
     box_t *box = &e->boxes[b];
     *box = (box_t){.type = type, .nslots = nslots[type], .used = true};
     for (int i = 0; i < box->nslots; i++) {
@@ -154,7 +162,7 @@ void ed_right(ed_t *e) {
 /* the slot above/below the current one, or -1 */
 static int vertical(box_t *box, int s, bool up) {
     switch (box->type) {
-        case B_FRAC: return up ? (s == 1 ? 0 : -1) : (s == 0 ? 1 : -1);
+        case B_FRAC: case B_NCR: case B_NPR: return up ? (s == 1 ? 0 : -1) : (s == 0 ? 1 : -1);
         case B_DEFINT:
             if (s == 0) return up ? 1 : -1;
             if (s == 1) return up ? -1 : 0;
@@ -270,9 +278,11 @@ static void serslot(const ed_t *e, const box_t *b, int s, sout_t *o) {
 }
 
 static void serbox(const ed_t *e, const box_t *b, sout_t *o, uint16_t at) {
-    static const char *const open[] = {"frac(", "^(", "sqrt(", "root(", "abs(", "logb(", "der(", "int(", "int(", "lim(", ""};
+    static const char *const open[] = {"frac(", "^(", "sqrt(", "root(", "abs(", "logb(", "der(", "int(", "int(", "lim(", "",
+                                       "ncr(", "npr("};
     /* the order the slots are written in */
-    static const uint8_t order[][4] = {{0, 1}, {0}, {0}, {0, 1}, {0}, {0, 1}, {1, 0}, {0, 1}, {2, 3, 0, 1}, {2, 0, 1}, {0, 1}};
+    static const uint8_t order[][4] = {{0, 1}, {0}, {0}, {0, 1}, {0}, {0, 1}, {1, 0}, {0, 1}, {2, 3, 0, 1}, {2, 0, 1}, {0, 1},
+                                       {0, 1}, {0, 1}};
     emit(o, open[b->type], at);
     for (int i = 0; i < b->nslots; i++) {
         if (i) emit(o, ",", at);
@@ -317,7 +327,7 @@ void ed_seek(ed_t *e, uint16_t at) {
 
 int ed_vars(const char *s, char *out, int max) {
     static const char *const names[] = {"asin", "acos", "atan", "sin", "cos", "tan", "logb", "log", "ln", "abs",
-                                        "sqrt", "root", "frac", "der", "int", "lim", "pi", "inf"};
+                                        "ncr", "npr", "sqrt", "root", "frac", "der", "int", "lim", "pi", "inf"};
     int n = 0;
     bool hasx = false;
     while (*s) {

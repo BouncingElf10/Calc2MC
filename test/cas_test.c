@@ -270,6 +270,26 @@ int main(int argc, char **argv) {
     run("2x^2+4x", A_FACTOR, 'x', NULL, NULL, "2x(x+2) |");
     run("x^3-6x^2+11x-6", A_FACTOR, 'x', NULL, NULL, "(x-1)(x-2)(x-3) |");
     run("sqrt(2)", A_APPROX, 'x', NULL, NULL, "1.41421 |");
+    raw("5!", "5!");
+    raw("ncr(n,2)", "ncr(n,2)");
+    run("ncr(10,3)", A_SIMPLIFY, 'x', NULL, NULL, "120 |");
+    run("npr(10,3)", A_SIMPLIFY, 'x', NULL, NULL, "720 |");
+    run("ncr(10,8)", A_SIMPLIFY, 'x', NULL, NULL, "45 |");
+    run("ncr(60,6)", A_SIMPLIFY, 'x', NULL, NULL, "50063860 |");
+    run("frac(5!,2!2!)", A_SIMPLIFY, 'x', NULL, NULL, "30 |");
+    run("ncr(5,2)ncr(4,1)", A_SIMPLIFY, 'x', NULL, NULL, "40 |");
+    run("npr(3,5)", A_SIMPLIFY, 'x', NULL, NULL, "r can't be bigger than n");
+    run("(-1)!", A_SIMPLIFY, 'x', NULL, NULL, "! needs a whole number");
+    run("ncr(n,2)=45", A_SOLVE, 'n', NULL, NULL, "n=10 |");
+    run("npr(n,2)=56", A_SOLVE, 'n', NULL, NULL, "n=8 |");
+    run("ncr(10,3)0.5^10", A_APPROX, 'x', NULL, NULL, "0.117188 |");
+    /* deep nesting stops with an error instead of running off the stack */
+    char deep[200];
+    memset(deep, '(', 90);
+    deep[90] = 'x';
+    memset(deep + 91, ')', 90);
+    deep[181] = 0;
+    run(deep, A_SIMPLIFY, 'x', NULL, NULL, "Too complex");
     show("2x+3=7", A_SOLVE, 'x', NULL, NULL);
     show("x^2+x-1=0", A_SOLVE, 'x', NULL, NULL);
     show("sqrt(x+2)=x", A_SOLVE, 'x', NULL, NULL);

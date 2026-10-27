@@ -28,7 +28,8 @@ enum {
 
 enum { C_PI, C_E, C_I, C_INF };
 
-enum { F_SIN, F_COS, F_TAN, F_ASIN, F_ACOS, F_ATAN, F_LN, F_LOG, F_LOGB, F_ABS };
+enum { F_SIN, F_COS, F_TAN, F_ASIN, F_ACOS, F_ATAN, F_LN, F_LOG, F_LOGB, F_ABS,
+       F_NCR, F_NPR, F_FACT };   /* NCR and NPR are (n, r) */
 
 typedef struct node node_t;
 struct node {
@@ -103,6 +104,7 @@ int fracparts(const node_t *e, const node_t **top, int *nt, const node_t **bot, 
 #include <setjmp.h>
 extern jmp_buf cas_jb;
 void fail(const char *msg);
+void cas_deeper(void);   /* fails when the stack is nearly used up */
 extern bool cas_logging;   /* simp() records its rewrites as sub-steps */
 uint8_t *cas_mark(void);
 void cas_release(uint8_t *m);

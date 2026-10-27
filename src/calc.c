@@ -27,7 +27,7 @@ static node_t *split(node_t *f, node_t *x, node_t **rest) {
         *rest = f;
         return has(f, x) ? num(1) : f;
     }
-    node_t *c[48], *r[48];
+    node_t *c[f->n], *r[f->n];
     int nc = 0, nr = 0;
     for (int i = 0; i < f->n; i++)
         if (has(f->k[i], x)) r[nr++] = f->k[i];
@@ -45,6 +45,20 @@ static node_t *chain(node_t *outer, node_t *g, node_t *x) {
 
 /* ---- derivatives ---- */
 
+/* a fraction with x on top and bottom: quotient rule. Not inlined, so
+ * dstep() stays small as it recurses. */
+__attribute__((noinline)) static node_t *quotient(node_t *f, node_t *x) {
+    static const node_t *top[32], *bot[32];   /* copied out before anything recurses */
+    int nt, nb;
+    fracparts(f, top, &nt, bot, &nb);
+    if (!nb || !nt) return NULL;
+    node_t *n = nt == 1 ? (node_t *)top[0] : mkv(N_MUL, nt, (node_t **)top);
+    node_t *d = nb == 1 ? (node_t *)bot[0] : mkv(N_MUL, nb, (node_t **)bot);
+    if (!has(n, x) || !has(d, x)) return NULL;
+    rule = "Quotient rule";
+    return dvd(sub(mul(D(n, x), d), mul(n, D(d, x))), pw(d, num(2)));
+}
+
 static node_t *dstep(node_t *f, node_t *x) {
     if (!has(f, x)) {
         rule = "The derivative of a constant is 0";
@@ -56,7 +70,7 @@ static node_t *dstep(node_t *f, node_t *x) {
     }
     switch (f->type) {
         case N_ADD: {
-            node_t *t[64];
+            node_t *t[f->n];
             for (int i = 0; i < f->n; i++) t[i] = D(f->k[i], x);
             rule = "Differentiate term by term";
             return mkv(N_ADD, f->n, t);
@@ -67,18 +81,8 @@ static node_t *dstep(node_t *f, node_t *x) {
                 rule = "Take out the constant";
                 return mul(c, D(rest, x));
             }
-            /* a fraction with x on top and bottom: quotient rule */
-            const node_t *top[32], *bot[32];
-            int nt, nb;
-            fracparts(f, top, &nt, bot, &nb);
-            if (nb && nt) {
-                node_t *n = nt == 1 ? (node_t *)top[0] : mkv(N_MUL, nt, (node_t **)top);
-                node_t *d = nb == 1 ? (node_t *)bot[0] : mkv(N_MUL, nb, (node_t **)bot);
-                if (has(n, x) && has(d, x)) {
-                    rule = "Quotient rule";
-                    return dvd(sub(mul(D(n, x), d), mul(n, D(d, x))), pw(d, num(2)));
-                }
-            }
+            node_t *q = quotient(f, x);
+            if (q) return q;
             node_t *u = f->k[0], *v = f->n == 2 ? f->k[1] : mkv(N_MUL, f->n - 1, f->k + 1);
             rule = "Product rule";
             return add(mul(D(u, x), v), mul(u, D(v, x)));
@@ -219,13 +223,13 @@ static int liate(node_t *f, node_t *x) {
 static node_t *uvar;
 
 /* f = c * outer(g) * g' for some inner g: returns c * outer(u) in u */
-static node_t *usub(node_t *f, node_t *x, node_t **gout) {
+__attribute__((noinline)) static node_t *usub(node_t *f, node_t *x, node_t **gout) {
     node_t *cands[16];
     int nc = 0;
     node_t *one = f;
     node_t **fs = f->type == N_MUL ? f->k : &one;
     const int nf = f->type == N_MUL ? f->n : 1;
-    for (int i = 0; i < nf && nc < 16; i++) {
+    for (int i = 0; i < nf && nc < 15; i++) {   /* a factor adds up to 2 */
         node_t *h = fs[i];
         if (h->type == N_FN && !isx(h->k[h->n - 1], x)) cands[nc++] = h->k[h->n - 1];
         if (h->type == N_POW && has(h->k[0], x) && !isx(h->k[0], x) && !has(h->k[1], x)) cands[nc++] = h->k[0];
@@ -249,8 +253,9 @@ static node_t *usub(node_t *f, node_t *x, node_t **gout) {
     return NULL;
 }
 
-static node_t *partial(node_t *f, node_t *x) {
-    const node_t *top[32], *bot[32];
+/* not inlined, so istep() stays small as it recurses */
+__attribute__((noinline)) static node_t *partial(node_t *f, node_t *x) {
+    static const node_t *top[32], *bot[32];   /* copied out before anything recurses */
     int nt, nb;
     if (fracparts(f, top, &nt, bot, &nb) < 0 || !nb) return NULL;
     node_t *n = nt == 0 ? num(1) : nt == 1 ? (node_t *)top[0] : simp(mkv(N_MUL, nt, (node_t **)top));
@@ -316,7 +321,7 @@ static node_t *istep(node_t *f, node_t *x) {
         return mul(f, x);
     }
     if (f->type == N_ADD) {
-        node_t *t[64];
+        node_t *t[f->n];
         for (int i = 0; i < f->n; i++) t[i] = I(f->k[i], x);
         rule = "Integrate term by term";
         return mkv(N_ADD, f->n, t);
@@ -347,7 +352,7 @@ static node_t *istep(node_t *f, node_t *x) {
     }
     if ((r = partial(f, x))) {
         if (r->type == N_ADD) {
-            node_t *t[64];
+            node_t *t[r->n];
             for (int i = 0; i < r->n; i++) t[i] = I(r->k[i], x);
             return mkv(N_ADD, r->n, t);
         }
@@ -372,7 +377,7 @@ static node_t *istep(node_t *f, node_t *x) {
             for (int i = 0; i < f->n; i++) {
                 if (liate(f->k[i], x) != pick) continue;
                 node_t *u = f->k[i];
-                node_t *dv[48];
+                node_t *dv[f->n];
                 int nd = 0;
                 for (int j = 0; j < f->n; j++)
                     if (j != i) dv[nd++] = f->k[j];
@@ -449,7 +454,8 @@ static node_t *pass(node_t *e) {
         rule = NULL;
         ruleArg = NULL;
         uvar = var('u');
-        node_t *r = e->type == N_DERIV ? dstep(f, x) : istep(f, x);
+        /* simplified, so u-substitution sees (x^2+1)^-2 and not ((x^2+1)^2)^-1 */
+        node_t *r = e->type == N_DERIV ? dstep(f, x) : istep(simp(f), x);
         if (!r) fail("No method found for this integral");
         nrules++;
         lastRule = rule;

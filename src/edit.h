@@ -14,7 +14,7 @@ enum {   /* tokens, stored as 0x80 + T_* */
 #define TOKEN 0x80
 #define BOX 0xC0   /* items >= BOX are boxes: BOX + box index */
 
-enum { B_FRAC, B_POW, B_SQRT, B_ROOT, B_ABS, B_LOGB, B_DERIV, B_INT, B_DEFINT, B_LIM, B_RANGE };
+enum { B_FRAC, B_POW, B_SQRT, B_ROOT, B_ABS, B_LOGB, B_DERIV, B_INT, B_DEFINT, B_LIM, B_RANGE, B_NCR, B_NPR };
 
 #define ED_ROWS 40
 #define ED_LEN 40

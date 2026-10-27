@@ -155,6 +155,16 @@ static dim_t sup(kid_t e, int baseA, int x, int y) {
     return d;
 }
 
+/* nCr and nPr as in the formula booklet: n raised in front, r lowered after */
+static dim_t counting(kid_t n, kid_t r, const char *c, int x, int y) {
+    dim_t d = sup(n, asc[penFont], x - 1, y);
+    grow(&d, text(c, x + d.w, y));
+    const dim_t dr = small(r, x + d.w, y + 3);
+    d.w += dr.w;
+    if (dr.d + 3 > d.d) d.d = dr.d + 3;
+    return d;
+}
+
 /* brackets, stretched around tall content */
 static dim_t wrap(kid_t k, char open, int x, int y) {
     const dim_t dk = measure(k);
@@ -377,11 +387,18 @@ static const char *intText(int32_t n) {
     return s;
 }
 
+/* Drawing recurses, so the factor and term lists are worked out in static
+ * buffers and only copied to the 4 KB stack at their real size. */
+static const node_t *spare[64], *spare2[32];
+
 static dim_t product(const node_t *e, int x, int y) {
-    const node_t *top[32], *bot[32];
     int nt, nbt;
     dim_t d = {0, 0, 0};
-    if (fracparts(e, top, &nt, bot, &nbt) < 0) grow(&d, text(G_MINUS, x, y));
+    const int sign = fracparts(e, spare, &nt, spare2, &nbt);
+    const node_t *top[nt + 1], *bot[nbt + 1];
+    memcpy(top, spare, nt * sizeof *top);
+    memcpy(bot, spare2, nbt * sizeof *bot);
+    if (sign < 0) grow(&d, text(G_MINUS, x, y));
     const list_t lt = {top, nt}, lb = {bot, nbt};
     const kid_t kt = {factors, &lt}, kb = {factors, &lb};
     grow(&d, nbt ? fraction(kt, kb, x + d.w, y) : lay(kt, x + d.w, y));
@@ -402,6 +419,7 @@ static dim_t fnCall(const node_t *e, const node_t *power, int x, int y) {
 }
 
 dim_t node(const node_t *e, int x, int y) {
+    cas_deeper();
     dim_t d = {0, 0, 0};
     switch (e->type) {
         case N_NUM:
@@ -418,8 +436,9 @@ dim_t node(const node_t *e, int x, int y) {
         case N_CONST:
             return text((const char *[]){G_PI, "e", "i", G_INF}[e->op], x, y);
         case N_ADD: {
-            const node_t *t[64];
-            const int n = sumterms(e, t);
+            const int n = sumterms(e, spare);
+            const node_t *t[n];
+            memcpy(t, spare, n * sizeof *t);
             for (int i = 0; i < n; i++) {
                 const node_t *m = t[i];
                 if (i) {
@@ -445,13 +464,20 @@ dim_t node(const node_t *e, int x, int y) {
                 return radical(K(b), p->v.q.den == 2 ? NULL : &ix, x, y);
             }
             if (negative(p)) return product(e, x, y);
-            if (b->type == N_FN && b->op != F_ABS && isint(p, NULL)) return fnCall(b, p, x, y);
+            if (b->type == N_FN && b->op < F_ABS && isint(p, NULL)) return fnCall(b, p, x, y);
             d = paren(b, !atomic(b) || b->type == N_FN, x, y);
             grow(&d, sup(K(p), d.a, x + d.w, y));
             return d;
         }
         case N_FN:
             if (e->op == F_ABS) return wrap(K(e->k[0]), '|', x, y);
+            if (e->op == F_FACT) {
+                const node_t *a = e->k[0];
+                d = paren(a, !atomic(a) || a->type == N_FN || negative(a), x, y);
+                grow(&d, text("!", x + d.w, y));
+                return d;
+            }
+            if (e->op != F_LOGB && e->n == 2) return counting(K(e->k[0]), K(e->k[1]), e->op == F_NCR ? "C" : "P", x, y);
             return fnCall(e, NULL, x, y);
         case N_EQ:
             d = node(e->k[0], x, y);
@@ -583,6 +609,8 @@ static dim_t box(const ed_t *ed, const box_t *b, int prevA, int x, int y, bool s
         case B_INT: return integral(k[0], k[1], NULL, NULL, x, y);
         case B_DEFINT: return integral(k[2], k[3], &k[0], &k[1], x, y);
         case B_LIM: return limit(k[0], k[1], k[2], x, y);
+        case B_NCR: return counting(k[0], k[1], "C", x, y);
+        case B_NPR: return counting(k[0], k[1], "P", x, y);
         default: {   /* B_RANGE: lo <= x <= hi */
             const char v[2] = {rangeVar, 0};
             d = lay(k[0], x, y);
@@ -613,6 +641,7 @@ static const char *itemText(uint8_t it) {
 }
 
 dim_t edrow(const ed_t *ed, int row, int x, int y, bool show) {
+    cas_deeper();
     const row_t *r = &ed->rows[row];
     const bool here = show && ed->row == row;
     const uint8_t f = penFont;
